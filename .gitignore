@@ -1,4 +1,4 @@
-# Built application file.s
+# Built application file.
 *.apk
 *.ap_
 
@@ -31,3 +31,13 @@ local.properties
 *.ipr
 *~
 *.swp
+build/
+production/
+out
+local.properties
+
+
+# Silly file browser stuff...
+.directory
+Thumbs.db
+.DS_Store
