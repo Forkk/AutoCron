@@ -14,18 +14,24 @@
  * limitations under the License.
  */
 
-package net.forkk.andcron.data;
+package net.forkk.andcron.data.action;
 
-import org.json.JSONObject;
+import net.forkk.andcron.data.AutomationComponent;
 
 
 /**
- * Class with static functions for loading actions.
+ * Interface for actions performed by an automation.
  */
-public class ActionLoader
+public interface Action extends AutomationComponent
 {
-    public static Action loadFromJSON(JSONObject object)
-    {
-        return null;
-    }
+    /**
+     * Called when the action's automation has been activated. This should perform whatever this
+     * action is meant to do on activation.
+     */
+    public void onActivate();
+
+    /**
+     * Called when the action's automation deactivates.
+     */
+    public void onDeactivate();
 }

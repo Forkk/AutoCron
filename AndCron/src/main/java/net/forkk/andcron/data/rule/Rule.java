@@ -14,21 +14,26 @@
  * limitations under the License.
  */
 
-package net.forkk.andcron.data;
+package net.forkk.andcron.data.rule;
+
+import net.forkk.andcron.data.AutomationComponent;
+
 
 /**
- * Interface for actions performed by an automation.
+ * An automation rule that specifies when an automation should activate.
  */
-public interface Action extends AutomationComponent
+public interface Rule extends AutomationComponent
 {
     /**
-     * Called when the action's automation has been activated. This should perform whatever this
-     * action is meant to do on activation.
+     * Initializes the rule. This should set up anything this rule needs. For example, if this is a
+     * geofence rule, this function would set up its geofence.
      */
-    public void onActivate();
+    public abstract void initialize();
 
     /**
-     * Called when the action's automation deactivates.
+     * Checks if this rule is active.
+     *
+     * @return If the rule is active, true, else false.
      */
-    public void onDeactivate();
+    public abstract boolean isActive();
 }

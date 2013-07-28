@@ -14,23 +14,18 @@
  * limitations under the License.
  */
 
-package net.forkk.andcron.data;
+package net.forkk.andcron.data.action;
+
+import org.json.JSONObject;
+
 
 /**
- * An automation rule that specifies when an automation should activate.
+ * Class with static functions for loading actions.
  */
-public interface Rule extends AutomationComponent
+public class ActionLoader
 {
-    /**
-     * Initializes the rule. This should set up anything this rule needs. For example, if this is a
-     * geofence rule, this function would set up its geofence.
-     */
-    public abstract void initialize();
-
-    /**
-     * Checks if this rule is active.
-     *
-     * @return If the rule is active, true, else false.
-     */
-    public abstract boolean isActive();
+    public static Action loadFromJSON(JSONObject object)
+    {
+        return null;
+    }
 }

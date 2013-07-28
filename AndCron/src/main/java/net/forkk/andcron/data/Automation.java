@@ -16,6 +16,10 @@
 
 package net.forkk.andcron.data;
 
+import net.forkk.andcron.data.action.Action;
+import net.forkk.andcron.data.rule.Rule;
+
+
 /**
  * Interface for automations. Provides access to all of the necessary stuff.
  */

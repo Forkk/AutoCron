@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.forkk.andcron.data;
+package net.forkk.andcron.data.rule;
 
 import org.json.JSONObject;
 
