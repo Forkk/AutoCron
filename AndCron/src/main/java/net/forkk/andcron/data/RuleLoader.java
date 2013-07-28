@@ -16,16 +16,16 @@
 
 package net.forkk.andcron.data;
 
+import org.json.JSONObject;
+
+
 /**
- * An interface for components of an automation. Components are things such as rules and actions.
+ * Class with static functions for loading rules.
  */
-public interface AutomationComponent extends ConfigComponent
+public class RuleLoader
 {
-    /**
-     * Sets this component's parent. The parent is the automation that contains the rule.
-     *
-     * @param parent
-     *         The rule's parent.
-     */
-    public void setParent(Automation parent);
+    public static Rule loadFromJSON(JSONObject object)
+    {
+        return null;
+    }
 }

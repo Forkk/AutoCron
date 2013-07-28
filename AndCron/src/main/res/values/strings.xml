@@ -16,11 +16,10 @@
   -->
 
 <resources>
+    <!-- Generic Info --><string name="app_name">AndCron</string>
 
-    <string name="app_name">AndCron</string>
-    <string name="action_settings">Settings</string>
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
+    <!-- Titles -->
+    <string name="title_automations">Automations</string>
 
+    <!-- Actions --><string name="action_settings">Settings</string>
 </resources>

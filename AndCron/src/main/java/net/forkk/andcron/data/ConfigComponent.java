@@ -16,8 +16,8 @@
 
 package net.forkk.andcron.data;
 
-import android.content.SharedPreferences;
-import android.preference.PreferenceFragment;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 /**
@@ -37,22 +37,17 @@ public interface ConfigComponent
     public abstract String getDescription();
 
     /**
-     * @return The ID for this component.
+     * Reads the component's settings from the given JSON object.
+     *
+     * @param object
+     *         The JSON object to read settings from.
      */
-    public abstract String getId();
+    public abstract void readFromJSONObject(JSONObject object)
+            throws JSONException;
 
     /**
-     * Adds the config components preference to the given fragment.
-     *
-     * @param prefMenu
-     *         The fragment to add preferences to.
+     * Writes the component's settings to a JSON object and returns it.
      */
-    public abstract void addPreferencesToFragment(PreferenceFragment prefMenu);
-
-    /**
-     * Gets this config component's SharedPreferences object.
-     *
-     * @return The SharedPreferences for this component.
-     */
-    public abstract SharedPreferences getSharedPreferences();
+    public abstract JSONObject writeToJSONObject()
+            throws JSONException;
 }
