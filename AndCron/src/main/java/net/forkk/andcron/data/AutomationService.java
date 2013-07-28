@@ -169,7 +169,8 @@ public class AutomationService extends Service
             {
                 try
                 {
-                    JSONObject object = automation.writeToJSONObject();
+                    JSONObject object = new JSONObject();
+                    automation.writeToJSONObject(object);
                     automations.put(object);
                 }
                 catch (JSONException e)

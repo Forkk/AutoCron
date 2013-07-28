@@ -47,7 +47,10 @@ public interface ConfigComponent
 
     /**
      * Writes the component's settings to a JSON object and returns it.
+     *
+     * @param object
+     *         The JSON object to write settings to.
      */
-    public abstract JSONObject writeToJSONObject()
-            throws JSONException;
+    public abstract void writeToJSONObject(JSONObject object)
+    throws JSONException;
 }

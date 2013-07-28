@@ -140,33 +140,35 @@ public class AutomationImpl implements Automation
      * Writes the component's settings to a JSON object and returns it.
      */
     @Override
-    public JSONObject writeToJSONObject()
-            throws JSONException
+    public void writeToJSONObject(JSONObject object)
+    throws JSONException
     {
         Log.i(LOGGER_TAG, "Saving automation " + getName() + ".");
-        JSONObject root = new JSONObject();
 
         Log.i(LOGGER_TAG, "Saving metadata.");
-        root.put("name", mName);
-        root.put("description", mDescription);
+        object.put("name", mName);
+        object.put("description", mDescription);
 
         Log.i(LOGGER_TAG, "Saving rules.");
         JSONArray rules = new JSONArray();
         for (Rule rule : mRules)
         {
-            rules.put(rule.writeToJSONObject());
+            JSONObject ruleObj = new JSONObject();
+            rule.writeToJSONObject(ruleObj);
+            rules.put(ruleObj);
         }
-        root.put("rules", rules);
+        object.put("rules", rules);
 
         Log.i(LOGGER_TAG, "Saving actions.");
         JSONArray actions = new JSONArray();
         for (Action action : mActions)
         {
-            actions.put(action.writeToJSONObject());
+            JSONObject actionObj = new JSONObject();
+            action.writeToJSONObject(actionObj);
+            actions.put(actionObj);
         }
-        root.put("actions", actions);
+        object.put("actions", actions);
 
         Log.i(LOGGER_TAG, "Done saving automation " + getName() + ".");
-        return root;
     }
 }
