@@ -25,12 +25,6 @@ import net.forkk.andcron.data.AutomationComponent;
 public interface Rule extends AutomationComponent
 {
     /**
-     * Initializes the rule. This should set up anything this rule needs. For example, if this is a
-     * geofence rule, this function would set up its geofence.
-     */
-    public abstract void initialize();
-
-    /**
      * Checks if this rule is active.
      *
      * @return If the rule is active, true, else false.

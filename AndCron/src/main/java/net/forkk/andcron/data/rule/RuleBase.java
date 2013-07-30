@@ -24,5 +24,22 @@ import net.forkk.andcron.data.AutomationComponentBase;
  */
 public abstract class RuleBase extends AutomationComponentBase implements Rule
 {
+    protected boolean mIsActive;
 
+    public RuleBase()
+    {
+        mIsActive = false;
+    }
+
+    public void setActive(boolean active)
+    {
+        mIsActive = active;
+        if (active) getParent().updateActivationState();
+    }
+
+    @Override
+    public boolean isActive()
+    {
+        return mIsActive;
+    }
 }

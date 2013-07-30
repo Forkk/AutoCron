@@ -16,6 +16,7 @@
 
 package net.forkk.andcron.data;
 
+import android.content.Context;
 import android.util.Log;
 
 import net.forkk.andcron.data.action.Action;
@@ -45,18 +46,62 @@ public class AutomationImpl implements Automation
 
     private ArrayList<Action> mActions;
 
-    public static Automation fromJSONObject(JSONObject object)
+    private AutomationService mAutomationService;
+
+    private boolean mIsActive;
+
+    public static Automation fromJSONObject(AutomationService service, JSONObject object)
             throws JSONException
     {
-        AutomationImpl automation = new AutomationImpl();
+        AutomationImpl automation = new AutomationImpl(service);
         automation.readFromJSONObject(object);
         return automation;
     }
 
-    public AutomationImpl()
+    public AutomationImpl(AutomationService service)
     {
+        mAutomationService = service;
         mRules = new ArrayList<Rule>();
         mActions = new ArrayList<Action>();
+        mIsActive = false;
+    }
+
+    /**
+     * Called after the automation service finishes loading components. This should perform all
+     * necessary initialization for this component.
+     *
+     * @param context
+     *         Context to initialize with.
+     */
+    @Override
+    public void onCreate(Context context)
+    {
+        for (Action action : mActions)
+        {
+            action.onCreate(context);
+        }
+
+        for (Rule rule : mRules)
+        {
+            rule.onCreate(context);
+        }
+    }
+
+    /**
+     * Called when the automation service is destroyed. This should perform all necessary cleanup.
+     */
+    @Override
+    public void onDestroy()
+    {
+        for (Rule rule : mRules)
+        {
+            rule.onDestroy();
+        }
+
+        for (Action action : mActions)
+        {
+            action.onDestroy();
+        }
     }
 
     /**
@@ -75,6 +120,51 @@ public class AutomationImpl implements Automation
     public Action[] getActions()
     {
         return mActions.toArray(new Action[mActions.size()]);
+    }
+
+    /**
+     * @return True or false depending on whether or not the automation is active.
+     */
+    @Override
+    public boolean isActive()
+    {
+        return mIsActive;
+    }
+
+    /**
+     * Called when a rule is activated or deactivated. This should recheck all of the rules and see
+     * if the automation should be activated.
+     */
+    @Override
+    public void updateActivationState()
+    {
+        boolean activated = true;
+        for (Rule rule : mRules)
+            if (!rule.isActive()) activated = false;
+
+        if (mIsActive != activated)
+        {
+            mIsActive = activated;
+            if (mIsActive)
+            {
+                for (Action action : mActions)
+                    action.onActivate();
+            }
+            else
+            {
+                for (Action action : mActions)
+                    action.onDeactivate();
+            }
+        }
+    }
+
+    /**
+     * @return The automation service that this automation is attached to.
+     */
+    @Override
+    public AutomationService getService()
+    {
+        return mAutomationService;
     }
 
     /**
@@ -141,7 +231,7 @@ public class AutomationImpl implements Automation
      */
     @Override
     public void writeToJSONObject(JSONObject object)
-    throws JSONException
+            throws JSONException
     {
         Log.i(LOGGER_TAG, "Saving automation " + getName() + ".");
 

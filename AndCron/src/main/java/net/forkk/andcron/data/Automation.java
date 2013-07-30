@@ -34,4 +34,20 @@ public interface Automation extends ConfigComponent
      * @return An array of this automation's actions.
      */
     public Action[] getActions();
+
+    /**
+     * @return True or false depending on whether or not the automation is active.
+     */
+    public boolean isActive();
+
+    /**
+     * Called when a rule is activated or deactivated. This should recheck all of the rules and see
+     * if the automation should be activated.
+     */
+    public void updateActivationState();
+
+    /**
+     * @return The automation service that this automation is attached to.
+     */
+    public AutomationService getService();
 }

@@ -16,6 +16,8 @@
 
 package net.forkk.andcron.data;
 
+import android.content.Context;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -26,6 +28,20 @@ import org.json.JSONObject;
  */
 public interface ConfigComponent
 {
+    /**
+     * Called after the automation service finishes loading components. This should perform all
+     * necessary initialization for this component.
+     *
+     * @param context
+     *         Context to initialize with.
+     */
+    public abstract void onCreate(Context context);
+
+    /**
+     * Called when the automation service is destroyed. This should perform all necessary cleanup.
+     */
+    public abstract void onDestroy();
+
     /**
      * @return The user-given name for this component.
      */

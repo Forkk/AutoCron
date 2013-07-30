@@ -44,6 +44,14 @@ public abstract class AutomationComponentBase implements AutomationComponent
     }
 
     /**
+     * Gets this component's parent automation.
+     */
+    protected Automation getParent()
+    {
+        return mAutomation;
+    }
+
+    /**
      * @return The user-given name for this component.
      */
     @Override

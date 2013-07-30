@@ -34,6 +34,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -49,7 +51,70 @@ public class AutomationService extends Service
 
     private static final int CONFIG_FILE_VERSION = 0;
 
+    public static final String LISTENER_ID_EXTRA = "net.forkk.andcron.listener_id";
+
     private ArrayList<Automation> mAutomations;
+
+    private Map<Integer, IntentListener> mIntentListenerMap;
+
+    private int mCurrentListenerId;
+
+    public AutomationService()
+    {
+        mIntentListenerMap = new HashMap<Integer, IntentListener>();
+        mCurrentListenerId = 0;
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onStart(Intent intent, int startId)
+    {
+        handleCommand(intent);
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId)
+    {
+        handleCommand(intent);
+        return START_STICKY;
+    }
+
+    private void handleCommand(Intent intent)
+    {
+        int listenerId = intent.getIntExtra(LISTENER_ID_EXTRA, -1);
+        if (mIntentListenerMap.containsKey(listenerId))
+        {
+            IntentListener listener = mIntentListenerMap.get(listenerId);
+            listener.onCommandReceived(intent);
+        }
+        else Log.w(LOGGER_TAG, "Command received for unknown listener ID.");
+    }
+
+    /**
+     * Registers the given intent listener with the automation service and returns its ID.
+     *
+     * @param listener
+     *         The intent listener to add.
+     *
+     * @return The intent listener's ID. This should be passed as an extra to the intent, under the
+     * key LISTENER_ID_EXTRA.
+     */
+    public int registerIntentListener(IntentListener listener)
+    {
+        mIntentListenerMap.put(mCurrentListenerId, listener);
+        return mCurrentListenerId++;
+    }
+
+    /**
+     * Un-registers the intent listener with the given ID.
+     *
+     * @param id
+     *         The ID of the intent listener to remove.
+     */
+    public void unregisterIntentListener(int id)
+    {
+        mIntentListenerMap.remove(id);
+    }
 
     @Override
     public void onCreate()
@@ -74,7 +139,7 @@ public class AutomationService extends Service
     @Override
     public IBinder onBind(Intent intent)
     {
-        return null;
+        return (IBinder) new LocalBinder();
     }
 
     public void loadConfig()
@@ -129,7 +194,7 @@ public class AutomationService extends Service
                 try
                 {
                     Automation automation =
-                            AutomationImpl.fromJSONObject(automations.getJSONObject(i));
+                            AutomationImpl.fromJSONObject(this, automations.getJSONObject(i));
                     Log.i(LOGGER_TAG, "Loaded automation " + automation.getName() + ".");
                     tempAutomationList.add(automation);
                 }
@@ -202,5 +267,22 @@ public class AutomationService extends Service
         }
 
         Log.i(LOGGER_TAG, "Done saving configuration.");
+    }
+
+    public class LocalBinder
+    {
+        public AutomationService getService()
+        {
+            return AutomationService.this;
+        }
+    }
+
+    /**
+     * An interface for classes that want to listen for intents to be passed as the service's start
+     * command.
+     */
+    public static interface IntentListener
+    {
+        public void onCommandReceived(Intent intent);
     }
 }
