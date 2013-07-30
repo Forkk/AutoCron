@@ -275,6 +275,11 @@ public class AutomationService extends Service
         {
             return AutomationService.this;
         }
+
+        public Automation[] getAutomationList()
+        {
+            return mAutomations.toArray(new Automation[mAutomations.size()]);
+        }
     }
 
     /**

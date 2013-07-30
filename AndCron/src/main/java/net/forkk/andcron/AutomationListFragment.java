@@ -16,15 +16,21 @@
 
 package net.forkk.andcron;
 
+import android.content.ComponentName;
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.os.IBinder;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.TextView;
+
+import net.forkk.andcron.data.Automation;
+import net.forkk.andcron.data.AutomationService;
 
 
 /**
@@ -48,13 +54,13 @@ public class AutomationListFragment extends ListFragment
         setListAdapter(mAdapter);
     }
 
-    public class AutomationListAdapter extends BaseAdapter
+    public class AutomationListAdapter extends BaseAdapter implements ServiceConnection
     {
         // TODO: Implement this stuff.
 
         private LayoutInflater mInflater;
 
-        private SharedPreferences mPreferences;
+        private AutomationService.LocalBinder mBinder;
 
         public AutomationListAdapter(Context parent)
         {
@@ -62,20 +68,23 @@ public class AutomationListFragment extends ListFragment
             assert parent.getApplicationContext() != null;
 
             mInflater = LayoutInflater.from(parent);
-            mPreferences =
-                    PreferenceManager.getDefaultSharedPreferences(parent.getApplicationContext());
+
+            Intent intent = new Intent(parent, AutomationService.class);
+            parent.bindService(intent, this, Context.BIND_AUTO_CREATE);
         }
 
         @Override
         public int getCount()
         {
-            return 0;
+            if (mBinder == null) return 0;
+            else return mBinder.getAutomationList().length;
         }
 
         @Override
         public Object getItem(int i)
         {
-            return null;
+            if (mBinder == null) return null;
+            else return mBinder.getAutomationList()[i];
         }
 
         @Override
@@ -87,7 +96,35 @@ public class AutomationListFragment extends ListFragment
         @Override
         public View getView(int i, View view, ViewGroup viewGroup)
         {
-            return null;
+            if (mBinder == null) return null;
+            else
+            {
+                Automation automation = mBinder.getAutomationList()[i];
+
+                view = mInflater.inflate(R.layout.automation_list_item, null);
+
+                TextView itemNameView = (TextView) view.findViewById(R.id.automation_name_view);
+                TextView itemDescView = (TextView) view.findViewById(R.id.automation_desc_view);
+
+                itemNameView.setText(automation.getName());
+                itemDescView.setText(automation.getDescription());
+
+                return view;
+            }
+        }
+
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder)
+        {
+            mBinder = (AutomationService.LocalBinder) iBinder;
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName)
+        {
+            mBinder = null;
+            notifyDataSetChanged();
         }
     }
 }
