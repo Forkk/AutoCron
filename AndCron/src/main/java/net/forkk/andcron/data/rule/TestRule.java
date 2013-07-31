@@ -36,6 +36,11 @@ public class TestRule extends RuleBase implements AutomationService.IntentListen
 
     private int mIntentListenerId;
 
+    public TestRule(Context context, int id)
+    {
+        super(context, id);
+    }
+
     /**
      * Checks if this rule is active.
      *

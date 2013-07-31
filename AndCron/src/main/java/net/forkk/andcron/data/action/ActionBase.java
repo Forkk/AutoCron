@@ -16,6 +16,8 @@
 
 package net.forkk.andcron.data.action;
 
+import android.content.Context;
+
 import net.forkk.andcron.data.AutomationComponentBase;
 
 
@@ -24,5 +26,14 @@ import net.forkk.andcron.data.AutomationComponentBase;
  */
 public abstract class ActionBase extends AutomationComponentBase implements Action
 {
+    public ActionBase(Context context, int id)
+    {
+        super(context, id);
+    }
 
+    @Override
+    protected String getSharedPreferencesId(int id)
+    {
+        return "action_" + id;
+    }
 }

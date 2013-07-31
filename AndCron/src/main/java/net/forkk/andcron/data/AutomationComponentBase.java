@@ -16,20 +16,21 @@
 
 package net.forkk.andcron.data;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import android.content.Context;
 
 
 /**
  * Abstract base class for automation components that implements all of their core functionality.
  */
-public abstract class AutomationComponentBase implements AutomationComponent
+public abstract class AutomationComponentBase extends ConfigComponentBase
+        implements AutomationComponent
 {
-    protected String mName;
-
-    protected String mDescription;
-
     protected Automation mAutomation;
+
+    public AutomationComponentBase(Context context, int id)
+    {
+        super(context, id);
+    }
 
     /**
      * Sets this component's parent. The parent is the automation that contains the rule.
@@ -49,48 +50,5 @@ public abstract class AutomationComponentBase implements AutomationComponent
     protected Automation getParent()
     {
         return mAutomation;
-    }
-
-    /**
-     * @return The user-given name for this component.
-     */
-    @Override
-    public String getName()
-    {
-        return mName;
-    }
-
-    /**
-     * @return The user-given description for this component.
-     */
-    @Override
-    public String getDescription()
-    {
-        return mDescription;
-    }
-
-    /**
-     * Reads the component's settings from the given JSON object.
-     *
-     * @param object
-     *         The JSON object to read settings from.
-     */
-    @Override
-    public void readFromJSONObject(JSONObject object)
-            throws JSONException
-    {
-        mName = object.getString("name");
-        mDescription = object.getString("description");
-    }
-
-    /**
-     * Writes the component's settings to a JSON object and returns it.
-     */
-    @Override
-    public void writeToJSONObject(JSONObject object)
-            throws JSONException
-    {
-        object.put("name", mName);
-        object.put("description", mDescription);
     }
 }

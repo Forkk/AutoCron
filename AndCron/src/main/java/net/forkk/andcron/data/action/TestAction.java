@@ -27,6 +27,11 @@ public class TestAction extends ActionBase
 {
     private Context mContext;
 
+    public TestAction(Context context, int id)
+    {
+        super(context, id);
+    }
+
     /**
      * Called when the action's automation has been activated. This should perform whatever this
      * action is meant to do on activation.

@@ -18,9 +18,6 @@ package net.forkk.andcron.data;
 
 import android.content.Context;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 
 /**
  * Interface that provides access to the underlying data structure of components such as
@@ -43,6 +40,11 @@ public interface ConfigComponent
     public abstract void onDestroy();
 
     /**
+     * @return This component's ID.
+     */
+    public abstract int getId();
+
+    /**
      * @return The user-given name for this component.
      */
     public abstract String getName();
@@ -51,22 +53,4 @@ public interface ConfigComponent
      * @return The user-given description for this component.
      */
     public abstract String getDescription();
-
-    /**
-     * Reads the component's settings from the given JSON object.
-     *
-     * @param object
-     *         The JSON object to read settings from.
-     */
-    public abstract void readFromJSONObject(JSONObject object)
-            throws JSONException;
-
-    /**
-     * Writes the component's settings to a JSON object and returns it.
-     *
-     * @param object
-     *         The JSON object to write settings to.
-     */
-    public abstract void writeToJSONObject(JSONObject object)
-    throws JSONException;
 }

@@ -16,6 +16,8 @@
 
 package net.forkk.andcron.data.rule;
 
+import android.content.Context;
+
 import net.forkk.andcron.data.AutomationComponentBase;
 
 
@@ -26,9 +28,9 @@ public abstract class RuleBase extends AutomationComponentBase implements Rule
 {
     protected boolean mIsActive;
 
-    public RuleBase()
+    public RuleBase(Context context, int id)
     {
-        mIsActive = false;
+        super(context, id);
     }
 
     public void setActive(boolean active)
@@ -41,5 +43,11 @@ public abstract class RuleBase extends AutomationComponentBase implements Rule
     public boolean isActive()
     {
         return mIsActive;
+    }
+
+    @Override
+    protected String getSharedPreferencesId(int id)
+    {
+        return "rule_" + id;
     }
 }

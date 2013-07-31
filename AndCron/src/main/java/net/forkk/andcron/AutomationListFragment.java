@@ -46,6 +46,8 @@ public class AutomationListFragment extends ListFragment
 {
     private AutomationListAdapter mAdapter;
 
+    private AutomationService.LocalBinder mBinder;
+
     public AutomationListFragment()
     {
         // Obligatory empty constructor.
@@ -60,6 +62,17 @@ public class AutomationListFragment extends ListFragment
         setListAdapter(mAdapter);
 
         setHasOptionsMenu(true);
+
+        Intent intent = new Intent(getActivity(), AutomationService.class);
+        getActivity().bindService(intent, mAdapter, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+
+        getActivity().unbindService(mAdapter);
     }
 
     @Override
@@ -87,6 +100,7 @@ public class AutomationListFragment extends ListFragment
                 public void onClick(DialogInterface dialogInterface, int i)
                 {
                     dialogInterface.dismiss();
+                    assert inputView != null;
                     EditText input = (EditText) inputView.findViewById(R.id.text_input);
                     final String name = input.getText().toString();
 
@@ -99,7 +113,7 @@ public class AutomationListFragment extends ListFragment
                         {
                             AutomationService.LocalBinder binder =
                                     (AutomationService.LocalBinder) iBinder;
-                            binder.addAutomation(name);
+                            binder.createNewAutomation(name);
                             getActivity().unbindService(this);
                         }
 
@@ -127,11 +141,7 @@ public class AutomationListFragment extends ListFragment
 
     public class AutomationListAdapter extends BaseAdapter implements ServiceConnection
     {
-        // TODO: Implement this stuff.
-
         private LayoutInflater mInflater;
-
-        private AutomationService.LocalBinder mBinder;
 
         public AutomationListAdapter(Context parent)
         {
@@ -139,9 +149,6 @@ public class AutomationListFragment extends ListFragment
             assert parent.getApplicationContext() != null;
 
             mInflater = LayoutInflater.from(parent);
-
-            Intent intent = new Intent(parent, AutomationService.class);
-            parent.bindService(intent, this, Context.BIND_AUTO_CREATE);
         }
 
         @Override
@@ -161,7 +168,8 @@ public class AutomationListFragment extends ListFragment
         @Override
         public long getItemId(int i)
         {
-            return i;
+            if (mBinder == null) return -1;
+            else return mBinder.getAutomationList()[i].getId();
         }
 
         @Override
@@ -174,6 +182,7 @@ public class AutomationListFragment extends ListFragment
 
                 view = mInflater.inflate(R.layout.automation_list_item, null);
 
+                assert view != null;
                 TextView itemNameView = (TextView) view.findViewById(R.id.automation_name_view);
                 TextView itemDescView = (TextView) view.findViewById(R.id.automation_desc_view);
 
