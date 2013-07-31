@@ -56,8 +56,11 @@ public class AutomationImpl extends ConfigComponentBase implements Automation
     public static Automation createNewAutomation(String name, AutomationService service,
                                                  int preferencesId)
     {
-        Automation automation = new AutomationImpl(service, preferencesId);
-        automation.setName(name);
+        AutomationImpl automation = new AutomationImpl(service, preferencesId);
+        SharedPreferences.Editor edit = automation.getSharedPreferences().edit();
+        edit.clear();
+        edit.putString(VALUE_NAME, name);
+        edit.commit();
         return automation;
     }
 
@@ -169,13 +172,6 @@ public class AutomationImpl extends ConfigComponentBase implements Automation
     public AutomationService getService()
     {
         return mAutomationService;
-    }
-
-    public void setName(String name)
-    {
-        SharedPreferences.Editor edit = getSharedPreferences().edit();
-        edit.putString(ConfigComponentBase.VALUE_NAME, name);
-        edit.apply();
     }
 
     /**

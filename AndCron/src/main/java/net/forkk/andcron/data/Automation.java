@@ -35,8 +35,6 @@ public interface Automation extends ConfigComponent
      */
     public Action[] getActions();
 
-    public void setName(String name);
-
     /**
      * @return True or false depending on whether or not the automation is active.
      */
