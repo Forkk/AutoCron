@@ -18,6 +18,7 @@ package net.forkk.andcron.data;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceFragment;
 
 
 /**
@@ -37,7 +38,7 @@ public abstract class ConfigComponentBase implements ConfigComponent
     {
         mId = id;
         mPreferences =
-                context.getSharedPreferences(getSharedPreferencesId(id), Context.MODE_PRIVATE);
+                context.getSharedPreferences(getSharedPreferencesName(id), Context.MODE_PRIVATE);
     }
 
     /**
@@ -48,7 +49,18 @@ public abstract class ConfigComponentBase implements ConfigComponent
      *
      * @return The shared preferences ID for the corresponding ID.
      */
-    protected abstract String getSharedPreferencesId(int id);
+    protected abstract String getSharedPreferencesName(int id);
+
+    /**
+     * Gets this component's shared preferences name.
+     *
+     * @return The shared preferences name for this component.
+     */
+    @Override
+    public String getSharedPreferencesName()
+    {
+        return getSharedPreferencesName(getId());
+    }
 
     protected SharedPreferences getSharedPreferences()
     {
@@ -77,5 +89,11 @@ public abstract class ConfigComponentBase implements ConfigComponent
     public String getDescription()
     {
         return getSharedPreferences().getString(VALUE_DESCRIPTION, "");
+    }
+
+    @Override
+    public void addPreferencesToFragment(PreferenceFragment fragment)
+    {
+
     }
 }

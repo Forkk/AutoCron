@@ -46,7 +46,7 @@ public abstract class RuleBase extends AutomationComponentBase implements Rule
     }
 
     @Override
-    protected String getSharedPreferencesId(int id)
+    protected String getSharedPreferencesName(int id)
     {
         return "rule_" + id;
     }

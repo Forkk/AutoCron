@@ -83,13 +83,21 @@ public class AutomationListFragment extends ListFragment
     {
         super.onDestroy();
 
+        if (mBinder != null) mBinder.unregisterAutomationListChangeListener(mAdapter);
         getActivity().unbindService(mAdapter);
+    }
+
+    public void onEditAutomation(int position, long id)
+    {
+        Intent intent = new Intent(getActivity(), EditAutomationActivity.class);
+        intent.putExtra(EditAutomationActivity.EXTRA_AUTOMATION_ID, (int) id);
+        startActivity(intent);
     }
 
     @Override
     public void onListItemClick(ListView listView, View view, int position, long id)
     {
-        // TODO: Implement editing automations.
+        onEditAutomation(position, id);
     }
 
     @Override
@@ -115,7 +123,7 @@ public class AutomationListFragment extends ListFragment
         switch (item.getItemId())
         {
         case R.id.action_edit_automation:
-            // TODO: Implement editing automations.
+            onEditAutomation(info.position, info.id);
             return true;
 
         case R.id.action_delete_automation:
@@ -173,6 +181,7 @@ public class AutomationListFragment extends ListFragment
                     dialogInterface.dismiss();
                     assert inputView != null;
                     EditText input = (EditText) inputView.findViewById(R.id.text_input);
+                    //noinspection ConstantConditions
                     final String name = input.getText().toString();
 
                     // Bind the automation service and create the new automation.

@@ -36,6 +36,7 @@ import java.util.Set;
  * Responsible for getting the automation list as well.
  */
 public class AutomationService extends Service
+        implements SharedPreferences.OnSharedPreferenceChangeListener
 {
     public static final String LOGGER_TAG = "net.forkk.andcron.AutomationService";
 
@@ -162,8 +163,14 @@ public class AutomationService extends Service
             }
         }
 
+        for (Automation automation : mAutomations)
+            getSharedPreferences(automation.getSharedPreferencesName(), MODE_PRIVATE)
+                    .unregisterOnSharedPreferenceChangeListener(this);
         mAutomations.clear();
         mAutomations.addAll(tempAutomationList);
+        for (Automation automation : mAutomations)
+            getSharedPreferences(automation.getSharedPreferencesName(), MODE_PRIVATE)
+                    .registerOnSharedPreferenceChangeListener(this);
 
         Log.i(LOGGER_TAG, "Done loading configuration.");
 
@@ -247,6 +254,12 @@ public class AutomationService extends Service
 
         // To get an unused ID, we just find an ID value greater than the greatest one.
         return greatestValue + 1;
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences preferences, String key)
+    {
+        if (key.equals("name") || key.equals("description")) onAutomationListChange();
     }
 
     public class LocalBinder extends Binder

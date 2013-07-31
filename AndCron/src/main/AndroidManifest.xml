@@ -14,7 +14,6 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="net.forkk.andcron"
           android:versionCode="1"
@@ -39,11 +38,16 @@
             </intent-filter>
         </activity>
 
-        <service android:name="net.forkk.andcron.data.AutomationService"
-                 android:enabled="true"
-                 android:exported="false"
-                >
+        <service
+                android:name="net.forkk.andcron.data.AutomationService"
+                android:enabled="true"
+                android:exported="false">
         </service>
+
+        <activity
+                android:name="net.forkk.andcron.EditAutomationActivity"
+                android:label="@string/title_edit_automation">
+        </activity>
     </application>
 
 </manifest>

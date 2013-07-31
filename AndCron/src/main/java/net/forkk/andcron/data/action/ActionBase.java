@@ -32,7 +32,7 @@ public abstract class ActionBase extends AutomationComponentBase implements Acti
     }
 
     @Override
-    protected String getSharedPreferencesId(int id)
+    protected String getSharedPreferencesName(int id)
     {
         return "action_" + id;
     }

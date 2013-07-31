@@ -18,7 +18,9 @@ package net.forkk.andcron.data;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceFragment;
 
+import net.forkk.andcron.R;
 import net.forkk.andcron.data.action.Action;
 import net.forkk.andcron.data.rule.Rule;
 
@@ -183,8 +185,15 @@ public class AutomationImpl extends ConfigComponentBase implements Automation
      * @return The shared preferences ID for the corresponding ID.
      */
     @Override
-    protected String getSharedPreferencesId(int id)
+    protected String getSharedPreferencesName(int id)
     {
         return "automation_" + id;
+    }
+
+    @Override
+    public void addPreferencesToFragment(PreferenceFragment fragment)
+    {
+        super.addPreferencesToFragment(fragment);
+        fragment.addPreferencesFromResource(R.xml.prefs_automation);
     }
 }

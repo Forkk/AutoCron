@@ -17,6 +17,7 @@
 package net.forkk.andcron.data;
 
 import android.content.Context;
+import android.preference.PreferenceFragment;
 
 
 /**
@@ -53,4 +54,13 @@ public interface ConfigComponent
      * @return The user-given description for this component.
      */
     public abstract String getDescription();
+
+    /**
+     * Gets this component's shared preferences name.
+     *
+     * @return The shared preferences name for this component.
+     */
+    public abstract String getSharedPreferencesName();
+
+    public abstract void addPreferencesToFragment(PreferenceFragment fragment);
 }
