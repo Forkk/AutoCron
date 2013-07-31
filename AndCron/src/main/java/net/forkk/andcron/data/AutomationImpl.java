@@ -40,7 +40,7 @@ public class AutomationImpl implements Automation
 
     private String mName;
 
-    private String mDescription;
+    private String mDescription = "";
 
     private ArrayList<Rule> mRules;
 
@@ -55,6 +55,13 @@ public class AutomationImpl implements Automation
     {
         AutomationImpl automation = new AutomationImpl(service);
         automation.readFromJSONObject(object);
+        return automation;
+    }
+
+    public static Automation createNewAutomation(String name, AutomationService automationService)
+    {
+        Automation automation = new AutomationImpl(automationService);
+        automation.setName(name);
         return automation;
     }
 
@@ -173,7 +180,12 @@ public class AutomationImpl implements Automation
     @Override
     public String getName()
     {
-        return null;
+        return mName;
+    }
+
+    public void setName(String name)
+    {
+        mName = name;
     }
 
     /**
@@ -182,7 +194,12 @@ public class AutomationImpl implements Automation
     @Override
     public String getDescription()
     {
-        return null;
+        return mDescription;
+    }
+
+    public void setDescription(String desc)
+    {
+        mDescription = desc;
     }
 
     /**

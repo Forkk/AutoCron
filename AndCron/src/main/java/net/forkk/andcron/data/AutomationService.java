@@ -19,6 +19,7 @@ package net.forkk.andcron.data;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -57,11 +58,14 @@ public class AutomationService extends Service
 
     private Map<Integer, IntentListener> mIntentListenerMap;
 
+    private ArrayList<AutomationListChangeListener> mAutomationListChangeListeners;
+
     private int mCurrentListenerId;
 
     public AutomationService()
     {
         mIntentListenerMap = new HashMap<Integer, IntentListener>();
+        mAutomationListChangeListeners = new ArrayList<AutomationListChangeListener>();
         mCurrentListenerId = 0;
     }
 
@@ -81,6 +85,8 @@ public class AutomationService extends Service
 
     private void handleCommand(Intent intent)
     {
+        if (intent == null) return;
+
         int listenerId = intent.getIntExtra(LISTENER_ID_EXTRA, -1);
         if (mIntentListenerMap.containsKey(listenerId))
         {
@@ -207,6 +213,7 @@ public class AutomationService extends Service
             }
             mAutomations.clear();
             mAutomations.addAll(tempAutomationList);
+            onAutomationListChange();
         }
         catch (JSONException e)
         {
@@ -260,6 +267,7 @@ public class AutomationService extends Service
             FileOutputStream outputStream = openFileOutput(JSON_CONFIG_FILE, Context.MODE_PRIVATE);
             PrintWriter writer = new PrintWriter(outputStream);
             writer.write(root.toString());
+            writer.close();
         }
         catch (FileNotFoundException e)
         {
@@ -269,7 +277,7 @@ public class AutomationService extends Service
         Log.i(LOGGER_TAG, "Done saving configuration.");
     }
 
-    public class LocalBinder
+    public class LocalBinder extends Binder
     {
         public AutomationService getService()
         {
@@ -280,6 +288,39 @@ public class AutomationService extends Service
         {
             return mAutomations.toArray(new Automation[mAutomations.size()]);
         }
+
+        public void addAutomation(String name)
+        {
+            mAutomations.add(AutomationImpl.createNewAutomation(name, AutomationService.this));
+            saveConfig();
+            onAutomationListChange();
+        }
+
+        public void registerAutomationListChangeListener(AutomationListChangeListener listener)
+        {
+            mAutomationListChangeListeners.add(listener);
+        }
+
+        public void unregisterAutomationListChangeListener(AutomationListChangeListener listener)
+        {
+            mAutomationListChangeListeners.remove(listener);
+        }
+    }
+
+    public void onAutomationListChange()
+    {
+        for (AutomationListChangeListener listener : mAutomationListChangeListeners)
+        {
+            if (listener != null) listener.onAutomationListChange();
+        }
+    }
+
+    /**
+     * An interface for classes that want to listen for changes to the automation list.
+     */
+    public static interface AutomationListChangeListener
+    {
+        public void onAutomationListChange();
     }
 
     /**

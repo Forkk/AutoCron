@@ -18,6 +18,7 @@ package net.forkk.andcron;
 
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -25,6 +26,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
+
+import net.forkk.andcron.data.AutomationService;
 
 import java.util.Locale;
 
@@ -50,6 +53,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        startService(new Intent(this, AutomationService.class));
 
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();
