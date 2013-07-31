@@ -189,9 +189,40 @@ public class AutomationService extends Service
         mAutomations.add(automation);
         boolean success = edit.commit();
         if (!success) Log.w(LOGGER_TAG, "Failed to commit changes to preferences.");
+        else onAutomationListChange();
 
         assert prefs.getStringSet(VALUE_AUTOMATION_IDS, new HashSet<String>())
                     .equals(automationIDs);
+    }
+
+    private void deleteAutomation(int id)
+    {
+        Automation automation = findAutomationById(id);
+        if (automation == null)
+        {
+            Log.e(LOGGER_TAG, "Attempted to delete automation that didn't exist.");
+            return;
+        }
+
+        SharedPreferences prefs = getSharedPreferences(PREF_AUTOMATIONS, MODE_PRIVATE);
+        SharedPreferences.Editor edit = prefs.edit();
+
+        Set<String> automationIDs = new HashSet<String>();
+        automationIDs.addAll(prefs.getStringSet(VALUE_AUTOMATION_IDS, new HashSet<String>()));
+        automationIDs.remove(((Integer) id).toString());
+
+        edit.putStringSet(VALUE_AUTOMATION_IDS, automationIDs);
+        mAutomations.remove(automation);
+        boolean success = edit.commit();
+        if (!success) Log.w(LOGGER_TAG, "Failed to commit changes to preferences.");
+        else onAutomationListChange();
+    }
+
+    private Automation findAutomationById(int id)
+    {
+        for (Automation automation : mAutomations)
+            if (automation.getId() == id) return automation;
+        return null;
     }
 
     public int getUnusedAutomationId()
@@ -220,14 +251,22 @@ public class AutomationService extends Service
 
     public class LocalBinder extends Binder
     {
-        public AutomationService getService()
-        {
-            return AutomationService.this;
-        }
-
         public Automation[] getAutomationList()
         {
             return mAutomations.toArray(new Automation[mAutomations.size()]);
+        }
+
+        /**
+         * Attempts to get the automation with the given ID.
+         *
+         * @param id
+         *         The ID of the automation to find.
+         *
+         * @return The automation with the given ID or null if no automation was found.
+         */
+        public Automation findAutomationById(int id)
+        {
+            return AutomationService.this.findAutomationById(id);
         }
 
         /**
@@ -241,6 +280,17 @@ public class AutomationService extends Service
             Automation automation = AutomationImpl.createNewAutomation(name, AutomationService.this,
                                                                        getUnusedAutomationId());
             addAutomation(automation);
+        }
+
+        /**
+         * Tries to delete the automation with the given ID.
+         *
+         * @param id
+         *         The ID of the automation to delete.
+         */
+        public void deleteAutomation(int id)
+        {
+            AutomationService.this.deleteAutomation(id);
         }
 
         public void registerAutomationListChangeListener(AutomationListChangeListener listener)

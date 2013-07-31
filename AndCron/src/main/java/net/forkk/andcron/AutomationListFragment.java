@@ -25,14 +25,17 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.ListFragment;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import net.forkk.andcron.data.Automation;
@@ -68,11 +71,79 @@ public class AutomationListFragment extends ListFragment
     }
 
     @Override
+    public void onStart()
+    {
+        super.onStart();
+        registerForContextMenu(getListView());
+        setEmptyText(getResources().getString(R.string.automation_list_empty_text));
+    }
+
+    @Override
     public void onDestroy()
     {
         super.onDestroy();
 
         getActivity().unbindService(mAdapter);
+    }
+
+    @Override
+    public void onListItemClick(ListView listView, View view, int position, long id)
+    {
+        // TODO: Implement editing automations.
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View view,
+                                    ContextMenu.ContextMenuInfo menuInfo)
+    {
+        menu.setHeaderTitle(getResources().getString(R.string.title_automation_menu));
+        MenuInflater inflater = getActivity().getMenuInflater();
+        inflater.inflate(R.menu.automation_context_menu, menu);
+        super.onCreateContextMenu(menu, view, menuInfo);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item)
+    {
+        AdapterView.AdapterContextMenuInfo info =
+                (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+
+        assert info != null;
+        final Automation automation = mBinder.findAutomationById((int) info.id);
+        assert automation != null;
+
+        switch (item.getItemId())
+        {
+        case R.id.action_edit_automation:
+            // TODO: Implement editing automations.
+            return true;
+
+        case R.id.action_delete_automation:
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle(getResources().getString(R.string.title_confirm_delete_automation));
+            builder.setMessage(getResources().getString(R.string.message_confirm_delete_automation,
+                                                        automation.getName()));
+            builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i)
+                {
+                    mBinder.deleteAutomation(automation.getId());
+                }
+            });
+            builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i)
+                {
+                    // Nothing to do here.
+                    dialogInterface.dismiss();
+                }
+            });
+            builder.create().show();
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -139,7 +210,8 @@ public class AutomationListFragment extends ListFragment
         return false;
     }
 
-    public class AutomationListAdapter extends BaseAdapter implements ServiceConnection
+    public class AutomationListAdapter extends BaseAdapter
+            implements ServiceConnection, AutomationService.AutomationListChangeListener
     {
         private LayoutInflater mInflater;
 
@@ -201,6 +273,7 @@ public class AutomationListFragment extends ListFragment
         public void onServiceConnected(ComponentName componentName, IBinder iBinder)
         {
             mBinder = (AutomationService.LocalBinder) iBinder;
+            mBinder.registerAutomationListChangeListener(this);
             notifyDataSetChanged();
         }
 
@@ -208,6 +281,12 @@ public class AutomationListFragment extends ListFragment
         public void onServiceDisconnected(ComponentName componentName)
         {
             mBinder = null;
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public void onAutomationListChange()
+        {
             notifyDataSetChanged();
         }
     }
