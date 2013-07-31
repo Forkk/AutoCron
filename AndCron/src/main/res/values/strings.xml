@@ -22,12 +22,18 @@
     <!-- Titles -->
     <string name="title_automations">Automations</string>
 
+    <!-- New Automation Message Box -->
+    <string name="title_new_automation">Create New Automation</string>
+    <string name="message_new_automation">Enter a name for the new automation.</string>
+
     <!-- Actions -->
     <string name="action_settings">Settings</string>
     <string name="action_add_automation">Add new automation</string>
+
+    <!-- Generic Strings -->
     <string name="okay">Okay</string>
-    <string name="title_new_automation">Create New Automation</string>
-    <string name="message_new_automation">Enter a name for the new automation.</string>
     <string name="cancel">Cancel</string>
+
+    <!-- Misc -->
     <string name="automation_no_description">No description set.</string>
 </resources>
