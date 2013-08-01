@@ -16,6 +16,10 @@
 
 package net.forkk.andcron.data.action;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
+import net.forkk.andcron.data.AutomationService;
 import net.forkk.andcron.data.ComponentType;
 
 
@@ -24,6 +28,25 @@ import net.forkk.andcron.data.ComponentType;
  */
 public class ActionType extends ComponentType<Action>
 {
+    /**
+     * @return The next available rule ID.
+     */
+    @Override
+    public int getAvailableId(Context context)
+    {
+        return context.getSharedPreferences(AutomationService.PREF_AUTOMATIONS,
+                                            Context.MODE_PRIVATE).getInt("next_action_id", 0);
+    }
+
+    @Override
+    public void incrementNextId(Context context)
+    {
+        SharedPreferences.Editor edit =
+                context.getSharedPreferences(AutomationService.PREF_AUTOMATIONS,
+                                             Context.MODE_PRIVATE).edit();
+        edit.putInt("next_action_id", getAvailableId(context) + 1);
+        edit.commit();
+    }
 
     /**
      * Constructs a new component type.
@@ -40,7 +63,7 @@ public class ActionType extends ComponentType<Action>
         super(typeName, typeDesc, typeClass);
     }
 
-    public static ActionType[] getRuleTypes()
+    public static ActionType[] getActionTypes()
     {
         return ACTION_TYPES;
     }
@@ -52,4 +75,22 @@ public class ActionType extends ComponentType<Action>
                                                                                              TestAction
                                                                                                      .class),
     };
+
+
+    public static Action fromSharedPreferences(Context context, int id)
+    {
+        SharedPreferences preferences =
+                context.getSharedPreferences(ActionBase.getSharedPreferencesNameForId(id),
+                                             Context.MODE_PRIVATE);
+
+        String typeId = preferences.getString(VALUE_COMPONENT_TYPE, null);
+        if (typeId == null) return null;
+        else
+        {
+            // Find an ActionType whose typeID matches.
+            for (ActionType type : getActionTypes())
+                if (typeId.equals(type.getTypeId())) return type.construct(context, id);
+            return null;
+        }
+    }
 }

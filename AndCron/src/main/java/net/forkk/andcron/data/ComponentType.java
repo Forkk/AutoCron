@@ -16,6 +16,9 @@
 
 package net.forkk.andcron.data;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
@@ -25,14 +28,22 @@ import java.lang.reflect.InvocationTargetException;
  */
 public abstract class ComponentType<T extends AutomationComponent>
 {
+    public static final String VALUE_COMPONENT_TYPE = "component_type";
+
     private String mTypeName;
 
     private String mTypeDesc;
 
     protected Class<? extends T> mTypeClass;
 
+    private String mTypeId;
+
+    public abstract int getAvailableId(Context context);
+
+    public abstract void incrementNextId(Context context);
+
     /**
-     * Constructs a new component type.
+     * Constructs a new component type. The typeID will be set from the typeClass's canonical name.
      *
      * @param typeName
      *         The type's name.
@@ -45,21 +56,65 @@ public abstract class ComponentType<T extends AutomationComponent>
     {
         mTypeName = typeName;
         mTypeDesc = typeDesc;
+        mTypeId = typeClass.getCanonicalName();
         mTypeClass = typeClass;
     }
 
     /**
-     * Creates a new action of this type with the given name and description.
+     * Constructs a new component type.
+     *
+     * @param typeName
+     *         The type's name.
+     * @param typeDesc
+     *         The type's description.
+     * @param typeId
+     *         The ID string used to identify this type in configs.
+     * @param typeClass
+     *         The type's class.
+     */
+    public ComponentType(String typeName, String typeDesc, String typeId,
+                         Class<? extends T> typeClass)
+    {
+        mTypeName = typeName;
+        mTypeDesc = typeDesc;
+        mTypeId = typeId;
+        mTypeClass = typeClass;
+    }
+
+    public T createNew(String name, Context context)
+    {
+        T component = construct(context, getAvailableId(context));
+        SharedPreferences.Editor edit =
+                context.getSharedPreferences(component.getSharedPreferencesName(),
+                                             Context.MODE_PRIVATE).edit();
+        edit.putString("name", name);
+        edit.putString(VALUE_COMPONENT_TYPE, getTypeId());
+        edit.commit();
+        incrementNextId(context);
+        return component;
+    }
+
+    /**
+     * Calls the constructor for this component type.
      *
      * @return The new action.
      */
-    public T createNew()
-            throws NoSuchMethodException
+    public T construct(Context context, int id)
     {
-        Constructor<? extends T> constructor = mTypeClass.getConstructor();
+        Constructor<? extends T> constructor = null;
         try
         {
-            return constructor.newInstance();
+            constructor = mTypeClass.getConstructor(Context.class, int.class);
+        }
+        catch (NoSuchMethodException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+
+        try
+        {
+            return constructor.newInstance(context, id);
         }
         catch (InstantiationException e)
         {
@@ -85,5 +140,10 @@ public abstract class ComponentType<T extends AutomationComponent>
     public String getTypeDesc()
     {
         return mTypeDesc;
+    }
+
+    public String getTypeId()
+    {
+        return mTypeId;
     }
 }

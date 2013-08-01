@@ -17,7 +17,9 @@
 package net.forkk.andcron.data;
 
 import net.forkk.andcron.data.action.Action;
+import net.forkk.andcron.data.action.ActionType;
 import net.forkk.andcron.data.rule.Rule;
+import net.forkk.andcron.data.rule.RuleType;
 
 import java.util.List;
 
@@ -33,9 +35,45 @@ public interface Automation extends ConfigComponent
     public List<Rule> getRules();
 
     /**
+     * Adds a new rule of the given type with the given name.
+     *
+     * @param name
+     *         Name of the rule to add.
+     * @param type
+     *         The type of rule to add.
+     */
+    public void addRule(String name, RuleType type);
+
+    /**
+     * Removes the rule with the given ID.
+     *
+     * @param id
+     *         The ID of the rule to remove.
+     */
+    public void deleteRule(int id);
+
+    /**
      * @return An array of this automation's actions.
      */
     public List<Action> getActions();
+
+    /**
+     * Adds a new action with the given name.
+     *
+     * @param name
+     *         Name of the action to add.
+     * @param type
+     *         The type of action to add.
+     */
+    public void addAction(String name, ActionType type);
+
+    /**
+     * Removes the action with the given ID.
+     *
+     * @param id
+     *         The ID of the action to remove.
+     */
+    public void deleteAction(int id);
 
     /**
      * @return True or false depending on whether or not the automation is active.
@@ -52,4 +90,8 @@ public interface Automation extends ConfigComponent
      * @return The automation service that this automation is attached to.
      */
     public AutomationService getService();
+
+    void registerComponentListObserver(AutomationImpl.ComponentListChangeListener listener);
+
+    void unregisterComponentListObserver(AutomationImpl.ComponentListChangeListener listener);
 }

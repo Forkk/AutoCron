@@ -46,7 +46,7 @@ public class AutomationService extends Service
     /**
      * Name of the SharedPreferences that stores automations.
      */
-    private static final String PREF_AUTOMATIONS = "automations";
+    public static final String PREF_AUTOMATIONS = "automations";
 
     private static final String VALUE_AUTOMATION_IDS = "automation_ids";
 

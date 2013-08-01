@@ -36,4 +36,9 @@ public abstract class ActionBase extends AutomationComponentBase implements Acti
     {
         return "action_" + id;
     }
+
+    protected static String getSharedPreferencesNameForId(int id)
+    {
+        return "action_" + id;
+    }
 }

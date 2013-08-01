@@ -16,8 +16,24 @@
 
 package net.forkk.andcron;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.TextView;
+
 import net.forkk.andcron.data.Automation;
+import net.forkk.andcron.data.AutomationImpl;
+import net.forkk.andcron.data.ComponentType;
 import net.forkk.andcron.data.ConfigComponent;
+import net.forkk.andcron.data.action.Action;
+import net.forkk.andcron.data.action.ActionType;
+import net.forkk.andcron.data.rule.Rule;
+import net.forkk.andcron.data.rule.RuleType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +43,7 @@ import java.util.List;
  * List fragment for listing components of an automation.
  */
 public class AutomationComponentListFragment extends ComponentListFragment
+        implements AutomationImpl.ComponentListChangeListener
 {
     private Automation mAutomation;
 
@@ -36,6 +53,20 @@ public class AutomationComponentListFragment extends ComponentListFragment
     {
         mType = type;
         mAutomation = automation;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        mAutomation.registerComponentListObserver(this);
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        mAutomation.unregisterComponentListObserver(this);
     }
 
     /**
@@ -70,14 +101,60 @@ public class AutomationComponentListFragment extends ComponentListFragment
     @Override
     protected ConfigComponent findComponentById(int id)
     {
-        // TODO: Implement this.
+        switch (mType)
+        {
+        case Rule:
+            for (Rule rule : mAutomation.getRules())
+                if (rule.getId() == id) return rule;
+            return null;
+
+        case Action:
+            for (Action action : mAutomation.getActions())
+                if (action.getId() == id) return action;
+            return null;
+        }
         return null;
     }
 
     @Override
-    protected void onAddComponent(String name)
+    protected void onAddComponent(final String name)
     {
-        // TODO: Implement adding components.
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(getResources().getString(R.string.title_choose_type,
+                                                  getComponentTypeName(false)));
+
+        ComponentTypeAdapter adapter = null;
+        switch (mType)
+        {
+        case Rule:
+            adapter = new ComponentTypeAdapter(getActivity(), RuleType.getRuleTypes());
+            break;
+
+        case Action:
+            adapter = new ComponentTypeAdapter(getActivity(), ActionType.getActionTypes());
+            break;
+        }
+        assert adapter != null;
+
+        builder.setAdapter(adapter, new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+                switch (mType)
+                {
+                case Rule:
+                    mAutomation.addRule(name, RuleType.getRuleTypes()[i]);
+                    break;
+
+                case Action:
+                    mAutomation.addAction(name, ActionType.getActionTypes()[i]);
+                    break;
+                }
+            }
+        });
+
+        builder.show();
     }
 
     @Override
@@ -108,9 +185,63 @@ public class AutomationComponentListFragment extends ComponentListFragment
         return null;
     }
 
+    @Override
+    public void onComponentListChange()
+    {
+        mAdapter.notifyDataSetChanged();
+    }
+
     public enum ComponentListType
     {
         Rule,
         Action
+    }
+
+    private class ComponentTypeAdapter extends BaseAdapter
+    {
+        LayoutInflater mInflater;
+
+        ComponentType[] mComponentTypes;
+
+        public ComponentTypeAdapter(Context parent, ComponentType[] types)
+        {
+            mInflater = LayoutInflater.from(parent);
+            mComponentTypes = types;
+        }
+
+        @Override
+        public int getCount()
+        {
+            return mComponentTypes.length;
+        }
+
+        @Override
+        public Object getItem(int i)
+        {
+            return mComponentTypes[i];
+        }
+
+        @Override
+        public long getItemId(int i)
+        {
+            return i;
+        }
+
+        @Override
+        public View getView(int i, View view, ViewGroup viewGroup)
+        {
+            ComponentType type = mComponentTypes[i];
+
+            view = mInflater.inflate(android.R.layout.simple_list_item_activated_2, null);
+
+            assert view != null;
+            TextView text1 = (TextView) view.findViewById(android.R.id.text1);
+            TextView text2 = (TextView) view.findViewById(android.R.id.text2);
+
+            text1.setText(type.getTypeName());
+            text2.setText(type.getTypeDesc());
+
+            return view;
+        }
     }
 }

@@ -19,23 +19,37 @@ package net.forkk.andcron.data;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceFragment;
+import android.util.Log;
 
 import net.forkk.andcron.R;
 import net.forkk.andcron.data.action.Action;
+import net.forkk.andcron.data.action.ActionType;
 import net.forkk.andcron.data.rule.Rule;
+import net.forkk.andcron.data.rule.RuleType;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 /**
  * Standard implementation for the automation interface.
  */
-public class AutomationImpl extends ConfigComponentBase implements Automation
+public class AutomationImpl extends ConfigComponentBase
+        implements Automation, SharedPreferences.OnSharedPreferenceChangeListener
 {
+    public static final String LOGGER_TAG = AutomationService.LOGGER_TAG;
+
+    private static final String VALUE_RULE_IDS = "rule_ids";
+
+    private static final String VALUE_ACTION_IDS = "action_ids";
+
     private ArrayList<Rule> mRules;
 
     private ArrayList<Action> mActions;
+
+    private ArrayList<ComponentListChangeListener> mComponentListObservers;
 
     private AutomationService mAutomationService;
 
@@ -71,9 +85,11 @@ public class AutomationImpl extends ConfigComponentBase implements Automation
     {
         super(service, sharedPreferencesId);
         mAutomationService = service;
+        mComponentListObservers = new ArrayList<ComponentListChangeListener>();
         mRules = new ArrayList<Rule>();
         mActions = new ArrayList<Action>();
         mIsActive = false;
+        loadConfig(service);
     }
 
     /**
@@ -114,6 +130,84 @@ public class AutomationImpl extends ConfigComponentBase implements Automation
         }
     }
 
+    protected void loadConfig(Context context)
+    {
+        Log.i(LOGGER_TAG, "Loading automation configuration for \"" + getName() + "\".");
+
+        SharedPreferences prefs = getSharedPreferences();
+        Set<String> ruleIDs = prefs.getStringSet(VALUE_RULE_IDS, new HashSet<String>());
+
+        Log.i(LOGGER_TAG, "Loading rule list for automation \"" + getName() + "\".");
+
+        ArrayList<Rule> tempRuleList = new ArrayList<Rule>();
+        for (String stringVal : ruleIDs)
+        {
+            try
+            {
+                int id = Integer.parseInt(stringVal);
+                Rule rule = RuleType.fromSharedPreferences(context, id);
+                if (rule != null)
+                {
+                    tempRuleList.add(rule);
+                    Log.i(LOGGER_TAG, "Loaded rule \"" + rule.getName() + "\".");
+                }
+                else
+                {
+                    Log.w(LOGGER_TAG, "Skipped rule with missing or invalid type ID.");
+                }
+            }
+            catch (NumberFormatException e)
+            {
+                Log.e(LOGGER_TAG, "Found non-integer in automation ID set.", e);
+            }
+        }
+
+        for (Rule rule : mRules)
+            context.getSharedPreferences(rule.getSharedPreferencesName(), Context.MODE_PRIVATE)
+                   .unregisterOnSharedPreferenceChangeListener(this);
+        mRules.clear();
+        mRules.addAll(tempRuleList);
+        for (Rule rule : mRules)
+            context.getSharedPreferences(rule.getSharedPreferencesName(), Context.MODE_PRIVATE)
+                   .registerOnSharedPreferenceChangeListener(this);
+
+        Log.i(LOGGER_TAG, "Loading action list for automation \"" + getName() + "\".");
+
+        ArrayList<Action> tempActionList = new ArrayList<Action>();
+        for (String stringVal : ruleIDs)
+        {
+            try
+            {
+                int id = Integer.parseInt(stringVal);
+                Action action = ActionType.fromSharedPreferences(context, id);
+                if (action != null)
+                {
+                    tempActionList.add(action);
+                    Log.i(LOGGER_TAG, "Loaded action \"" + action.getName() + "\".");
+                }
+                else
+                {
+                    Log.w(LOGGER_TAG, "Skipped action with missing or invalid type ID.");
+                }
+            }
+            catch (NumberFormatException e)
+            {
+                Log.e(LOGGER_TAG, "Found non-integer in automation ID set.", e);
+            }
+        }
+
+        for (Action action : mActions)
+            context.getSharedPreferences(action.getSharedPreferencesName(), Context.MODE_PRIVATE)
+                   .unregisterOnSharedPreferenceChangeListener(this);
+        mActions.clear();
+        mActions.addAll(tempActionList);
+        for (Action action : mActions)
+            context.getSharedPreferences(action.getSharedPreferencesName(), Context.MODE_PRIVATE)
+                   .registerOnSharedPreferenceChangeListener(this);
+
+        Log.i(LOGGER_TAG, "Done loading automation configuration for \"" + getName() + "\".");
+    }
+
     /**
      * @return An array of this automation's rules.
      */
@@ -124,12 +218,94 @@ public class AutomationImpl extends ConfigComponentBase implements Automation
     }
 
     /**
+     * Adds a new rule of the given type with the given name.
+     *
+     * @param name
+     *         Name of the rule to add.
+     * @param type
+     *         The type of rule to add.
+     */
+    @Override
+    public void addRule(String name, RuleType type)
+    {
+        SharedPreferences prefs = getSharedPreferences();
+        SharedPreferences.Editor edit = prefs.edit();
+
+        Rule rule = type.createNew(name, getService());
+
+        Set<String> componentIDs = new HashSet<String>();
+        componentIDs.add(((Integer) rule.getId()).toString());
+        componentIDs.addAll(prefs.getStringSet(VALUE_RULE_IDS, new HashSet<String>()));
+
+        edit.putStringSet(VALUE_RULE_IDS, componentIDs);
+        mRules.add(rule);
+        boolean success = edit.commit();
+        if (!success) Log.w(LOGGER_TAG, "Failed to commit changes to preferences.");
+        else onComponentListChange();
+
+        assert prefs.getStringSet(VALUE_RULE_IDS, new HashSet<String>()).equals(componentIDs);
+    }
+
+    /**
+     * Removes the rule with the given ID.
+     *
+     * @param id
+     *         The ID of the rule to remove.
+     */
+    @Override
+    public void deleteRule(int id)
+    {
+
+    }
+
+    /**
      * @return An array of this automation's actions.
      */
     @Override
     public List<Action> getActions()
     {
         return mActions;
+    }
+
+    /**
+     * Adds a new action with the given name.
+     *
+     * @param name
+     *         Name of the action to add.
+     * @param type
+     *         The type of action to add.
+     */
+    @Override
+    public void addAction(String name, ActionType type)
+    {
+        SharedPreferences prefs = getSharedPreferences();
+        SharedPreferences.Editor edit = prefs.edit();
+
+        Action action = type.createNew(name, getService());
+
+        Set<String> componentIDs = new HashSet<String>();
+        componentIDs.add(((Integer) action.getId()).toString());
+        componentIDs.addAll(prefs.getStringSet(VALUE_ACTION_IDS, new HashSet<String>()));
+
+        edit.putStringSet(VALUE_ACTION_IDS, componentIDs);
+        mActions.add(action);
+        boolean success = edit.commit();
+        if (!success) Log.w(LOGGER_TAG, "Failed to commit changes to preferences.");
+        else onComponentListChange();
+
+        assert prefs.getStringSet(VALUE_ACTION_IDS, new HashSet<String>()).equals(componentIDs);
+    }
+
+    /**
+     * Removes the action with the given ID.
+     *
+     * @param id
+     *         The ID of the action to remove.
+     */
+    @Override
+    public void deleteAction(int id)
+    {
+
     }
 
     /**
@@ -196,5 +372,34 @@ public class AutomationImpl extends ConfigComponentBase implements Automation
     {
         super.addPreferencesToFragment(fragment);
         fragment.addPreferencesFromResource(R.xml.prefs_automation);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences preferences, String key)
+    {
+        if (key.equals("name") || key.equals("description")) onComponentListChange();
+    }
+
+    @Override
+    public void registerComponentListObserver(ComponentListChangeListener listener)
+    {
+        mComponentListObservers.add(listener);
+    }
+
+    @Override
+    public void unregisterComponentListObserver(ComponentListChangeListener listener)
+    {
+        mComponentListObservers.remove(listener);
+    }
+
+    private void onComponentListChange()
+    {
+        for (ComponentListChangeListener listener : mComponentListObservers)
+            listener.onComponentListChange();
+    }
+
+    public static interface ComponentListChangeListener
+    {
+        public void onComponentListChange();
     }
 }

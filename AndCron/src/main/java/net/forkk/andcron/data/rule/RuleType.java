@@ -16,6 +16,10 @@
 
 package net.forkk.andcron.data.rule;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
+import net.forkk.andcron.data.AutomationService;
 import net.forkk.andcron.data.ComponentType;
 
 
@@ -24,6 +28,26 @@ import net.forkk.andcron.data.ComponentType;
  */
 public class RuleType extends ComponentType<Rule>
 {
+    /**
+     * @return The next available rule ID.
+     */
+    @Override
+    public int getAvailableId(Context context)
+    {
+        return context.getSharedPreferences(AutomationService.PREF_AUTOMATIONS,
+                                            Context.MODE_PRIVATE).getInt("next_rule_id", 0);
+    }
+
+    @Override
+    public void incrementNextId(Context context)
+    {
+        SharedPreferences.Editor edit =
+                context.getSharedPreferences(AutomationService.PREF_AUTOMATIONS,
+                                             Context.MODE_PRIVATE).edit();
+        edit.putInt("next_rule_id", getAvailableId(context) + 1);
+        edit.commit();
+    }
+
     /**
      * Constructs a new component type.
      *
@@ -50,4 +74,21 @@ public class RuleType extends ComponentType<Rule>
                                                                                      "A simple rule for testing.",
                                                                                      TestRule.class),
     };
+
+    public static Rule fromSharedPreferences(Context context, int id)
+    {
+        SharedPreferences preferences =
+                context.getSharedPreferences(RuleBase.getSharedPreferencesNameForId(id),
+                                             Context.MODE_PRIVATE);
+
+        String typeId = preferences.getString(VALUE_COMPONENT_TYPE, null);
+        if (typeId == null) return null;
+        else
+        {
+            // Find a RuleType whose typeID matches.
+            for (RuleType type : getRuleTypes())
+                if (typeId.equals(type.getTypeId())) return type.construct(context, id);
+            return null;
+        }
+    }
 }

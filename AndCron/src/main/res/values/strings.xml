@@ -67,4 +67,5 @@
     <string name="action_lower">action</string>
     <string name="automation_upper">Automation</string>
     <string name="automation_lower">automation</string>
+    <string name="title_choose_type">Choose a type of %1$s to add.</string>
 </resources>

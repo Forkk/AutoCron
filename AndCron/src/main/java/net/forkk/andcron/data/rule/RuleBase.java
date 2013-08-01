@@ -28,7 +28,7 @@ public abstract class RuleBase extends AutomationComponentBase implements Rule
 {
     protected boolean mIsActive;
 
-    public RuleBase(Context context, int id)
+    protected RuleBase(Context context, int id)
     {
         super(context, id);
     }
@@ -47,6 +47,11 @@ public abstract class RuleBase extends AutomationComponentBase implements Rule
 
     @Override
     protected String getSharedPreferencesName(int id)
+    {
+        return "rule_" + id;
+    }
+
+    protected static String getSharedPreferencesNameForId(int id)
     {
         return "rule_" + id;
     }
