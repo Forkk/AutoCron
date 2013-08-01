@@ -203,15 +203,13 @@ public class AutomationImpl extends ConfigComponentBase
     /**
      * Adds a new rule of the given type with the given name.
      *
-     * @param name
-     *         Name of the rule to add.
      * @param type
      *         The type of rule to add.
      */
     @Override
-    public void addRule(String name, RuleType type)
+    public Rule addRule(RuleType type)
     {
-        addComponent(name, type, mRuleTypeInterface);
+        return addComponent(type, mRuleTypeInterface);
     }
 
     /**
@@ -246,15 +244,13 @@ public class AutomationImpl extends ConfigComponentBase
     /**
      * Adds a new action with the given name.
      *
-     * @param name
-     *         Name of the action to add.
      * @param type
      *         The type of action to add.
      */
     @Override
-    public void addAction(String name, ActionType type)
+    public Action addAction(ActionType type)
     {
-        addComponent(name, type, mActionTypeInterface);
+        return addComponent(type, mActionTypeInterface);
     }
 
     /**
@@ -278,13 +274,13 @@ public class AutomationImpl extends ConfigComponentBase
     }
 
 
-    public <T extends AutomationComponent> void addComponent(String name, ComponentType<T> type,
-                                                             ComponentTypeInterface<T> typeInterface)
+    public <T extends AutomationComponent> T addComponent(ComponentType<T> type,
+                                                          ComponentTypeInterface<T> typeInterface)
     {
         SharedPreferences prefs = getSharedPreferences();
         SharedPreferences.Editor edit = prefs.edit();
 
-        T component = type.createNew(this, name, getService());
+        T component = type.createNew(this, getService());
 
         Set<String> componentIDs = new HashSet<String>();
         componentIDs.add(((Integer) component.getId()).toString());
@@ -301,6 +297,8 @@ public class AutomationImpl extends ConfigComponentBase
 
         assert prefs.getStringSet(typeInterface.getIdListKey(), new HashSet<String>())
                     .equals(componentIDs);
+
+        return component;
     }
 
     public void deleteComponent(int id, ComponentTypeInterface typeInterface)

@@ -81,14 +81,13 @@ public abstract class ComponentType<T extends AutomationComponent>
         mTypeClass = typeClass;
     }
 
-    public T createNew(Automation parent, String name, Context context)
+    public T createNew(Automation parent, Context context)
     {
         T component = construct(parent, context, getAvailableId(context));
         SharedPreferences.Editor edit =
                 context.getSharedPreferences(component.getSharedPreferencesName(),
                                              Context.MODE_PRIVATE).edit();
         edit.clear().commit();
-        edit.putString("name", name);
         edit.putString(VALUE_COMPONENT_TYPE, getTypeId());
         edit.commit();
         incrementNextId(context);

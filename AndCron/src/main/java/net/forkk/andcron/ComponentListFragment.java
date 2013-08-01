@@ -30,7 +30,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -72,11 +71,11 @@ public abstract class ComponentListFragment extends ListFragment
      */
     protected abstract ConfigComponent findComponentById(int id);
 
-    protected abstract void onEditComponent(int position, long id);
+    protected abstract void onEditComponent(long id);
 
     protected abstract void onDeleteComponent(int id);
 
-    protected abstract void onAddComponent(String name);
+    protected abstract void onActionAddComponent();
 
     public abstract String getComponentTypeName(boolean upper);
 
@@ -94,7 +93,7 @@ public abstract class ComponentListFragment extends ListFragment
     @Override
     public void onListItemClick(ListView l, View v, int position, long id)
     {
-        onEditComponent(position, id);
+        onEditComponent(id);
     }
 
     @Override
@@ -115,38 +114,7 @@ public abstract class ComponentListFragment extends ListFragment
         switch (item.getItemId())
         {
         case R.id.action_add_component:
-            final View inputView =
-                    getActivity().getLayoutInflater().inflate(R.layout.text_entry_view, null);
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle(getResources().getString(R.string.title_new_component,
-                                                      getComponentTypeName(true)));
-            builder.setMessage(getResources().getString(R.string.message_new_component,
-                                                        getComponentTypeName(false)));
-            builder.setView(inputView);
-            builder.setPositiveButton(R.string.okay, new DialogInterface.OnClickListener()
-            {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i)
-                {
-                    dialogInterface.dismiss();
-                    assert inputView != null;
-                    EditText input = (EditText) inputView.findViewById(R.id.text_input);
-                    //noinspection ConstantConditions
-                    final String name = input.getText().toString();
-
-                    // Add a new component with the given name.
-                    onAddComponent(name);
-                }
-            });
-            builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener()
-            {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i)
-                {
-                    dialogInterface.cancel();
-                }
-            });
-            builder.create().show();
+            onActionAddComponent();
             return true;
         }
         return false;
@@ -189,7 +157,7 @@ public abstract class ComponentListFragment extends ListFragment
         switch (item.getItemId())
         {
         case R.id.action_edit_component:
-            onEditComponent(info.position, info.id);
+            onEditComponent(info.id);
             return true;
 
         case R.id.action_delete_component:

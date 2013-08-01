@@ -16,12 +16,16 @@
 
 package net.forkk.andcron;
 
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.view.View;
+import android.widget.EditText;
 
 import net.forkk.andcron.data.AutomationService;
 import net.forkk.andcron.data.ConfigComponent;
@@ -62,7 +66,7 @@ public class AutomationListFragment extends ComponentListFragment
     }
 
     @Override
-    protected void onEditComponent(int position, long id)
+    protected void onEditComponent(long id)
     {
         Intent intent = new Intent(getActivity(), EditAutomationActivity.class);
         intent.putExtra(EditAutomationActivity.EXTRA_AUTOMATION_ID, (int) id);
@@ -76,9 +80,40 @@ public class AutomationListFragment extends ComponentListFragment
     }
 
     @Override
-    protected void onAddComponent(String name)
+    protected void onActionAddComponent()
     {
-        mBinder.createNewAutomation(name);
+        final View inputView =
+                getActivity().getLayoutInflater().inflate(R.layout.text_entry_view, null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(getResources().getString(R.string.title_new_component,
+                                                  getComponentTypeName(true)));
+        builder.setMessage(getResources().getString(R.string.message_new_component,
+                                                    getComponentTypeName(false)));
+        builder.setView(inputView);
+        builder.setPositiveButton(R.string.okay, new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+                dialogInterface.dismiss();
+                assert inputView != null;
+                EditText input = (EditText) inputView.findViewById(R.id.text_input);
+                //noinspection ConstantConditions
+                final String name = input.getText().toString();
+
+                // Add a new component with the given name.
+                mBinder.createNewAutomation(name);
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+                dialogInterface.cancel();
+            }
+        });
+        builder.create().show();
     }
 
     @Override

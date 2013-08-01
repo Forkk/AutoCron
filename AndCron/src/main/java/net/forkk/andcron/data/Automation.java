@@ -37,12 +37,10 @@ public interface Automation extends ConfigComponent
     /**
      * Adds a new rule of the given type with the given name.
      *
-     * @param name
-     *         Name of the rule to add.
      * @param type
      *         The type of rule to add.
      */
-    public void addRule(String name, RuleType type);
+    public Rule addRule(RuleType type);
 
     /**
      * Removes the rule with the given ID.
@@ -70,12 +68,10 @@ public interface Automation extends ConfigComponent
     /**
      * Adds a new action with the given name.
      *
-     * @param name
-     *         Name of the action to add.
      * @param type
      *         The type of action to add.
      */
-    public void addAction(String name, ActionType type);
+    public Action addAction(ActionType type);
 
     /**
      * Removes the action with the given ID.

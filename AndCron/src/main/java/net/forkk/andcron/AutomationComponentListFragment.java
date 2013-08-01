@@ -118,7 +118,7 @@ public class AutomationComponentListFragment extends ComponentListFragment
     }
 
     @Override
-    protected void onAddComponent(final String name)
+    protected void onActionAddComponent()
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(getResources().getString(R.string.title_choose_type,
@@ -142,16 +142,18 @@ public class AutomationComponentListFragment extends ComponentListFragment
             @Override
             public void onClick(DialogInterface dialogInterface, int i)
             {
+                ConfigComponent component = null;
                 switch (mType)
                 {
                 case Rule:
-                    mAutomation.addRule(name, RuleType.getRuleTypes()[i]);
+                    component = mAutomation.addRule(RuleType.getRuleTypes()[i]);
                     break;
 
                 case Action:
-                    mAutomation.addAction(name, ActionType.getActionTypes()[i]);
+                    component = mAutomation.addAction(ActionType.getActionTypes()[i]);
                     break;
                 }
+                onEditComponent(component.getId());
             }
         });
 
@@ -159,9 +161,8 @@ public class AutomationComponentListFragment extends ComponentListFragment
     }
 
     @Override
-    protected void onEditComponent(int position, long id)
+    protected void onEditComponent(long id)
     {
-        // TODO: Implement editing these components.
         Intent intent = new Intent(getActivity(), EditComponentActivity.class);
         intent.putExtra(EditAutomationActivity.EXTRA_AUTOMATION_ID, mAutomation.getId());
         intent.putExtra(EditComponentActivity.EXTRA_COMPONENT_ID, (int) id);
