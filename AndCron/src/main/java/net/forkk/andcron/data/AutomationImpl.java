@@ -75,7 +75,7 @@ public class AutomationImpl extends ConfigComponentBase
     {
         AutomationImpl automation = new AutomationImpl(service, preferencesId);
         SharedPreferences.Editor edit = automation.getSharedPreferences().edit();
-        edit.clear();
+        edit.clear().commit();
         edit.putString(VALUE_NAME, name);
         edit.commit();
         return automation;
@@ -319,6 +319,12 @@ public class AutomationImpl extends ConfigComponentBase
         componentIDs.remove(((Integer) id).toString());
 
         edit.putStringSet(typeInterface.getIdListKey(), componentIDs);
+
+        // Clear the component's preferences
+        getService()
+                .getSharedPreferences(component.getSharedPreferencesName(), Context.MODE_PRIVATE)
+                .edit().clear().commit();
+
         component.onDestroy(getService());
         typeInterface.getList().remove(component);
         boolean success = edit.commit();
@@ -489,6 +495,12 @@ public class AutomationImpl extends ConfigComponentBase
     protected String getSharedPreferencesName(int id)
     {
         return "automation_" + id;
+    }
+
+    @Override
+    protected SharedPreferences getSharedPreferences()
+    {
+        return getService().getSharedPreferences(getSharedPreferencesName(), Context.MODE_PRIVATE);
     }
 
     @Override

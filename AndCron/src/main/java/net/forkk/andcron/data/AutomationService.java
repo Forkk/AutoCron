@@ -231,8 +231,13 @@ public class AutomationService extends Service
         automationIDs.remove(((Integer) id).toString());
 
         edit.putStringSet(VALUE_AUTOMATION_IDS, automationIDs);
-        mAutomations.remove(automation);
+
+        // Clear the component's preferences.
+        getSharedPreferences(automation.getSharedPreferencesName(), MODE_PRIVATE).edit().clear()
+                .commit();
+
         automation.onDestroy(this);
+        mAutomations.remove(automation);
         boolean success = edit.commit();
         if (!success) Log.e(LOGGER_TAG, "Failed to commit changes to preferences.");
         else onAutomationListChange();
