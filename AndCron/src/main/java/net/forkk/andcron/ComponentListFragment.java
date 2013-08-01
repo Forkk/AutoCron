@@ -21,7 +21,10 @@ import android.app.ListFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -93,6 +96,18 @@ public abstract class ComponentListFragment extends ListFragment
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.component_list_menu, menu);
+        MenuItem addItem = menu.findItem(R.id.action_add_component);
+
+        assert addItem != null;
+        addItem.setTitle(getResources().getString(R.string.action_add_component,
+                                                  getComponentTypeName(false)));
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
         switch (item.getItemId())
@@ -133,6 +148,27 @@ public abstract class ComponentListFragment extends ListFragment
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View view,
+                                    ContextMenu.ContextMenuInfo menuInfo)
+    {
+        menu.setHeaderTitle(getResources().getString(R.string.title_component_context_menu,
+                                                     getComponentTypeName(true)));
+        MenuInflater inflater = getActivity().getMenuInflater();
+        inflater.inflate(R.menu.component_context_menu, menu);
+
+        MenuItem editItem = menu.findItem(R.id.action_edit_component);
+        MenuItem deleteItem = menu.findItem(R.id.action_delete_component);
+
+        assert editItem != null;
+        editItem.setTitle(getResources().getString(R.string.action_edit_component,
+                                                   getComponentTypeName(false)));
+        assert deleteItem != null;
+        deleteItem.setTitle(getResources().getString(R.string.action_delete_component,
+                                                     getComponentTypeName(false)));
+        super.onCreateContextMenu(menu, view, menuInfo);
     }
 
     @Override

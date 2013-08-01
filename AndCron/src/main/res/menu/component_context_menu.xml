@@ -18,9 +18,12 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-            android:id="@+id/action_add_component"
-            android:title="@string/action_add_automation"
-            android:icon="@drawable/ic_action_content_new"
-            android:showAsAction="ifRoom|withText"
+            android:id="@+id/action_edit_component"
+            android:title="@string/action_edit_component"
+            />
+
+    <item
+            android:id="@+id/action_delete_component"
+            android:title="@string/action_delete_component"
             />
 </menu>

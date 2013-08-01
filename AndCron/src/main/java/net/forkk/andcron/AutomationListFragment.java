@@ -22,10 +22,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.view.ContextMenu;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.View;
 
 import net.forkk.andcron.data.AutomationService;
 import net.forkk.andcron.data.ConfigComponent;
@@ -88,24 +84,8 @@ public class AutomationListFragment extends ComponentListFragment
     @Override
     public String getComponentTypeName(boolean upper)
     {
-        return null;
-    }
-
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View view,
-                                    ContextMenu.ContextMenuInfo menuInfo)
-    {
-        menu.setHeaderTitle(getResources().getString(R.string.title_automation_menu));
-        MenuInflater inflater = getActivity().getMenuInflater();
-        inflater.inflate(R.menu.automation_context_menu, menu);
-        super.onCreateContextMenu(menu, view, menuInfo);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
-    {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.automation_list_menu, menu);
+        if (upper) return getResources().getString(R.string.automation_upper);
+        else return getResources().getString(R.string.automation_lower);
     }
 
     @Override

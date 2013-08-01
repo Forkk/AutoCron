@@ -75,6 +75,12 @@ public class AutomationComponentListFragment extends ComponentListFragment
     }
 
     @Override
+    protected void onAddComponent(String name)
+    {
+        // TODO: Implement adding components.
+    }
+
+    @Override
     protected void onEditComponent(int position, long id)
     {
         // TODO: Implement editing these components.
@@ -84,12 +90,6 @@ public class AutomationComponentListFragment extends ComponentListFragment
     protected void onDeleteComponent(int id)
     {
         // TODO: Implement deleting these components.
-    }
-
-    @Override
-    protected void onAddComponent(String name)
-    {
-        // TODO: Implement adding components.
     }
 
     @Override
