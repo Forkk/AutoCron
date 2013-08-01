@@ -72,7 +72,8 @@
     <string name="pref_automation_desc_title">Description</string>
     <string name="pref_automation_desc_summary">A short description explaining what this automation does.</string>
     <string name="pref_automation_desc_dialog_title">Enter a description for this automation.</string>
-    <string name="rule_upper">Rule</string>
+
+    <!-- Names of Things --><string name="rule_upper">Rule</string>
     <string name="rule_lower">rule</string>
     <string name="action_upper">Action</string>
     <string name="action_lower">action</string>
