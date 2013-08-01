@@ -240,7 +240,7 @@ public class AutomationImpl extends ConfigComponentBase
         edit.putStringSet(VALUE_RULE_IDS, componentIDs);
         mRules.add(rule);
         boolean success = edit.commit();
-        if (!success) Log.w(LOGGER_TAG, "Failed to commit changes to preferences.");
+        if (!success) Log.e(LOGGER_TAG, "Failed to commit changes to preferences.");
         else onComponentListChange();
 
         assert prefs.getStringSet(VALUE_RULE_IDS, new HashSet<String>()).equals(componentIDs);
@@ -255,7 +255,33 @@ public class AutomationImpl extends ConfigComponentBase
     @Override
     public void deleteRule(int id)
     {
+        Rule rule = findRuleById(id);
+        if (rule == null)
+        {
+            Log.e(LOGGER_TAG, "Attempted to delete a rule that doesn't exist.");
+            return;
+        }
 
+        SharedPreferences prefs = getSharedPreferences();
+        SharedPreferences.Editor edit = prefs.edit();
+
+        Set<String> ruleIDs = new HashSet<String>();
+        ruleIDs.addAll(prefs.getStringSet(VALUE_RULE_IDS, new HashSet<String>()));
+        ruleIDs.remove(((Integer) id).toString());
+
+        edit.putStringSet(VALUE_RULE_IDS, ruleIDs);
+        mRules.remove(rule);
+        boolean success = edit.commit();
+        if (!success) Log.e(LOGGER_TAG, "Failed to commit changes to preferences.");
+        else onComponentListChange();
+    }
+
+    @Override
+    public Rule findRuleById(int id)
+    {
+        for (Rule rule : mRules)
+            if (rule.getId() == id) return rule;
+        return null;
     }
 
     /**
@@ -290,7 +316,7 @@ public class AutomationImpl extends ConfigComponentBase
         edit.putStringSet(VALUE_ACTION_IDS, componentIDs);
         mActions.add(action);
         boolean success = edit.commit();
-        if (!success) Log.w(LOGGER_TAG, "Failed to commit changes to preferences.");
+        if (!success) Log.e(LOGGER_TAG, "Failed to commit changes to preferences.");
         else onComponentListChange();
 
         assert prefs.getStringSet(VALUE_ACTION_IDS, new HashSet<String>()).equals(componentIDs);
@@ -305,7 +331,33 @@ public class AutomationImpl extends ConfigComponentBase
     @Override
     public void deleteAction(int id)
     {
+        Action action = findActionById(id);
+        if (action == null)
+        {
+            Log.e(LOGGER_TAG, "Attempted to delete an action that doesn't exist.");
+            return;
+        }
 
+        SharedPreferences prefs = getSharedPreferences();
+        SharedPreferences.Editor edit = prefs.edit();
+
+        Set<String> actionIDs = new HashSet<String>();
+        actionIDs.addAll(prefs.getStringSet(VALUE_ACTION_IDS, new HashSet<String>()));
+        actionIDs.remove(((Integer) id).toString());
+
+        edit.putStringSet(VALUE_ACTION_IDS, actionIDs);
+        mActions.remove(action);
+        boolean success = edit.commit();
+        if (!success) Log.e(LOGGER_TAG, "Failed to commit changes to preferences.");
+        else onComponentListChange();
+    }
+
+    @Override
+    public Action findActionById(int id)
+    {
+        for (Action action : mActions)
+            if (action.getId() == id) return action;
+        return null;
     }
 
     /**

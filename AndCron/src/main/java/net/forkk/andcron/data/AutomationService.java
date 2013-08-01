@@ -196,7 +196,7 @@ public class AutomationService extends Service
         edit.putStringSet(VALUE_AUTOMATION_IDS, automationIDs);
         mAutomations.add(automation);
         boolean success = edit.commit();
-        if (!success) Log.w(LOGGER_TAG, "Failed to commit changes to preferences.");
+        if (!success) Log.e(LOGGER_TAG, "Failed to commit changes to preferences.");
         else onAutomationListChange();
 
         assert prefs.getStringSet(VALUE_AUTOMATION_IDS, new HashSet<String>())
@@ -208,7 +208,7 @@ public class AutomationService extends Service
         Automation automation = findAutomationById(id);
         if (automation == null)
         {
-            Log.e(LOGGER_TAG, "Attempted to delete automation that didn't exist.");
+            Log.e(LOGGER_TAG, "Attempted to delete an automation that doesn't exist.");
             return;
         }
 
@@ -222,7 +222,7 @@ public class AutomationService extends Service
         edit.putStringSet(VALUE_AUTOMATION_IDS, automationIDs);
         mAutomations.remove(automation);
         boolean success = edit.commit();
-        if (!success) Log.w(LOGGER_TAG, "Failed to commit changes to preferences.");
+        if (!success) Log.e(LOGGER_TAG, "Failed to commit changes to preferences.");
         else onAutomationListChange();
     }
 

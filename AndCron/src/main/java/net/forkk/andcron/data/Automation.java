@@ -52,6 +52,8 @@ public interface Automation extends ConfigComponent
      */
     public void deleteRule(int id);
 
+    Rule findRuleById(int id);
+
     /**
      * @return An array of this automation's actions.
      */
@@ -74,6 +76,8 @@ public interface Automation extends ConfigComponent
      *         The ID of the action to remove.
      */
     public void deleteAction(int id);
+
+    Action findActionById(int id);
 
     /**
      * @return True or false depending on whether or not the automation is active.

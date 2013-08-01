@@ -166,7 +166,15 @@ public class AutomationComponentListFragment extends ComponentListFragment
     @Override
     protected void onDeleteComponent(int id)
     {
-        // TODO: Implement deleting these components.
+        switch (mType)
+        {
+        case Rule:
+            mAutomation.deleteRule(id);
+            break;
+        case Action:
+            mAutomation.deleteAction(id);
+            break;
+        }
     }
 
     @Override

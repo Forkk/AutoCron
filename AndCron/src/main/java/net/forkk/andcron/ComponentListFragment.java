@@ -46,6 +46,8 @@ public abstract class ComponentListFragment extends ListFragment
 {
     protected ComponentListAdapter mAdapter;
 
+    private ContextMenu.ContextMenuInfo mMenuInfo;
+
     @Override
     public void onStart()
     {
@@ -154,6 +156,7 @@ public abstract class ComponentListFragment extends ListFragment
     public void onCreateContextMenu(ContextMenu menu, View view,
                                     ContextMenu.ContextMenuInfo menuInfo)
     {
+        mMenuInfo = menuInfo;
         menu.setHeaderTitle(getResources().getString(R.string.title_component_context_menu,
                                                      getComponentTypeName(true)));
         MenuInflater inflater = getActivity().getMenuInflater();
@@ -174,6 +177,8 @@ public abstract class ComponentListFragment extends ListFragment
     @Override
     public boolean onContextItemSelected(MenuItem item)
     {
+        if (item.getMenuInfo() != mMenuInfo) return false;
+
         AdapterView.AdapterContextMenuInfo info =
                 (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 
