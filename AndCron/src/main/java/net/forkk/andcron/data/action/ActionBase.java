@@ -17,7 +17,9 @@
 package net.forkk.andcron.data.action;
 
 import android.content.Context;
+import android.preference.PreferenceFragment;
 
+import net.forkk.andcron.R;
 import net.forkk.andcron.data.Automation;
 import net.forkk.andcron.data.AutomationComponentBase;
 
@@ -41,5 +43,12 @@ public abstract class ActionBase extends AutomationComponentBase implements Acti
     protected static String getSharedPreferencesNameForId(int id)
     {
         return "action_" + id;
+    }
+
+    @Override
+    public void addPreferencesToFragment(PreferenceFragment fragment)
+    {
+        super.addPreferencesToFragment(fragment);
+        fragment.addPreferencesFromResource(R.xml.prefs_action);
     }
 }

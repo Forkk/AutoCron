@@ -37,7 +37,8 @@ import java.util.Set;
  * Standard implementation for the automation interface.
  */
 public class AutomationImpl extends ConfigComponentBase
-        implements Automation, SharedPreferences.OnSharedPreferenceChangeListener
+        implements Automation, SharedPreferences.OnSharedPreferenceChangeListener,
+                           AutomationComponentBase.ComponentChangeListener
 {
     public static final String LOGGER_TAG = AutomationService.LOGGER_TAG;
 
@@ -161,11 +162,12 @@ public class AutomationImpl extends ConfigComponentBase
             try
             {
                 int id = Integer.parseInt(stringVal);
-                T rule = typeInterface.loadFromPrefs(this, context, id);
-                if (rule != null)
+                T component = typeInterface.loadFromPrefs(this, context, id);
+                if (component != null)
                 {
-                    tempComponentList.add(rule);
-                    Log.i(LOGGER_TAG, "Loaded " + typeName + " \"" + rule.getName() + "\".");
+                    tempComponentList.add(component);
+                    component.addChangeListener(this);
+                    Log.i(LOGGER_TAG, "Loaded " + typeName + " \"" + component.getName() + "\".");
                 }
                 else
                 {
@@ -291,6 +293,7 @@ public class AutomationImpl extends ConfigComponentBase
 
         edit.putStringSet(typeInterface.getIdListKey(), componentIDs);
         typeInterface.getList().add(component);
+        component.addChangeListener(this);
         component.onCreate(getService());
         boolean success = edit.commit();
         if (!success) Log.e(LOGGER_TAG, "Failed to commit changes to preferences.");
@@ -400,6 +403,12 @@ public class AutomationImpl extends ConfigComponentBase
                     return findActionById(id);
                 }
             };
+
+    @Override
+    public void onComponentChange()
+    {
+        onComponentListChange();
+    }
 
     private interface ComponentTypeInterface<T extends AutomationComponent>
     {

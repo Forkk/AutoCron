@@ -19,6 +19,7 @@ package net.forkk.andcron;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -161,6 +162,21 @@ public class AutomationComponentListFragment extends ComponentListFragment
     protected void onEditComponent(int position, long id)
     {
         // TODO: Implement editing these components.
+        Intent intent = new Intent(getActivity(), EditComponentActivity.class);
+        intent.putExtra(EditAutomationActivity.EXTRA_AUTOMATION_ID, mAutomation.getId());
+        intent.putExtra(EditComponentActivity.EXTRA_COMPONENT_ID, (int) id);
+
+        switch (mType)
+        {
+        case Rule:
+            intent.putExtra(EditComponentActivity.EXTRA_COMPONENT_TYPE, 0);
+            break;
+        case Action:
+            intent.putExtra(EditComponentActivity.EXTRA_COMPONENT_TYPE, 1);
+            break;
+        }
+
+        startActivity(intent);
     }
 
     @Override

@@ -22,4 +22,7 @@ package net.forkk.andcron.data;
 public interface AutomationComponent extends ConfigComponent
 {
 
+    void addChangeListener(AutomationComponentBase.ComponentChangeListener listener);
+
+    void removeChangeListener(AutomationComponentBase.ComponentChangeListener listener);
 }

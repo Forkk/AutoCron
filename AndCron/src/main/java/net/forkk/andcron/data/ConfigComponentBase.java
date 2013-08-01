@@ -24,7 +24,8 @@ import android.preference.PreferenceFragment;
 /**
  * Abstract base for all config components.
  */
-public abstract class ConfigComponentBase implements ConfigComponent
+public abstract class ConfigComponentBase
+        implements ConfigComponent, SharedPreferences.OnSharedPreferenceChangeListener
 {
     public static final String VALUE_NAME = "name";
 

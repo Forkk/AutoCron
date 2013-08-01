@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ Copyright 2013 Andrew Okin
   ~
@@ -15,7 +14,6 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
 <resources>
 
     <!-- Generic Info -->
@@ -24,6 +22,7 @@
     <!-- Titles -->
     <string name="title_automations">Automations</string>
     <string name="title_edit_automation">Edit Automation</string>
+    <string name="title_activity_edit_component">Edit %1$s</string>
     <string name="title_component_context_menu">Automation Menu</string>
     <string name="title_automation_settings">Settings</string>
     <string name="title_automation_rules">Rules</string>
@@ -64,16 +63,29 @@
 
     <!-- Preference Stuff -->
     <string name="pref_title_name_and_desc">Name &amp; Description</string>
-
     <string name="pref_automation_name_title">Name</string>
     <string name="pref_automation_name_summary">A short name for the automation.</string>
     <string name="pref_automation_name_dialog_title">Enter a name for this automation.</string>
-
     <string name="pref_automation_desc_title">Description</string>
     <string name="pref_automation_desc_summary">A short description explaining what this automation does.</string>
     <string name="pref_automation_desc_dialog_title">Enter a description for this automation.</string>
 
-    <!-- Names of Things --><string name="rule_upper">Rule</string>
+    <string name="pref_rule_name_title">Name</string>
+    <string name="pref_rule_name_summary">A short name for the rule.</string>
+    <string name="pref_rule_name_dialog_title">Enter a name for this rule.</string>
+    <string name="pref_rule_desc_title">Description</string>
+    <string name="pref_rule_desc_summary">A short description explaining what this rule does.</string>
+    <string name="pref_rule_desc_dialog_title">Enter a description for this rule.</string>
+
+    <string name="pref_action_name_title">Name</string>
+    <string name="pref_action_name_summary">A short name for the action.</string>
+    <string name="pref_action_name_dialog_title">Enter a name for this action.</string>
+    <string name="pref_action_desc_title">Description</string>
+    <string name="pref_action_desc_summary">A short description explaining what this action does.</string>
+    <string name="pref_action_desc_dialog_title">Enter a description for this action.</string>
+
+    <!-- Names of Things -->
+    <string name="rule_upper">Rule</string>
     <string name="rule_lower">rule</string>
     <string name="action_upper">Action</string>
     <string name="action_lower">action</string>

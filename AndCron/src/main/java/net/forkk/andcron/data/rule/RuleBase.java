@@ -17,7 +17,9 @@
 package net.forkk.andcron.data.rule;
 
 import android.content.Context;
+import android.preference.PreferenceFragment;
 
+import net.forkk.andcron.R;
 import net.forkk.andcron.data.Automation;
 import net.forkk.andcron.data.AutomationComponentBase;
 
@@ -55,5 +57,12 @@ public abstract class RuleBase extends AutomationComponentBase implements Rule
     protected static String getSharedPreferencesNameForId(int id)
     {
         return "rule_" + id;
+    }
+
+    @Override
+    public void addPreferencesToFragment(PreferenceFragment fragment)
+    {
+        super.addPreferencesToFragment(fragment);
+        fragment.addPreferencesFromResource(R.xml.prefs_rule);
     }
 }
