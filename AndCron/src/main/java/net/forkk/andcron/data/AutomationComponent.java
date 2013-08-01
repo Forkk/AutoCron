@@ -21,11 +21,5 @@ package net.forkk.andcron.data;
  */
 public interface AutomationComponent extends ConfigComponent
 {
-    /**
-     * Sets this component's parent. The parent is the automation that contains the rule.
-     *
-     * @param parent
-     *         The rule's parent.
-     */
-    public void setParent(Automation parent);
+
 }

@@ -18,6 +18,7 @@ package net.forkk.andcron.data.rule;
 
 import android.content.Context;
 
+import net.forkk.andcron.data.Automation;
 import net.forkk.andcron.data.AutomationComponentBase;
 
 
@@ -28,15 +29,15 @@ public abstract class RuleBase extends AutomationComponentBase implements Rule
 {
     protected boolean mIsActive;
 
-    protected RuleBase(Context context, int id)
+    protected RuleBase(Automation parent, Context context, int id)
     {
-        super(context, id);
+        super(parent, context, id);
     }
 
     public void setActive(boolean active)
     {
         mIsActive = active;
-        if (active) getParent().updateActivationState();
+        getParent().updateActivationState();
     }
 
     @Override

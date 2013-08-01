@@ -19,6 +19,7 @@ package net.forkk.andcron.data.rule;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import net.forkk.andcron.data.Automation;
 import net.forkk.andcron.data.AutomationService;
 import net.forkk.andcron.data.ComponentType;
 
@@ -75,7 +76,7 @@ public class RuleType extends ComponentType<Rule>
                                                                                      TestRule.class),
     };
 
-    public static Rule fromSharedPreferences(Context context, int id)
+    public static Rule fromSharedPreferences(Automation parent, Context context, int id)
     {
         SharedPreferences preferences =
                 context.getSharedPreferences(RuleBase.getSharedPreferencesNameForId(id),
@@ -87,7 +88,7 @@ public class RuleType extends ComponentType<Rule>
         {
             // Find a RuleType whose typeID matches.
             for (RuleType type : getRuleTypes())
-                if (typeId.equals(type.getTypeId())) return type.construct(context, id);
+                if (typeId.equals(type.getTypeId())) return type.construct(parent, context, id);
             return null;
         }
     }

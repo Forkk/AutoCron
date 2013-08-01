@@ -32,6 +32,8 @@ public abstract class ConfigComponentBase implements ConfigComponent
 
     private SharedPreferences mPreferences;
 
+    protected Context mContext;
+
     private int mId;
 
     public ConfigComponentBase(Context context, int id)
@@ -39,6 +41,11 @@ public abstract class ConfigComponentBase implements ConfigComponent
         mId = id;
         mPreferences =
                 context.getSharedPreferences(getSharedPreferencesName(id), Context.MODE_PRIVATE);
+    }
+
+    protected Context getContext()
+    {
+        return mContext;
     }
 
     /**

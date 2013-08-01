@@ -96,20 +96,20 @@ public class AutomationImpl extends ConfigComponentBase
      * Called after the automation service finishes loading components. This should perform all
      * necessary initialization for this component.
      *
-     * @param context
+     * @param service
      *         Context to initialize with.
      */
     @Override
-    public void onCreate(Context context)
+    public void onCreate(AutomationService service)
     {
         for (Action action : mActions)
         {
-            action.onCreate(context);
+            action.onCreate(service);
         }
 
         for (Rule rule : mRules)
         {
-            rule.onCreate(context);
+            rule.onCreate(service);
         }
     }
 
@@ -117,16 +117,16 @@ public class AutomationImpl extends ConfigComponentBase
      * Called when the automation service is destroyed. This should perform all necessary cleanup.
      */
     @Override
-    public void onDestroy()
+    public void onDestroy(AutomationService service)
     {
         for (Rule rule : mRules)
         {
-            rule.onDestroy();
+            rule.onDestroy(service);
         }
 
         for (Action action : mActions)
         {
-            action.onDestroy();
+            action.onDestroy(service);
         }
     }
 
@@ -145,7 +145,7 @@ public class AutomationImpl extends ConfigComponentBase
             try
             {
                 int id = Integer.parseInt(stringVal);
-                Rule rule = RuleType.fromSharedPreferences(context, id);
+                Rule rule = RuleType.fromSharedPreferences(this, context, id);
                 if (rule != null)
                 {
                     tempRuleList.add(rule);
@@ -179,7 +179,7 @@ public class AutomationImpl extends ConfigComponentBase
             try
             {
                 int id = Integer.parseInt(stringVal);
-                Action action = ActionType.fromSharedPreferences(context, id);
+                Action action = ActionType.fromSharedPreferences(this, context, id);
                 if (action != null)
                 {
                     tempActionList.add(action);
@@ -231,7 +231,7 @@ public class AutomationImpl extends ConfigComponentBase
         SharedPreferences prefs = getSharedPreferences();
         SharedPreferences.Editor edit = prefs.edit();
 
-        Rule rule = type.createNew(name, getService());
+        Rule rule = type.createNew(this, name, getService());
 
         Set<String> componentIDs = new HashSet<String>();
         componentIDs.add(((Integer) rule.getId()).toString());
@@ -307,7 +307,7 @@ public class AutomationImpl extends ConfigComponentBase
         SharedPreferences prefs = getSharedPreferences();
         SharedPreferences.Editor edit = prefs.edit();
 
-        Action action = type.createNew(name, getService());
+        Action action = type.createNew(this, name, getService());
 
         Set<String> componentIDs = new HashSet<String>();
         componentIDs.add(((Integer) action.getId()).toString());
@@ -386,12 +386,12 @@ public class AutomationImpl extends ConfigComponentBase
             if (mIsActive)
             {
                 for (Action action : mActions)
-                    action.onActivate();
+                    action.onActivate(getService());
             }
             else
             {
                 for (Action action : mActions)
-                    action.onDeactivate();
+                    action.onDeactivate(getService());
             }
         }
     }

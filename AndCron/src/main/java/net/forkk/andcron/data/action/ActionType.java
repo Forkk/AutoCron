@@ -19,6 +19,7 @@ package net.forkk.andcron.data.action;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import net.forkk.andcron.data.Automation;
 import net.forkk.andcron.data.AutomationService;
 import net.forkk.andcron.data.ComponentType;
 
@@ -77,7 +78,7 @@ public class ActionType extends ComponentType<Action>
     };
 
 
-    public static Action fromSharedPreferences(Context context, int id)
+    public static Action fromSharedPreferences(Automation parent, Context context, int id)
     {
         SharedPreferences preferences =
                 context.getSharedPreferences(ActionBase.getSharedPreferencesNameForId(id),
@@ -89,7 +90,7 @@ public class ActionType extends ComponentType<Action>
         {
             // Find an ActionType whose typeID matches.
             for (ActionType type : getActionTypes())
-                if (typeId.equals(type.getTypeId())) return type.construct(context, id);
+                if (typeId.equals(type.getTypeId())) return type.construct(parent, context, id);
             return null;
         }
     }

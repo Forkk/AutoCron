@@ -18,6 +18,7 @@ package net.forkk.andcron.data.action;
 
 import android.content.Context;
 
+import net.forkk.andcron.data.Automation;
 import net.forkk.andcron.data.AutomationComponentBase;
 
 
@@ -26,9 +27,9 @@ import net.forkk.andcron.data.AutomationComponentBase;
  */
 public abstract class ActionBase extends AutomationComponentBase implements Action
 {
-    public ActionBase(Context context, int id)
+    public ActionBase(Automation parent, Context context, int id)
     {
-        super(context, id);
+        super(parent, context, id);
     }
 
     @Override

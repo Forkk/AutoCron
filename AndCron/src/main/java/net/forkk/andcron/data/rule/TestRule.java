@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 
 import net.forkk.andcron.R;
+import net.forkk.andcron.data.Automation;
 import net.forkk.andcron.data.AutomationService;
 
 
@@ -36,48 +37,37 @@ public class TestRule extends RuleBase implements AutomationService.IntentListen
 
     private int mIntentListenerId;
 
-    public TestRule(Context context, int id)
+    public TestRule(Automation parent, Context context, int id)
     {
-        super(context, id);
-    }
-
-    /**
-     * Checks if this rule is active.
-     *
-     * @return If the rule is active, true, else false.
-     */
-    @Override
-    public boolean isActive()
-    {
-        return false;
+        super(parent, context, id);
     }
 
     /**
      * Called after the automation service finishes loading components. This should perform all
      * necessary initialization for this component.
      *
-     * @param context
+     * @param service
      *         Context to initialize with.
      */
     @Override
-    public void onCreate(Context context)
+    public void onCreate(AutomationService service)
     {
-        mIntentListenerId = getParent().getService().registerIntentListener(this);
+        mIntentListenerId = service.registerIntentListener(this);
 
         NotificationCompat.Builder mNotificationBuilder =
-                new NotificationCompat.Builder(context).setContentTitle("Click to test")
+                new NotificationCompat.Builder(service).setContentTitle("Click to test")
                                                        .setContentText("Click to test the test rule.")
                                                        .setSmallIcon(R.drawable.ic_launcher);
 
-        Intent notificationIntent = new Intent(context, AutomationService.class);
+        Intent notificationIntent = new Intent(service, AutomationService.class);
         notificationIntent.putExtra(AutomationService.LISTENER_ID_EXTRA, mIntentListenerId);
-        PendingIntent pendingIntent = PendingIntent.getService(context, 0, notificationIntent,
+        PendingIntent pendingIntent = PendingIntent.getService(service, 0, notificationIntent,
                                                                PendingIntent.FLAG_CANCEL_CURRENT);
         mNotificationBuilder.setContentIntent(pendingIntent);
 
         mNotification = mNotificationBuilder.build();
         NotificationManager notificationManager =
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                (NotificationManager) service.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(-1, mNotification);
     }
 
@@ -85,7 +75,7 @@ public class TestRule extends RuleBase implements AutomationService.IntentListen
      * Called when the automation service is destroyed. This should perform all necessary cleanup.
      */
     @Override
-    public void onDestroy()
+    public void onDestroy(AutomationService service)
     {
 
     }
@@ -94,7 +84,6 @@ public class TestRule extends RuleBase implements AutomationService.IntentListen
     public void onCommandReceived(Intent intent)
     {
         // TODO: Implement a better system for rules that fire once, rather than just activate and deactivate.
-        setActive(true);
-        setActive(false);
+        setActive(!isActive());
     }
 }

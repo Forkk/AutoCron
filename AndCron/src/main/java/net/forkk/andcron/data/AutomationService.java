@@ -127,12 +127,22 @@ public class AutomationService extends Service
 
         // Load automations from the config file.
         loadConfig();
+
+        for (Automation automation : mAutomations)
+        {
+            automation.onCreate(this);
+        }
     }
 
     @Override
     public void onDestroy()
     {
         super.onDestroy();
+
+        for (Automation automation : mAutomations)
+        {
+            automation.onDestroy(this);
+        }
     }
 
     @Override
@@ -315,6 +325,11 @@ public class AutomationService extends Service
         public void unregisterAutomationListChangeListener(AutomationListChangeListener listener)
         {
             mAutomationListChangeListeners.remove(listener);
+        }
+
+        public AutomationService getService()
+        {
+            return AutomationService.this;
         }
     }
 

@@ -19,6 +19,9 @@ package net.forkk.andcron.data.action;
 import android.content.Context;
 import android.widget.Toast;
 
+import net.forkk.andcron.data.Automation;
+import net.forkk.andcron.data.AutomationService;
+
 
 /**
  * Test action that shows a toast when activated or deactivated.
@@ -27,9 +30,9 @@ public class TestAction extends ActionBase
 {
     private Context mContext;
 
-    public TestAction(Context context, int id)
+    public TestAction(Automation parent, Context context, int id)
     {
-        super(context, id);
+        super(parent, context, id);
     }
 
     /**
@@ -37,7 +40,7 @@ public class TestAction extends ActionBase
      * action is meant to do on activation.
      */
     @Override
-    public void onActivate()
+    public void onActivate(AutomationService service)
     {
         assert mContext != null;
         Toast.makeText(mContext, "Test action " + getName() + " was activated.", Toast.LENGTH_SHORT)
@@ -48,31 +51,21 @@ public class TestAction extends ActionBase
      * Called when the action's automation deactivates.
      */
     @Override
-    public void onDeactivate()
+    public void onDeactivate(AutomationService service)
     {
         assert mContext != null;
         Toast.makeText(mContext, "Test action " + getName() + " was deactivated.",
                        Toast.LENGTH_SHORT).show();
     }
 
-    /**
-     * Called after the automation service finishes loading components. This should perform all
-     * necessary initialization for this component.
-     *
-     * @param context
-     *         Context to initialize with.
-     */
     @Override
-    public void onCreate(Context context)
+    public void onCreate(AutomationService service)
     {
-        mContext = context;
+        mContext = service;
     }
 
-    /**
-     * Called when the automation service is destroyed. This should perform all necessary cleanup.
-     */
     @Override
-    public void onDestroy()
+    public void onDestroy(AutomationService service)
     {
         mContext = null;
     }

@@ -27,20 +27,9 @@ public abstract class AutomationComponentBase extends ConfigComponentBase
 {
     protected Automation mAutomation;
 
-    public AutomationComponentBase(Context context, int id)
+    public AutomationComponentBase(Automation parent, Context context, int id)
     {
         super(context, id);
-    }
-
-    /**
-     * Sets this component's parent. The parent is the automation that contains the rule.
-     *
-     * @param parent
-     *         The rule's parent.
-     */
-    @Override
-    public void setParent(Automation parent)
-    {
         mAutomation = parent;
     }
 

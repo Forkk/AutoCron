@@ -81,9 +81,9 @@ public abstract class ComponentType<T extends AutomationComponent>
         mTypeClass = typeClass;
     }
 
-    public T createNew(String name, Context context)
+    public T createNew(Automation parent, String name, Context context)
     {
-        T component = construct(context, getAvailableId(context));
+        T component = construct(parent, context, getAvailableId(context));
         SharedPreferences.Editor edit =
                 context.getSharedPreferences(component.getSharedPreferencesName(),
                                              Context.MODE_PRIVATE).edit();
@@ -99,12 +99,12 @@ public abstract class ComponentType<T extends AutomationComponent>
      *
      * @return The new action.
      */
-    public T construct(Context context, int id)
+    public T construct(Automation parent, Context context, int id)
     {
         Constructor<? extends T> constructor = null;
         try
         {
-            constructor = mTypeClass.getConstructor(Context.class, int.class);
+            constructor = mTypeClass.getConstructor(Automation.class, Context.class, int.class);
         }
         catch (NoSuchMethodException e)
         {
@@ -114,7 +114,7 @@ public abstract class ComponentType<T extends AutomationComponent>
 
         try
         {
-            return constructor.newInstance(context, id);
+            return constructor.newInstance(parent, context, id);
         }
         catch (InstantiationException e)
         {

@@ -16,7 +16,6 @@
 
 package net.forkk.andcron.data;
 
-import android.content.Context;
 import android.preference.PreferenceFragment;
 
 
@@ -30,15 +29,18 @@ public interface ConfigComponent
      * Called after the automation service finishes loading components. This should perform all
      * necessary initialization for this component.
      *
-     * @param context
-     *         Context to initialize with.
+     * @param service
+     *         The automation service that this component belongs to.
      */
-    public abstract void onCreate(Context context);
+    public abstract void onCreate(AutomationService service);
 
     /**
      * Called when the automation service is destroyed. This should perform all necessary cleanup.
+     *
+     * @param service
+     *         The automation service that this component belongs to.
      */
-    public abstract void onDestroy();
+    public abstract void onDestroy(AutomationService service);
 
     /**
      * @return This component's ID.
