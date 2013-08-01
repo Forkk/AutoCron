@@ -54,8 +54,8 @@ public class TestRule extends RuleBase implements AutomationService.IntentListen
     @Override
     public void onCreate(AutomationService service)
     {
-        updateNotification(service);
         mIntentListenerId = service.registerIntentListener(this);
+        updateNotification(service);
     }
 
     /**
@@ -87,8 +87,9 @@ public class TestRule extends RuleBase implements AutomationService.IntentListen
 
         Intent notificationIntent = new Intent(service, AutomationService.class);
         notificationIntent.putExtra(AutomationService.LISTENER_ID_EXTRA, mIntentListenerId);
-        PendingIntent pendingIntent = PendingIntent.getService(service, 0, notificationIntent,
-                                                               PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getService(service, mIntentListenerId,
+                                                               notificationIntent,
+                                                               PendingIntent.FLAG_ONE_SHOT);
         builder.setContentIntent(pendingIntent);
         builder.setOngoing(true);
 
