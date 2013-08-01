@@ -25,6 +25,7 @@ import net.forkk.andcron.data.action.Action;
 import net.forkk.andcron.data.rule.Rule;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -117,18 +118,18 @@ public class AutomationImpl extends ConfigComponentBase implements Automation
      * @return An array of this automation's rules.
      */
     @Override
-    public Rule[] getRules()
+    public List<Rule> getRules()
     {
-        return mRules.toArray(new Rule[mRules.size()]);
+        return mRules;
     }
 
     /**
      * @return An array of this automation's actions.
      */
     @Override
-    public Action[] getActions()
+    public List<Action> getActions()
     {
-        return mActions.toArray(new Action[mActions.size()]);
+        return mActions;
     }
 
     /**

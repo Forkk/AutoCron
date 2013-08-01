@@ -26,14 +26,14 @@
               android:paddingRight="16dp"
         >
 
-    <TextView android:id="@+id/automation_name_view"
+    <TextView android:id="@+id/component_name_view"
               android:text="This is a test"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"
             />
 
-    <TextView android:id="@+id/automation_desc_view"
+    <TextView android:id="@+id/component_desc_view"
               android:text="This is a description of the test list entry."
               android:layout_width="match_parent"
               android:layout_height="wrap_content"

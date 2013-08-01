@@ -19,6 +19,8 @@ package net.forkk.andcron.data;
 import net.forkk.andcron.data.action.Action;
 import net.forkk.andcron.data.rule.Rule;
 
+import java.util.List;
+
 
 /**
  * Interface for automations. Provides access to all of the necessary stuff.
@@ -28,12 +30,12 @@ public interface Automation extends ConfigComponent
     /**
      * @return An array of this automation's rules.
      */
-    public Rule[] getRules();
+    public List<Rule> getRules();
 
     /**
      * @return An array of this automation's actions.
      */
-    public Action[] getActions();
+    public List<Action> getActions();
 
     /**
      * @return True or false depending on whether or not the automation is active.

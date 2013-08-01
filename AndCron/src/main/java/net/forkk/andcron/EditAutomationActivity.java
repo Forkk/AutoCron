@@ -28,10 +28,6 @@ import android.os.IBinder;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
 import net.forkk.andcron.data.Automation;
 import net.forkk.andcron.data.AutomationService;
@@ -86,11 +82,13 @@ public class EditAutomationActivity extends FragmentActivity
     @Override
     public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction)
     {
+
     }
 
     @Override
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction)
     {
+
     }
 
     @Override
@@ -167,12 +165,15 @@ public class EditAutomationActivity extends FragmentActivity
             {
             case 0:
                 return new ComponentPreferenceFragment(mAutomation);
+
+            case 1:
+                return new AutomationComponentListFragment(mAutomation,
+                                                           AutomationComponentListFragment.ComponentListType.Rule);
+            case 2:
+                return new AutomationComponentListFragment(mAutomation,
+                                                           AutomationComponentListFragment.ComponentListType.Action);
             }
-            Fragment fragment = new DummySectionFragment();
-            Bundle args = new Bundle();
-            args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position + 1);
-            fragment.setArguments(args);
-            return fragment;
+            return null;
         }
 
         @Override
@@ -196,34 +197,6 @@ public class EditAutomationActivity extends FragmentActivity
                 return getString(R.string.title_automation_actions).toUpperCase(l);
             }
             return null;
-        }
-    }
-
-    /**
-     * A dummy fragment representing a section of the app, but that simply displays dummy text.
-     */
-    public static class DummySectionFragment extends Fragment
-    {
-        /**
-         * The fragment argument representing the section number for this fragment.
-         */
-        public static final String ARG_SECTION_NUMBER = "section_number";
-
-        public DummySectionFragment()
-        {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState)
-        {
-            View rootView =
-                    inflater.inflate(R.layout.fragment_edit_automation_dummy, container, false);
-            assert rootView != null;
-            TextView dummyTextView = (TextView) rootView.findViewById(R.id.section_label);
-            //noinspection ConstantConditions
-            dummyTextView.setText(Integer.toString(getArguments().getInt(ARG_SECTION_NUMBER)));
-            return rootView;
         }
     }
 }

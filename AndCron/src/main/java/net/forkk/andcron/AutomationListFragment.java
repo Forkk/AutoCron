@@ -16,39 +16,30 @@
 
 package net.forkk.andcron;
 
-import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v4.app.ListFragment;
 import android.view.ContextMenu;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.TextView;
 
-import net.forkk.andcron.data.Automation;
 import net.forkk.andcron.data.AutomationService;
+import net.forkk.andcron.data.ConfigComponent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
  * Fragment that shows a list of automations.
  */
-public class AutomationListFragment extends ListFragment
+public class AutomationListFragment extends ComponentListFragment
+        implements ServiceConnection, AutomationService.AutomationListChangeListener
 {
-    private AutomationListAdapter mAdapter;
-
     private AutomationService.LocalBinder mBinder;
 
     public AutomationListFragment()
@@ -61,21 +52,8 @@ public class AutomationListFragment extends ListFragment
     {
         super.onCreate(savedInstanceState);
 
-        mAdapter = new AutomationListAdapter(getActivity());
-        setListAdapter(mAdapter);
-
-        setHasOptionsMenu(true);
-
         Intent intent = new Intent(getActivity(), AutomationService.class);
-        getActivity().bindService(intent, mAdapter, Context.BIND_AUTO_CREATE);
-    }
-
-    @Override
-    public void onStart()
-    {
-        super.onStart();
-        registerForContextMenu(getListView());
-        setEmptyText(getResources().getString(R.string.automation_list_empty_text));
+        getActivity().bindService(intent, this, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -83,11 +61,12 @@ public class AutomationListFragment extends ListFragment
     {
         super.onDestroy();
 
-        if (mBinder != null) mBinder.unregisterAutomationListChangeListener(mAdapter);
-        getActivity().unbindService(mAdapter);
+        if (mBinder != null) mBinder.unregisterAutomationListChangeListener(this);
+        getActivity().unbindService(this);
     }
 
-    public void onEditAutomation(int position, long id)
+    @Override
+    protected void onEditComponent(int position, long id)
     {
         Intent intent = new Intent(getActivity(), EditAutomationActivity.class);
         intent.putExtra(EditAutomationActivity.EXTRA_AUTOMATION_ID, (int) id);
@@ -95,9 +74,21 @@ public class AutomationListFragment extends ListFragment
     }
 
     @Override
-    public void onListItemClick(ListView listView, View view, int position, long id)
+    protected void onDeleteComponent(int id)
     {
-        onEditAutomation(position, id);
+        mBinder.deleteAutomation(id);
+    }
+
+    @Override
+    protected void onAddComponent(String name)
+    {
+        mBinder.createNewAutomation(name);
+    }
+
+    @Override
+    public String getComponentTypeName(boolean upper)
+    {
+        return null;
     }
 
     @Override
@@ -111,50 +102,6 @@ public class AutomationListFragment extends ListFragment
     }
 
     @Override
-    public boolean onContextItemSelected(MenuItem item)
-    {
-        AdapterView.AdapterContextMenuInfo info =
-                (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-
-        assert info != null;
-        final Automation automation = mBinder.findAutomationById((int) info.id);
-        assert automation != null;
-
-        switch (item.getItemId())
-        {
-        case R.id.action_edit_automation:
-            onEditAutomation(info.position, info.id);
-            return true;
-
-        case R.id.action_delete_automation:
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle(getResources().getString(R.string.title_confirm_delete_automation));
-            builder.setMessage(getResources().getString(R.string.message_confirm_delete_automation,
-                                                        automation.getName()));
-            builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener()
-            {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i)
-                {
-                    mBinder.deleteAutomation(automation.getId());
-                }
-            });
-            builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener()
-            {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i)
-                {
-                    // Nothing to do here.
-                    dialogInterface.dismiss();
-                }
-            });
-            builder.create().show();
-            return true;
-        }
-        return false;
-    }
-
-    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
     {
         super.onCreateOptionsMenu(menu, inflater);
@@ -162,141 +109,45 @@ public class AutomationListFragment extends ListFragment
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
+    protected List<ConfigComponent> getComponentList()
     {
-        switch (item.getItemId())
-        {
-        case R.id.action_add_automation:
-            final View inputView =
-                    getActivity().getLayoutInflater().inflate(R.layout.text_entry_view, null);
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle(getActivity().getString(R.string.title_new_automation));
-            builder.setMessage(getActivity().getString(R.string.message_new_automation));
-            builder.setView(inputView);
-            builder.setPositiveButton(R.string.okay, new DialogInterface.OnClickListener()
-            {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i)
-                {
-                    dialogInterface.dismiss();
-                    assert inputView != null;
-                    EditText input = (EditText) inputView.findViewById(R.id.text_input);
-                    //noinspection ConstantConditions
-                    final String name = input.getText().toString();
-
-                    // Bind the automation service and create the new automation.
-                    Intent intent = new Intent(getActivity(), AutomationService.class);
-                    getActivity().bindService(intent, new ServiceConnection()
-                    {
-                        @Override
-                        public void onServiceConnected(ComponentName componentName, IBinder iBinder)
-                        {
-                            AutomationService.LocalBinder binder =
-                                    (AutomationService.LocalBinder) iBinder;
-                            binder.createNewAutomation(name);
-                            getActivity().unbindService(this);
-                        }
-
-                        @Override
-                        public void onServiceDisconnected(ComponentName componentName)
-                        {
-
-                        }
-                    }, Context.BIND_AUTO_CREATE);
-                }
-            });
-            builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener()
-            {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i)
-                {
-                    dialogInterface.cancel();
-                }
-            });
-            builder.create().show();
-            return true;
-        }
-        return false;
+        return new ArrayList<ConfigComponent>(mBinder.getAutomationList());
     }
 
-    public class AutomationListAdapter extends BaseAdapter
-            implements ServiceConnection, AutomationService.AutomationListChangeListener
+    @Override
+    protected boolean hasItems()
     {
-        private LayoutInflater mInflater;
+        return mBinder != null;
+    }
 
-        public AutomationListAdapter(Context parent)
-        {
-            assert parent != null;
-            assert parent.getApplicationContext() != null;
+    /**
+     * Finds the component with the given ID.
+     */
+    @Override
+    protected ConfigComponent findComponentById(int id)
+    {
+        if (mBinder == null) return null;
+        return mBinder.findAutomationById(id);
+    }
 
-            mInflater = LayoutInflater.from(parent);
-        }
+    @Override
+    public void onServiceConnected(ComponentName componentName, IBinder iBinder)
+    {
+        mBinder = (AutomationService.LocalBinder) iBinder;
+        mBinder.registerAutomationListChangeListener(this);
+        mAdapter.notifyDataSetChanged();
+    }
 
-        @Override
-        public int getCount()
-        {
-            if (mBinder == null) return 0;
-            else return mBinder.getAutomationList().length;
-        }
+    @Override
+    public void onServiceDisconnected(ComponentName componentName)
+    {
+        mBinder = null;
+        mAdapter.notifyDataSetChanged();
+    }
 
-        @Override
-        public Object getItem(int i)
-        {
-            if (mBinder == null) return null;
-            else return mBinder.getAutomationList()[i];
-        }
-
-        @Override
-        public long getItemId(int i)
-        {
-            if (mBinder == null) return -1;
-            else return mBinder.getAutomationList()[i].getId();
-        }
-
-        @Override
-        public View getView(int i, View view, ViewGroup viewGroup)
-        {
-            if (mBinder == null) return null;
-            else
-            {
-                Automation automation = mBinder.getAutomationList()[i];
-
-                view = mInflater.inflate(R.layout.automation_list_item, null);
-
-                assert view != null;
-                TextView itemNameView = (TextView) view.findViewById(R.id.automation_name_view);
-                TextView itemDescView = (TextView) view.findViewById(R.id.automation_desc_view);
-
-                itemNameView.setText(automation.getName());
-
-                String description = automation.getDescription();
-                if (description.isEmpty()) itemDescView.setText(getActivity()
-                                                                        .getString(R.string.automation_no_description));
-                else itemDescView.setText(description);
-
-                return view;
-            }
-        }
-
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder)
-        {
-            mBinder = (AutomationService.LocalBinder) iBinder;
-            mBinder.registerAutomationListChangeListener(this);
-            notifyDataSetChanged();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName)
-        {
-            mBinder = null;
-            notifyDataSetChanged();
-        }
-
-        @Override
-        public void onAutomationListChange()
-        {
-            notifyDataSetChanged();
-        }
+    @Override
+    public void onAutomationListChange()
+    {
+        mAdapter.notifyDataSetChanged();
     }
 }

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ Copyright 2013 Andrew Okin
   ~
@@ -28,10 +29,10 @@
     <string name="title_automation_actions">Actions</string>
 
     <!-- Message Boxes -->
-    <string name="title_new_automation">Create New Automation</string>
-    <string name="message_new_automation">Enter a name for the new automation.</string>
-    <string name="title_confirm_delete_automation">Are you sure you want to do that?</string>
-    <string name="message_confirm_delete_automation">You\'re about to delete the automation \"%1$s\".\nDeleted automations are gone FOREVER (a very long time).\nAre you sure you want to do this?</string>
+    <string name="title_new_component">Create New %1$s</string>
+    <string name="message_new_component">Enter a name for the new %1$s.</string>
+    <string name="title_confirm_delete_component">Are you sure you want to do that?</string>
+    <string name="message_confirm_delete_component">You\'re about to delete the %1$s \"%2$s\".\nDeleted items are gone FOREVER (a very long time).\nAre you sure you want to do this?</string>
 
     <!-- Actions -->
     <string name="action_settings">Settings</string>
@@ -46,8 +47,8 @@
     <string name="no">No</string>
 
     <!-- Misc -->
-    <string name="automation_no_description">No description set.</string>
-    <string name="automation_list_empty_text">Click the \"Add new automation\" button in the top right corner to add a new automation.</string>
+    <string name="component_no_description">No description set.</string>
+    <string name="component_list_empty_text">Click the \"Add new %1$s\" button in the top right corner to add a new %1$s.</string>
 
     <!-- Preference Stuff -->
     <string name="pref_title_name_and_desc">Name &amp; Description</string>
@@ -59,4 +60,8 @@
     <string name="pref_automation_desc_title">Description</string>
     <string name="pref_automation_desc_summary">A short description explaining what this automation does.</string>
     <string name="pref_automation_desc_dialog_title">Enter a description for this automation.</string>
+    <string name="rule_upper">Rule</string>
+    <string name="rule_lower">rule</string>
+    <string name="action_upper">Action</string>
+    <string name="action_lower">action</string>
 </resources>
