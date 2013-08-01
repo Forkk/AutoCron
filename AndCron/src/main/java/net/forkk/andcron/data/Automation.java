@@ -16,8 +16,6 @@
 
 package net.forkk.andcron.data;
 
-import android.content.Context;
-
 import net.forkk.andcron.data.action.Action;
 import net.forkk.andcron.data.action.ActionType;
 import net.forkk.andcron.data.rule.Rule;
@@ -114,7 +112,7 @@ public interface Automation extends ConfigComponent
      * This is generally called when some configuration options change. It re-creates all of the
      * rules and actions.
      */
-    public void reloadComponents(Context context);
+    public void reloadComponents(AutomationService service);
 
     /**
      * @return The automation service that this automation is attached to.

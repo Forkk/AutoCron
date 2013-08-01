@@ -58,6 +58,18 @@ public class TestRule extends RuleBase implements AutomationService.IntentListen
         mIntentListenerId = service.registerIntentListener(this);
     }
 
+    /**
+     * Called when the automation service is destroyed. This should perform all necessary cleanup.
+     */
+    @Override
+    public void onDestroy(AutomationService service)
+    {
+        NotificationManager notificationManager =
+                (NotificationManager) service.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(NOTIFICATION_TAG, getId());
+        service.unregisterIntentListener(mIntentListenerId);
+    }
+
     public void updateNotification(AutomationService service)
     {
         updateNotification(service,
@@ -84,17 +96,6 @@ public class TestRule extends RuleBase implements AutomationService.IntentListen
         NotificationManager notificationManager =
                 (NotificationManager) service.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(NOTIFICATION_TAG, getId(), mNotification);
-    }
-
-    /**
-     * Called when the automation service is destroyed. This should perform all necessary cleanup.
-     */
-    @Override
-    public void onDestroy(AutomationService service)
-    {
-        NotificationManager notificationManager =
-                (NotificationManager) service.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancel(NOTIFICATION_TAG, getId());
     }
 
     @Override

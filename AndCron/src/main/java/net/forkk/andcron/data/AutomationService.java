@@ -205,6 +205,7 @@ public class AutomationService extends Service
 
         edit.putStringSet(VALUE_AUTOMATION_IDS, automationIDs);
         mAutomations.add(automation);
+        automation.onCreate(this);
         boolean success = edit.commit();
         if (!success) Log.e(LOGGER_TAG, "Failed to commit changes to preferences.");
         else onAutomationListChange();
@@ -231,6 +232,7 @@ public class AutomationService extends Service
 
         edit.putStringSet(VALUE_AUTOMATION_IDS, automationIDs);
         mAutomations.remove(automation);
+        automation.onDestroy(this);
         boolean success = edit.commit();
         if (!success) Log.e(LOGGER_TAG, "Failed to commit changes to preferences.");
         else onAutomationListChange();

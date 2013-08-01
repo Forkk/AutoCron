@@ -102,14 +102,14 @@ public class AutomationImpl extends ConfigComponentBase
     @Override
     public void onCreate(AutomationService service)
     {
-        for (Action action : mActions)
-        {
-            action.onCreate(service);
-        }
-
         for (Rule rule : mRules)
         {
             rule.onCreate(service);
+        }
+
+        for (Action action : mActions)
+        {
+            action.onCreate(service);
         }
     }
 
@@ -139,6 +139,8 @@ public class AutomationImpl extends ConfigComponentBase
         loadComponentList(context, prefs, mRuleTypeInterface);
 
         loadComponentList(context, prefs, mActionTypeInterface);
+
+        onComponentListChange();
 
         Log.i(LOGGER_TAG, "Done loading automation configuration for \"" + getName() + "\".");
     }
@@ -284,15 +286,18 @@ public class AutomationImpl extends ConfigComponentBase
 
         Set<String> componentIDs = new HashSet<String>();
         componentIDs.add(((Integer) component.getId()).toString());
-        componentIDs.addAll(prefs.getStringSet(VALUE_ACTION_IDS, new HashSet<String>()));
+        componentIDs
+                .addAll(prefs.getStringSet(typeInterface.getIdListKey(), new HashSet<String>()));
 
-        edit.putStringSet(VALUE_ACTION_IDS, componentIDs);
+        edit.putStringSet(typeInterface.getIdListKey(), componentIDs);
         typeInterface.getList().add(component);
+        component.onCreate(getService());
         boolean success = edit.commit();
         if (!success) Log.e(LOGGER_TAG, "Failed to commit changes to preferences.");
         else onComponentListChange();
 
-        assert prefs.getStringSet(VALUE_ACTION_IDS, new HashSet<String>()).equals(componentIDs);
+        assert prefs.getStringSet(typeInterface.getIdListKey(), new HashSet<String>())
+                    .equals(componentIDs);
     }
 
     public void deleteComponent(int id, ComponentTypeInterface typeInterface)
@@ -314,6 +319,7 @@ public class AutomationImpl extends ConfigComponentBase
         componentIDs.remove(((Integer) id).toString());
 
         edit.putStringSet(typeInterface.getIdListKey(), componentIDs);
+        component.onDestroy(getService());
         typeInterface.getList().remove(component);
         boolean success = edit.commit();
         if (!success) Log.e(LOGGER_TAG, "Failed to commit changes to preferences.");
@@ -445,9 +451,21 @@ public class AutomationImpl extends ConfigComponentBase
      * rules and actions.
      */
     @Override
-    public void reloadComponents(Context context)
+    public void reloadComponents(AutomationService service)
     {
-        loadConfig(context);
+        for (Rule rule : mRules)
+            rule.onDestroy(service);
+
+        for (Action action : mActions)
+            action.onDestroy(service);
+
+        loadConfig(service);
+
+        for (Rule rule : mRules)
+            rule.onCreate(service);
+
+        for (Action action : mActions)
+            action.onCreate(service);
     }
 
     /**
