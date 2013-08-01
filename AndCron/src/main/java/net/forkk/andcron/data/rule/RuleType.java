@@ -18,10 +18,14 @@ package net.forkk.andcron.data.rule;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 
+import net.forkk.andcron.R;
 import net.forkk.andcron.data.Automation;
 import net.forkk.andcron.data.AutomationService;
 import net.forkk.andcron.data.ComponentType;
+
+import java.util.ArrayList;
 
 
 /**
@@ -70,11 +74,20 @@ public class RuleType extends ComponentType<Rule>
     }
 
     // Damn IntelliJ and its shitty code formatting...
-    private static final RuleType[] RULE_TYPES = new RuleType[] {
-                                                                        new RuleType("Test Rule",
-                                                                                     "A simple rule for testing.",
-                                                                                     TestRule.class),
-    };
+    private static RuleType[] RULE_TYPES;
+
+    public static void initialize(Context context)
+    {
+        Resources res = context.getResources();
+        assert res != null;
+
+        ArrayList<RuleType> types = new ArrayList<RuleType>();
+
+        types.add(new RuleType(res.getString(R.string.test_rule_title),
+                               res.getString(R.string.test_rule_description), TestRule.class));
+
+        RULE_TYPES = types.toArray(new RuleType[types.size()]);
+    }
 
     public static Rule fromSharedPreferences(Automation parent, Context context, int id)
     {

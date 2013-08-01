@@ -18,10 +18,14 @@ package net.forkk.andcron.data.action;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 
+import net.forkk.andcron.R;
 import net.forkk.andcron.data.Automation;
 import net.forkk.andcron.data.AutomationService;
 import net.forkk.andcron.data.ComponentType;
+
+import java.util.ArrayList;
 
 
 /**
@@ -70,12 +74,21 @@ public class ActionType extends ComponentType<Action>
     }
 
     // Damn IntelliJ and its shitty code formatting...
-    private static final ActionType[] ACTION_TYPES = new ActionType[] {
-                                                                              new ActionType("Test Action",
-                                                                                             "A simple action for testing.",
-                                                                                             TestAction
-                                                                                                     .class),
-    };
+    private static ActionType[] ACTION_TYPES;
+
+    public static void initialize(Context context)
+    {
+        Resources res = context.getResources();
+        assert res != null;
+
+        ArrayList<ActionType> types = new ArrayList<ActionType>();
+
+        types.add(new ActionType(res.getString(R.string.test_action_title),
+                                 res.getString(R.string.test_action_description),
+                                 TestAction.class));
+
+        ACTION_TYPES = types.toArray(new ActionType[types.size()]);
+    }
 
 
     public static Action fromSharedPreferences(Automation parent, Context context, int id)

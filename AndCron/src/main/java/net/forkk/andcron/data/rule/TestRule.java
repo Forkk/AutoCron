@@ -33,6 +33,8 @@ import net.forkk.andcron.data.AutomationService;
  */
 public class TestRule extends RuleBase implements AutomationService.IntentListener
 {
+    public static final String NOTIFICATION_TAG = "net.forkk.andcron.testrule";
+
     private Notification mNotification;
 
     private int mIntentListenerId;
@@ -52,23 +54,36 @@ public class TestRule extends RuleBase implements AutomationService.IntentListen
     @Override
     public void onCreate(AutomationService service)
     {
+        updateNotification(service);
         mIntentListenerId = service.registerIntentListener(this);
+    }
 
-        NotificationCompat.Builder mNotificationBuilder =
-                new NotificationCompat.Builder(service).setContentTitle("Click to test")
-                                                       .setContentText("Click to test the test rule.")
-                                                       .setSmallIcon(R.drawable.ic_launcher);
+    public void updateNotification(AutomationService service)
+    {
+        updateNotification(service,
+                           service.getString(R.string.notification_title_test_rule, getName()),
+                           service.getString(R.string.notification_text_test_rule, getName(),
+                                             isActive() ? "deactivate" : "activate"));
+    }
+
+    public void updateNotification(AutomationService service, String title, String text)
+    {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(service);
+        builder.setContentTitle(title);
+        builder.setContentText(text);
+        builder.setSmallIcon(R.drawable.ic_notification_icon);
 
         Intent notificationIntent = new Intent(service, AutomationService.class);
         notificationIntent.putExtra(AutomationService.LISTENER_ID_EXTRA, mIntentListenerId);
         PendingIntent pendingIntent = PendingIntent.getService(service, 0, notificationIntent,
                                                                PendingIntent.FLAG_CANCEL_CURRENT);
-        mNotificationBuilder.setContentIntent(pendingIntent);
+        builder.setContentIntent(pendingIntent);
+        builder.setOngoing(true);
 
-        mNotification = mNotificationBuilder.build();
+        mNotification = builder.build();
         NotificationManager notificationManager =
                 (NotificationManager) service.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(-1, mNotification);
+        notificationManager.notify(NOTIFICATION_TAG, getId(), mNotification);
     }
 
     /**
@@ -77,13 +92,21 @@ public class TestRule extends RuleBase implements AutomationService.IntentListen
     @Override
     public void onDestroy(AutomationService service)
     {
+        NotificationManager notificationManager =
+                (NotificationManager) service.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(NOTIFICATION_TAG, getId());
+    }
 
+    @Override
+    public void setActive(boolean active)
+    {
+        super.setActive(active);
+        updateNotification(getParent().getService());
     }
 
     @Override
     public void onCommandReceived(Intent intent)
     {
-        // TODO: Implement a better system for rules that fire once, rather than just activate and deactivate.
         setActive(!isActive());
     }
 }

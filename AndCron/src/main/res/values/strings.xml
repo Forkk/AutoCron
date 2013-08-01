@@ -28,6 +28,7 @@
     <string name="title_automation_settings">Settings</string>
     <string name="title_automation_rules">Rules</string>
     <string name="title_automation_actions">Actions</string>
+    <string name="title_choose_type">Choose a type of %1$s to add.</string>
 
     <!-- Message Boxes -->
     <string name="title_new_component">Create New %1$s</string>
@@ -47,9 +48,19 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
 
+    <!-- Action Type Info -->
+    <string name="test_action_title">Test Action</string>
+    <string name="test_action_description">This is a simple test action that just displays a toast notification on screen whenever it activates or deactivates. You can use this to test your automation\'s rules.</string>
+
+    <!-- Rule Type Info -->
+    <string name="test_rule_title">Test Rule</string>
+    <string name="test_rule_description">This is a simple test rule that displays a notification that you can click on to activate and deactivate the rule. You can use this rule for testing an automation\'s actions.</string>
+
     <!-- Misc -->
     <string name="component_no_description">No description set.</string>
     <string name="component_list_empty_text">Click the \"Add new %1$s\" button in the top right corner to add a new %1$s.</string>
+    <string name="notification_title_test_rule">Test rule \"%1$s\"</string>
+    <string name="notification_text_test_rule">Tap to %2$s test rule \"%1$s\".</string>
 
     <!-- Preference Stuff -->
     <string name="pref_title_name_and_desc">Name &amp; Description</string>
@@ -67,5 +78,4 @@
     <string name="action_lower">action</string>
     <string name="automation_upper">Automation</string>
     <string name="automation_lower">automation</string>
-    <string name="title_choose_type">Choose a type of %1$s to add.</string>
 </resources>
