@@ -17,8 +17,10 @@
 package net.forkk.andcron.data.action;
 
 import android.content.Context;
+import android.preference.PreferenceFragment;
 import android.widget.Toast;
 
+import net.forkk.andcron.R;
 import net.forkk.andcron.data.Automation;
 import net.forkk.andcron.data.AutomationService;
 
@@ -43,8 +45,7 @@ public class TestAction extends ActionBase
     public void onActivate(AutomationService service)
     {
         assert mContext != null;
-        Toast.makeText(mContext, "Test action " + getName() + " was activated.", Toast.LENGTH_SHORT)
-             .show();
+        Toast.makeText(mContext, getActivationMessage(), Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -54,8 +55,7 @@ public class TestAction extends ActionBase
     public void onDeactivate(AutomationService service)
     {
         assert mContext != null;
-        Toast.makeText(mContext, "Test action " + getName() + " was deactivated.",
-                       Toast.LENGTH_SHORT).show();
+        Toast.makeText(mContext, getDeactivationMessage(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -68,5 +68,24 @@ public class TestAction extends ActionBase
     public void onDestroy(AutomationService service)
     {
         mContext = null;
+    }
+
+    @Override
+    public void addPreferencesToFragment(PreferenceFragment fragment)
+    {
+        super.addPreferencesToFragment(fragment);
+        fragment.addPreferencesFromResource(R.xml.prefs_test_action);
+    }
+
+    protected String getActivationMessage()
+    {
+        return getSharedPreferences().getString("activate_message",
+                                                mContext.getString(R.string.pref_default_test_action_activate));
+    }
+
+    protected String getDeactivationMessage()
+    {
+        return getSharedPreferences().getString("deactivate_message",
+                                                mContext.getString(R.string.pref_default_test_action_deactivate));
     }
 }

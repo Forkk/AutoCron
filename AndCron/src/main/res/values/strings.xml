@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ Copyright 2013 Andrew Okin
   ~
@@ -83,6 +84,16 @@
     <string name="pref_action_desc_title">Description</string>
     <string name="pref_action_desc_summary">A short description explaining what this action does.</string>
     <string name="pref_action_desc_dialog_title">Enter a description for this action.</string>
+
+    <string name="pref_title_activation_msg">Activation Message</string>
+    <string name="pref_summary_activation_msg">Message to be displayed when the action is activated.</string>
+    <string name="pref_dialog_title_activation_msg">Enter a message to show when the action is activated.</string>
+    <string name="pref_default_test_action_activate">Test action activated.</string>
+
+    <string name="pref_title_deactivation_msg">Deactivation Message</string>
+    <string name="pref_summary_deactivation_msg">Message to be displayed when the action is deactivated.</string>
+    <string name="pref_dialog_title_deactivation_msg">Enter a message to show when the action is deactivated.</string>
+    <string name="pref_default_test_action_deactivate">Test action deactivated.</string>
 
     <!-- Names of Things -->
     <string name="rule_upper">Rule</string>
