@@ -16,6 +16,8 @@
 
 package net.forkk.andcron.data;
 
+import android.content.Context;
+
 import net.forkk.andcron.data.action.Action;
 import net.forkk.andcron.data.action.ActionType;
 import net.forkk.andcron.data.rule.Rule;
@@ -52,7 +54,15 @@ public interface Automation extends ConfigComponent
      */
     public void deleteRule(int id);
 
-    Rule findRuleById(int id);
+    /**
+     * Tries to find a rule with the given ID.
+     *
+     * @param id
+     *         The rule ID to search for.
+     *
+     * @return The rule with the given ID if one exists, otherwise null.
+     */
+    public Rule findRuleById(int id);
 
     /**
      * @return An array of this automation's actions.
@@ -77,7 +87,15 @@ public interface Automation extends ConfigComponent
      */
     public void deleteAction(int id);
 
-    Action findActionById(int id);
+    /**
+     * Tries to find an action with the given ID.
+     *
+     * @param id
+     *         The action ID to search for.
+     *
+     * @return The action with the given ID if one exists, otherwise null.
+     */
+    public Action findActionById(int id);
 
     /**
      * @return True or false depending on whether or not the automation is active.
@@ -89,6 +107,14 @@ public interface Automation extends ConfigComponent
      * if the automation should be activated.
      */
     public void updateActivationState();
+
+    /**
+     * Reloads all components from configuration.
+     * <p/>
+     * This is generally called when some configuration options change. It re-creates all of the
+     * rules and actions.
+     */
+    public void reloadComponents(Context context);
 
     /**
      * @return The automation service that this automation is attached to.

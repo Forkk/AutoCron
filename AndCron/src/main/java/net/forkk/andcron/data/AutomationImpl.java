@@ -135,77 +135,56 @@ public class AutomationImpl extends ConfigComponentBase
         Log.i(LOGGER_TAG, "Loading automation configuration for \"" + getName() + "\".");
 
         SharedPreferences prefs = getSharedPreferences();
-        Set<String> ruleIDs = prefs.getStringSet(VALUE_RULE_IDS, new HashSet<String>());
 
-        Log.i(LOGGER_TAG, "Loading rule list for automation \"" + getName() + "\".");
+        loadComponentList(context, prefs, mRuleTypeInterface);
 
-        ArrayList<Rule> tempRuleList = new ArrayList<Rule>();
-        for (String stringVal : ruleIDs)
-        {
-            try
-            {
-                int id = Integer.parseInt(stringVal);
-                Rule rule = RuleType.fromSharedPreferences(this, context, id);
-                if (rule != null)
-                {
-                    tempRuleList.add(rule);
-                    Log.i(LOGGER_TAG, "Loaded rule \"" + rule.getName() + "\".");
-                }
-                else
-                {
-                    Log.w(LOGGER_TAG, "Skipped rule with missing or invalid type ID.");
-                }
-            }
-            catch (NumberFormatException e)
-            {
-                Log.e(LOGGER_TAG, "Found non-integer in automation ID set.", e);
-            }
-        }
-
-        for (Rule rule : mRules)
-            context.getSharedPreferences(rule.getSharedPreferencesName(), Context.MODE_PRIVATE)
-                   .unregisterOnSharedPreferenceChangeListener(this);
-        mRules.clear();
-        mRules.addAll(tempRuleList);
-        for (Rule rule : mRules)
-            context.getSharedPreferences(rule.getSharedPreferencesName(), Context.MODE_PRIVATE)
-                   .registerOnSharedPreferenceChangeListener(this);
-
-        Log.i(LOGGER_TAG, "Loading action list for automation \"" + getName() + "\".");
-
-        ArrayList<Action> tempActionList = new ArrayList<Action>();
-        for (String stringVal : ruleIDs)
-        {
-            try
-            {
-                int id = Integer.parseInt(stringVal);
-                Action action = ActionType.fromSharedPreferences(this, context, id);
-                if (action != null)
-                {
-                    tempActionList.add(action);
-                    Log.i(LOGGER_TAG, "Loaded action \"" + action.getName() + "\".");
-                }
-                else
-                {
-                    Log.w(LOGGER_TAG, "Skipped action with missing or invalid type ID.");
-                }
-            }
-            catch (NumberFormatException e)
-            {
-                Log.e(LOGGER_TAG, "Found non-integer in automation ID set.", e);
-            }
-        }
-
-        for (Action action : mActions)
-            context.getSharedPreferences(action.getSharedPreferencesName(), Context.MODE_PRIVATE)
-                   .unregisterOnSharedPreferenceChangeListener(this);
-        mActions.clear();
-        mActions.addAll(tempActionList);
-        for (Action action : mActions)
-            context.getSharedPreferences(action.getSharedPreferencesName(), Context.MODE_PRIVATE)
-                   .registerOnSharedPreferenceChangeListener(this);
+        loadComponentList(context, prefs, mActionTypeInterface);
 
         Log.i(LOGGER_TAG, "Done loading automation configuration for \"" + getName() + "\".");
+    }
+
+    private <T extends AutomationComponent> void loadComponentList(Context context,
+                                                                   SharedPreferences prefs,
+                                                                   ComponentTypeInterface<T> typeInterface)
+    {
+        String typeName = typeInterface.getTypeName(false);
+
+        Set<String> idSet = prefs.getStringSet(typeInterface.getIdListKey(), new HashSet<String>());
+
+        Log.i(LOGGER_TAG, "Loading " + typeName + " list for automation \"" + getName() + "\".");
+
+        ArrayList<T> tempComponentList = new ArrayList<T>();
+        for (String stringVal : idSet)
+        {
+            try
+            {
+                int id = Integer.parseInt(stringVal);
+                T rule = typeInterface.loadFromPrefs(this, context, id);
+                if (rule != null)
+                {
+                    tempComponentList.add(rule);
+                    Log.i(LOGGER_TAG, "Loaded " + typeName + " \"" + rule.getName() + "\".");
+                }
+                else
+                {
+                    Log.e(LOGGER_TAG, "Skipped " + typeName + " with missing or invalid type ID.");
+                }
+            }
+            catch (NumberFormatException e)
+            {
+                Log.e(LOGGER_TAG, "Found non-integer in automation " + typeName + " ID set.", e);
+            }
+        }
+
+        List<T> list = typeInterface.getList();
+        for (T component : list)
+            context.getSharedPreferences(component.getSharedPreferencesName(), Context.MODE_PRIVATE)
+                   .unregisterOnSharedPreferenceChangeListener(this);
+        list.clear();
+        list.addAll(tempComponentList);
+        for (T component : list)
+            context.getSharedPreferences(component.getSharedPreferencesName(), Context.MODE_PRIVATE)
+                   .registerOnSharedPreferenceChangeListener(this);
     }
 
     /**
@@ -228,22 +207,7 @@ public class AutomationImpl extends ConfigComponentBase
     @Override
     public void addRule(String name, RuleType type)
     {
-        SharedPreferences prefs = getSharedPreferences();
-        SharedPreferences.Editor edit = prefs.edit();
-
-        Rule rule = type.createNew(this, name, getService());
-
-        Set<String> componentIDs = new HashSet<String>();
-        componentIDs.add(((Integer) rule.getId()).toString());
-        componentIDs.addAll(prefs.getStringSet(VALUE_RULE_IDS, new HashSet<String>()));
-
-        edit.putStringSet(VALUE_RULE_IDS, componentIDs);
-        mRules.add(rule);
-        boolean success = edit.commit();
-        if (!success) Log.e(LOGGER_TAG, "Failed to commit changes to preferences.");
-        else onComponentListChange();
-
-        assert prefs.getStringSet(VALUE_RULE_IDS, new HashSet<String>()).equals(componentIDs);
+        addComponent(name, type, mRuleTypeInterface);
     }
 
     /**
@@ -255,25 +219,7 @@ public class AutomationImpl extends ConfigComponentBase
     @Override
     public void deleteRule(int id)
     {
-        Rule rule = findRuleById(id);
-        if (rule == null)
-        {
-            Log.e(LOGGER_TAG, "Attempted to delete a rule that doesn't exist.");
-            return;
-        }
-
-        SharedPreferences prefs = getSharedPreferences();
-        SharedPreferences.Editor edit = prefs.edit();
-
-        Set<String> ruleIDs = new HashSet<String>();
-        ruleIDs.addAll(prefs.getStringSet(VALUE_RULE_IDS, new HashSet<String>()));
-        ruleIDs.remove(((Integer) id).toString());
-
-        edit.putStringSet(VALUE_RULE_IDS, ruleIDs);
-        mRules.remove(rule);
-        boolean success = edit.commit();
-        if (!success) Log.e(LOGGER_TAG, "Failed to commit changes to preferences.");
-        else onComponentListChange();
+        deleteComponent(id, mRuleTypeInterface);
     }
 
     @Override
@@ -304,22 +250,7 @@ public class AutomationImpl extends ConfigComponentBase
     @Override
     public void addAction(String name, ActionType type)
     {
-        SharedPreferences prefs = getSharedPreferences();
-        SharedPreferences.Editor edit = prefs.edit();
-
-        Action action = type.createNew(this, name, getService());
-
-        Set<String> componentIDs = new HashSet<String>();
-        componentIDs.add(((Integer) action.getId()).toString());
-        componentIDs.addAll(prefs.getStringSet(VALUE_ACTION_IDS, new HashSet<String>()));
-
-        edit.putStringSet(VALUE_ACTION_IDS, componentIDs);
-        mActions.add(action);
-        boolean success = edit.commit();
-        if (!success) Log.e(LOGGER_TAG, "Failed to commit changes to preferences.");
-        else onComponentListChange();
-
-        assert prefs.getStringSet(VALUE_ACTION_IDS, new HashSet<String>()).equals(componentIDs);
+        addComponent(name, type, mActionTypeInterface);
     }
 
     /**
@@ -331,25 +262,7 @@ public class AutomationImpl extends ConfigComponentBase
     @Override
     public void deleteAction(int id)
     {
-        Action action = findActionById(id);
-        if (action == null)
-        {
-            Log.e(LOGGER_TAG, "Attempted to delete an action that doesn't exist.");
-            return;
-        }
-
-        SharedPreferences prefs = getSharedPreferences();
-        SharedPreferences.Editor edit = prefs.edit();
-
-        Set<String> actionIDs = new HashSet<String>();
-        actionIDs.addAll(prefs.getStringSet(VALUE_ACTION_IDS, new HashSet<String>()));
-        actionIDs.remove(((Integer) id).toString());
-
-        edit.putStringSet(VALUE_ACTION_IDS, actionIDs);
-        mActions.remove(action);
-        boolean success = edit.commit();
-        if (!success) Log.e(LOGGER_TAG, "Failed to commit changes to preferences.");
-        else onComponentListChange();
+        deleteComponent(id, mActionTypeInterface);
     }
 
     @Override
@@ -358,6 +271,135 @@ public class AutomationImpl extends ConfigComponentBase
         for (Action action : mActions)
             if (action.getId() == id) return action;
         return null;
+    }
+
+
+    public <T extends AutomationComponent> void addComponent(String name, ComponentType<T> type,
+                                                             ComponentTypeInterface<T> typeInterface)
+    {
+        SharedPreferences prefs = getSharedPreferences();
+        SharedPreferences.Editor edit = prefs.edit();
+
+        T component = type.createNew(this, name, getService());
+
+        Set<String> componentIDs = new HashSet<String>();
+        componentIDs.add(((Integer) component.getId()).toString());
+        componentIDs.addAll(prefs.getStringSet(VALUE_ACTION_IDS, new HashSet<String>()));
+
+        edit.putStringSet(VALUE_ACTION_IDS, componentIDs);
+        typeInterface.getList().add(component);
+        boolean success = edit.commit();
+        if (!success) Log.e(LOGGER_TAG, "Failed to commit changes to preferences.");
+        else onComponentListChange();
+
+        assert prefs.getStringSet(VALUE_ACTION_IDS, new HashSet<String>()).equals(componentIDs);
+    }
+
+    public void deleteComponent(int id, ComponentTypeInterface typeInterface)
+    {
+        AutomationComponent component = typeInterface.findById(id);
+        if (component == null)
+        {
+            Log.e(LOGGER_TAG, "Attempted to delete " + typeInterface.getTypeName(false) +
+                              " that doesn't exist.");
+            return;
+        }
+
+        SharedPreferences prefs = getSharedPreferences();
+        SharedPreferences.Editor edit = prefs.edit();
+
+        Set<String> componentIDs = new HashSet<String>();
+        componentIDs
+                .addAll(prefs.getStringSet(typeInterface.getIdListKey(), new HashSet<String>()));
+        componentIDs.remove(((Integer) id).toString());
+
+        edit.putStringSet(typeInterface.getIdListKey(), componentIDs);
+        typeInterface.getList().remove(component);
+        boolean success = edit.commit();
+        if (!success) Log.e(LOGGER_TAG, "Failed to commit changes to preferences.");
+        else onComponentListChange();
+    }
+
+
+    private final ComponentTypeInterface<Rule> mRuleTypeInterface =
+            new ComponentTypeInterface<Rule>()
+            {
+                @Override
+                public String getTypeName(boolean upper)
+                {
+                    return upper ? "Rule" : "rule";
+                }
+
+                @Override
+                public String getIdListKey()
+                {
+                    return VALUE_RULE_IDS;
+                }
+
+                @Override
+                public List<Rule> getList()
+                {
+                    return mRules;
+                }
+
+                @Override
+                public Rule loadFromPrefs(Automation automation, Context context, int id)
+                {
+                    return RuleType.fromSharedPreferences(automation, context, id);
+                }
+
+                @Override
+                public Rule findById(int id)
+                {
+                    return findRuleById(id);
+                }
+            };
+
+    private final ComponentTypeInterface<Action> mActionTypeInterface =
+            new ComponentTypeInterface<Action>()
+            {
+                @Override
+                public String getTypeName(boolean upper)
+                {
+                    return upper ? "Action" : "action";
+                }
+
+                @Override
+                public String getIdListKey()
+                {
+                    return VALUE_ACTION_IDS;
+                }
+
+                @Override
+                public List<Action> getList()
+                {
+                    return mActions;
+                }
+
+                @Override
+                public Action loadFromPrefs(Automation automation, Context context, int id)
+                {
+                    return ActionType.fromSharedPreferences(automation, context, id);
+                }
+
+                @Override
+                public Action findById(int id)
+                {
+                    return findActionById(id);
+                }
+            };
+
+    private interface ComponentTypeInterface<T extends AutomationComponent>
+    {
+        public abstract String getTypeName(boolean upper);
+
+        public abstract String getIdListKey();
+
+        public abstract List<T> getList();
+
+        public abstract T loadFromPrefs(Automation automation, Context context, int id);
+
+        public abstract T findById(int id);
     }
 
     /**
@@ -394,6 +436,18 @@ public class AutomationImpl extends ConfigComponentBase
                     action.onDeactivate(getService());
             }
         }
+    }
+
+    /**
+     * Reloads all components from configuration.
+     * <p/>
+     * This is generally called when some configuration options change. It re-creates all of the
+     * rules and actions.
+     */
+    @Override
+    public void reloadComponents(Context context)
+    {
+        loadConfig(context);
     }
 
     /**
