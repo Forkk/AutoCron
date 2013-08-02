@@ -83,6 +83,10 @@ public class RuleType extends ComponentType<Rule>
 
         ArrayList<RuleType> types = new ArrayList<RuleType>();
 
+        types.add(new RuleType(res.getString(R.string.time_range_rule_title),
+                               res.getString(R.string.time_range_rule_description),
+                               TimeRangeRule.class));
+
         types.add(new RuleType(res.getString(R.string.test_rule_title),
                                res.getString(R.string.test_rule_description), TestRule.class));
 
