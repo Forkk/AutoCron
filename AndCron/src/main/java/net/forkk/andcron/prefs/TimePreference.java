@@ -31,11 +31,25 @@ import net.forkk.andcron.R;
  */
 public class TimePreference extends DialogPreference
 {
-    private int lastHour = 0;
+    private int mHour;
 
-    private int lastMinute = 0;
+    private int mMinute;
 
-    private TimePicker picker = null;
+    private TimePicker mTimePicker;
+
+    public TimePreference(Context context, AttributeSet attributes)
+    {
+        super(context, attributes);
+
+        setPositiveButtonText(R.string.okay);
+        setNegativeButtonText(R.string.cancel);
+    }
+
+    public void setValues(int hour, int minute)
+    {
+        mHour = hour;
+        mMinute = minute;
+    }
 
     public static int getHour(String time)
     {
@@ -51,20 +65,12 @@ public class TimePreference extends DialogPreference
         return Integer.parseInt(pieces[1]);
     }
 
-    public TimePreference(Context context, AttributeSet attributes)
-    {
-        super(context, attributes);
-
-        setPositiveButtonText(R.string.okay);
-        setNegativeButtonText(R.string.cancel);
-    }
-
     @Override
     protected View onCreateDialogView()
     {
-        picker = new TimePicker(getContext());
+        mTimePicker = new TimePicker(getContext());
 
-        return (picker);
+        return mTimePicker;
     }
 
     @Override
@@ -72,8 +78,8 @@ public class TimePreference extends DialogPreference
     {
         super.onBindDialogView(view);
 
-        picker.setCurrentHour(lastHour);
-        picker.setCurrentMinute(lastMinute);
+        mTimePicker.setCurrentHour(mHour);
+        mTimePicker.setCurrentMinute(mMinute);
     }
 
     @Override
@@ -83,10 +89,10 @@ public class TimePreference extends DialogPreference
 
         if (positiveResult)
         {
-            lastHour = picker.getCurrentHour();
-            lastMinute = picker.getCurrentMinute();
+            mHour = mTimePicker.getCurrentHour();
+            mMinute = mTimePicker.getCurrentMinute();
 
-            String time = String.valueOf(lastHour) + ":" + String.valueOf(lastMinute);
+            String time = String.valueOf(mHour) + ":" + String.valueOf(mMinute);
 
             if (callChangeListener(time))
             {
@@ -106,23 +112,10 @@ public class TimePreference extends DialogPreference
     {
         String time;
 
-        if (restoreValue)
-        {
-            if (defaultValue == null)
-            {
-                time = getPersistedString("00:00");
-            }
-            else
-            {
-                time = getPersistedString(defaultValue.toString());
-            }
-        }
-        else
-        {
-            time = defaultValue.toString();
-        }
+        if (restoreValue) time = getPersistedString("00:00");
+        else time = defaultValue.toString();
 
-        lastHour = getHour(time);
-        lastMinute = getMinute(time);
+        mHour = getHour(time);
+        mMinute = getMinute(time);
     }
 }

@@ -26,6 +26,7 @@ import android.preference.PreferenceFragment;
 import net.forkk.andcron.R;
 import net.forkk.andcron.data.Automation;
 import net.forkk.andcron.data.AutomationService;
+import net.forkk.andcron.prefs.TimePreference;
 
 import java.util.Calendar;
 
@@ -42,6 +43,8 @@ public class TimeRangeRule extends RuleBase implements AutomationService.IntentL
     private PendingIntent mPendingStartIntent;
 
     private PendingIntent mPendingEndIntent;
+
+    private TimePreference mEndTimePreference;
 
     public TimeRangeRule(Automation parent, Context context, int id)
     {
@@ -142,6 +145,8 @@ public class TimeRangeRule extends RuleBase implements AutomationService.IntentL
     {
         super.addPreferencesToFragment(fragment);
         fragment.addPreferencesFromResource(R.xml.prefs_time_range_rule);
+
+        mEndTimePreference = (TimePreference) fragment.findPreference("range_end");
     }
 
     @Override
@@ -160,11 +165,13 @@ public class TimeRangeRule extends RuleBase implements AutomationService.IntentL
             cal.add(Calendar.MINUTE, 1);
 
             Integer hour = cal.get(Calendar.HOUR_OF_DAY);
-            Integer minute = cal.get(Calendar.MINUTE);
+            Integer minute = cal.get(Calendar.MINUTE) + 1;
 
-            // FIXME: This doesn't update the value in the preferences fragment until it's reopened.
             edit.putString("range_end", hour.toString() + ":" + minute.toString());
             edit.commit();
+
+            // Hack to update the end time in the UI when it is corrected to start time + 1.
+            mEndTimePreference.setValues(hour, minute);
         }
         else setAlarms(getParent().getService());
     }
