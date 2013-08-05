@@ -121,6 +121,8 @@ public class AutomationService extends Service
     @Override
     public void onCreate()
     {
+        Log.d(LOGGER_TAG, "Initializing automation service.");
+
         super.onCreate();
 
         mAutomations = new ArrayList<Automation>();
@@ -137,6 +139,8 @@ public class AutomationService extends Service
     @Override
     public void onDestroy()
     {
+        Log.d(LOGGER_TAG, "Stopping automation service.");
+
         super.onDestroy();
 
         for (Automation automation : mAutomations)

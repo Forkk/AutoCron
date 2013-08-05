@@ -87,6 +87,10 @@ public class RuleType extends ComponentType<Rule>
                                res.getString(R.string.time_range_rule_description),
                                TimeRangeRule.class));
 
+        types.add(new RuleType(res.getString(R.string.location_rule_title),
+                               res.getString(R.string.location_rule_description),
+                               LocationRule.class));
+
         types.add(new RuleType(res.getString(R.string.test_rule_title),
                                res.getString(R.string.test_rule_description), TestRule.class));
 

@@ -57,6 +57,9 @@
     <string name="test_rule_title">Test Rule</string>
     <string name="test_rule_description">This is a simple test rule that displays a notification that you can click on to activate and deactivate the rule. You can use this rule for testing an automation\'s actions.</string>
 
+    <string name="location_rule_title">Location Rule</string>
+    <string name="location_rule_description">A rule that activates when the device is in a certain location.</string>
+
     <string name="time_range_rule_title">Time Range Rule</string>
     <string name="time_range_rule_description">A rule that activates every day between the two given times.</string>
 
@@ -98,6 +101,17 @@
     <string name="pref_summary_deactivation_msg">Message to be displayed when the action is deactivated.</string>
     <string name="pref_dialog_title_deactivation_msg">Enter a message to show when the action is deactivated.</string>
     <string name="pref_default_test_action_deactivate">Test action deactivated.</string>
+
+    <string name="pref_title_location">Location</string>
+    <string name="pref_latitude_title">Latitude</string>
+    <string name="pref_latitude_summary">The latitude of the center of the location\'s radius.</string>
+    <string name="pref_latitude_dialog_title">Enter the latitude of the area\'s center.</string>
+    <string name="pref_longitude_title">Longitude</string>
+    <string name="pref_longitude_summary">The longitude of the center of the location\'s radius.</string>
+    <string name="pref_longitude_dialog_title">Enter the longitude of the area\'s center.</string>
+    <string name="pref_radius_title">Radius</string>
+    <string name="pref_radius_summary">The location\'s radius.</string>
+    <string name="pref_radius_dialog_title">Enter the radius of the area.</string>
 
     <string name="pref_title_time_range">Time Range</string>
     <string name="pref_title_time_range_start">Start Time</string>

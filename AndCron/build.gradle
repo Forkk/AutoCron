@@ -16,6 +16,8 @@
 
 
 
+
+
 buildscript {
     repositories {
         mavenCentral()
@@ -33,6 +35,7 @@ repositories {
 dependencies {
     compile 'com.android.support:support-v4:13.0.+'
     compile 'com.android.support:support-v13:13.0.+'
+    compile 'com.google.android.gms:play-services:3.+'
 }
 
 android {
