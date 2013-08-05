@@ -44,8 +44,7 @@ public class TestAction extends ActionBase
     @Override
     public void onActivate(AutomationService service)
     {
-        assert mContext != null;
-        Toast.makeText(mContext, getActivationMessage(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(service, getActivationMessage(), Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -54,8 +53,7 @@ public class TestAction extends ActionBase
     @Override
     public void onDeactivate(AutomationService service)
     {
-        assert mContext != null;
-        Toast.makeText(mContext, getDeactivationMessage(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(service, getDeactivationMessage(), Toast.LENGTH_SHORT).show();
     }
 
     @Override

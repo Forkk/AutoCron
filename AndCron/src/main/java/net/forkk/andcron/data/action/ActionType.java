@@ -83,6 +83,10 @@ public class ActionType extends ComponentType<Action>
 
         ArrayList<ActionType> types = new ArrayList<ActionType>();
 
+        types.add(new ActionType(res.getString(R.string.ringer_mode_action_title),
+                                 res.getString(R.string.ringer_mode_action_description),
+                                 RingerModeAction.class));
+
         types.add(new ActionType(res.getString(R.string.test_action_title),
                                  res.getString(R.string.test_action_description),
                                  TestAction.class));

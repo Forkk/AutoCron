@@ -53,6 +53,9 @@
     <string name="test_action_title">Test Action</string>
     <string name="test_action_description">This is a simple test action that just displays a toast notification on screen whenever it activates or deactivates. You can use this to test your automation\'s rules.</string>
 
+    <string name="ringer_mode_action_title">Ringer Mode Action</string>
+    <string name="ringer_mode_action_description">This action changes the device\'s ringer mode to either mute or vibrate.</string>
+
     <!-- Rule Type Info -->
     <string name="test_rule_title">Test Rule</string>
     <string name="test_rule_description">This is a simple test rule that displays a notification that you can click on to activate and deactivate the rule. You can use this rule for testing an automation\'s actions.</string>
@@ -119,6 +122,19 @@
     <string name="pref_title_time_range_end">End Time</string>
     <string name="pref_summary_time_range_end">The time at which this rule will deactivate.</string>
 
+    <string name="pref_title_activate_mode">Activation Mode</string>
+    <string name="pref_summary_activate_mode">The ringer mode to set when this action is activated.</string>
+
+    <string name="pref_title_deactivate_mode">Deactivation Mode</string>
+    <string name="pref_summary_deactivate_mode">The ringer mode to set when this action is deactivated.</string>
+
+    <string-array name="pref_ringer_mode_entries">
+        <item>Don\'t Change</item>
+        <item>Normal</item>
+        <item>Vibrate</item>
+        <item>Silent</item>
+    </string-array>
+
     <!-- Names of Things -->
     <string name="rule_upper">Rule</string>
     <string name="rule_lower">rule</string>
@@ -126,4 +142,5 @@
     <string name="action_lower">action</string>
     <string name="automation_upper">Automation</string>
     <string name="automation_lower">automation</string>
+    <string name="pref_title_ringer_modes_category">Modes to Set</string>
 </resources>

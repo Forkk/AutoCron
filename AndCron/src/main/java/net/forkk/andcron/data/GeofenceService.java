@@ -116,13 +116,19 @@ public class GeofenceService extends Service
             {
                 Log.d(LOGGER_TAG, "Entered geofence.");
                 for (Geofence geofence : triggers)
-                    mGeofenceClients.get(geofence.getRequestId()).onEnterGeofence();
+                {
+                    GeofenceClient client = mGeofenceClients.get(geofence.getRequestId());
+                    if (client != null) client.onEnterGeofence();
+                }
             }
             else
             {
                 Log.d(LOGGER_TAG, "Left geofence.");
                 for (Geofence geofence : triggers)
-                    mGeofenceClients.get(geofence.getRequestId()).onLeaveGeofence();
+                {
+                    GeofenceClient client = mGeofenceClients.get(geofence.getRequestId());
+                    if (client != null) client.onLeaveGeofence();
+                }
             }
         }
 
