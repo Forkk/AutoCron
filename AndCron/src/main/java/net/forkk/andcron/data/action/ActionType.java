@@ -87,6 +87,11 @@ public class ActionType extends ComponentType<Action>
                                  res.getString(R.string.ringer_mode_action_description),
                                  RingerModeAction.class));
 
+        // TODO: Disable the send SMS action when the device doesn't support SMS.
+        types.add(new ActionType(res.getString(R.string.send_sms_action_title),
+                                 res.getString(R.string.send_sms_action_description),
+                                 SendSMSAction.class));
+
         types.add(new ActionType(res.getString(R.string.test_action_title),
                                  res.getString(R.string.test_action_description),
                                  TestAction.class));
