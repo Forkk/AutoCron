@@ -16,12 +16,12 @@
 
 package net.forkk.andcron.data.rule;
 
-import android.content.Context;
 import android.preference.PreferenceFragment;
 
 import net.forkk.andcron.R;
 import net.forkk.andcron.data.Automation;
 import net.forkk.andcron.data.AutomationComponentBase;
+import net.forkk.andcron.data.AutomationService;
 
 
 /**
@@ -31,9 +31,9 @@ public abstract class RuleBase extends AutomationComponentBase implements Rule
 {
     protected boolean mIsActive;
 
-    protected RuleBase(Automation parent, Context context, int id)
+    public RuleBase(Automation parent, AutomationService service, int id)
     {
-        super(parent, context, id);
+        super(parent, service, id);
     }
 
     public void setActive(boolean active)

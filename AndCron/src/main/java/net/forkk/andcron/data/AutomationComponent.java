@@ -21,8 +21,9 @@ package net.forkk.andcron.data;
  */
 public interface AutomationComponent extends ConfigComponent
 {
+    public abstract void addChangeListener(AutomationComponentBase.ComponentChangeListener listener);
 
-    void addChangeListener(AutomationComponentBase.ComponentChangeListener listener);
+    public abstract void removeChangeListener(AutomationComponentBase.ComponentChangeListener listener);
 
-    void removeChangeListener(AutomationComponentBase.ComponentChangeListener listener);
+    public abstract void onParentDisabled();
 }

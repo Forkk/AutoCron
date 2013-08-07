@@ -51,9 +51,9 @@ public class LocationRule extends RuleBase
 
     private String mRequestId;
 
-    public LocationRule(Automation parent, Context context, int id)
+    public LocationRule(Automation parent, AutomationService service, int id)
     {
-        super(parent, context, id);
+        super(parent, service, id);
     }
 
     /**

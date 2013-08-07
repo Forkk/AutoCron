@@ -48,14 +48,14 @@ public class SendSMSAction extends ActionBase
 
     private static int nextSentPendingId = 0;
 
+    public SendSMSAction(Automation parent, AutomationService service, int id)
+    {
+        super(parent, service, id);
+    }
+
     private static int getNewRequestId()
     {
         return nextSentPendingId++;
-    }
-
-    public SendSMSAction(Automation parent, Context context, int id)
-    {
-        super(parent, context, id);
     }
 
     /**

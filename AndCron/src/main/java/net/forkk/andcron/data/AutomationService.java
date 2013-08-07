@@ -132,7 +132,7 @@ public class AutomationService extends Service
 
         for (Automation automation : mAutomations)
         {
-            automation.onCreate(this);
+            if (automation.isEnabled()) automation.create(this);
         }
     }
 
@@ -145,7 +145,7 @@ public class AutomationService extends Service
 
         for (Automation automation : mAutomations)
         {
-            automation.onDestroy(this);
+            automation.destroy(this);
         }
     }
 
@@ -209,7 +209,7 @@ public class AutomationService extends Service
 
         edit.putStringSet(VALUE_AUTOMATION_IDS, automationIDs);
         mAutomations.add(automation);
-        automation.onCreate(this);
+        automation.create(this);
         boolean success = edit.commit();
         if (!success) Log.e(LOGGER_TAG, "Failed to commit changes to preferences.");
         else onAutomationListChange();
@@ -240,7 +240,7 @@ public class AutomationService extends Service
         getSharedPreferences(automation.getSharedPreferencesName(), MODE_PRIVATE).edit().clear()
                 .commit();
 
-        automation.onDestroy(this);
+        automation.destroy(this);
         mAutomations.remove(automation);
         boolean success = edit.commit();
         if (!success) Log.e(LOGGER_TAG, "Failed to commit changes to preferences.");
@@ -281,7 +281,8 @@ public class AutomationService extends Service
     @Override
     public void onSharedPreferenceChanged(SharedPreferences preferences, String key)
     {
-        if (key.equals("name") || key.equals("description")) onAutomationListChange();
+        if (key.equals("name") || key.equals("description") || key.equals("enabled"))
+            onAutomationListChange();
     }
 
     public class LocalBinder extends Binder

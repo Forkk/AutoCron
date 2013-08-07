@@ -39,9 +39,9 @@ public class TestRule extends RuleBase implements AutomationService.IntentListen
 
     private int mIntentListenerId;
 
-    public TestRule(Automation parent, Context context, int id)
+    public TestRule(Automation parent, AutomationService service, int id)
     {
-        super(parent, context, id);
+        super(parent, service, id);
     }
 
     /**

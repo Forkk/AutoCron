@@ -30,7 +30,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import net.forkk.andcron.data.ConfigComponent;
@@ -227,20 +229,31 @@ public abstract class ComponentListFragment extends ListFragment
         {
             if (hasItems())
             {
-                ConfigComponent component = getComponentList().get(i);
+                final ConfigComponent component = getComponentList().get(i);
 
                 view = mInflater.inflate(R.layout.component_list_item, null);
 
                 assert view != null;
                 TextView itemNameView = (TextView) view.findViewById(R.id.component_name_view);
                 TextView itemDescView = (TextView) view.findViewById(R.id.component_desc_view);
+                Switch enableSwitch = (Switch) view.findViewById(R.id.component_enable_switch);
 
                 itemNameView.setText(component.getName());
 
                 String description = component.getDescription();
-                if (description.isEmpty()) itemDescView.setText(getActivity()
+                if (description.isEmpty()) itemDescView.setText(getResources()
                                                                         .getString(R.string.component_no_description));
                 else itemDescView.setText(description);
+
+                enableSwitch.setChecked(component.isEnabled());
+                enableSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+                {
+                    @Override
+                    public void onCheckedChanged(CompoundButton compoundButton, boolean checked)
+                    {
+                        component.setEnabled(checked);
+                    }
+                });
 
                 return view;
             }

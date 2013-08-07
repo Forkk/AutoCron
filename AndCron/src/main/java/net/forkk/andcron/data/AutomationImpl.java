@@ -105,12 +105,12 @@ public class AutomationImpl extends ConfigComponentBase
     {
         for (Rule rule : mRules)
         {
-            rule.onCreate(service);
+            rule.create(service);
         }
 
         for (Action action : mActions)
         {
-            action.onCreate(service);
+            action.create(service);
         }
     }
 
@@ -122,12 +122,12 @@ public class AutomationImpl extends ConfigComponentBase
     {
         for (Rule rule : mRules)
         {
-            rule.onDestroy(service);
+            rule.destroy(service);
         }
 
         for (Action action : mActions)
         {
-            action.onDestroy(service);
+            action.destroy(service);
         }
     }
 
@@ -189,6 +189,23 @@ public class AutomationImpl extends ConfigComponentBase
         for (T component : list)
             context.getSharedPreferences(component.getSharedPreferencesName(), Context.MODE_PRIVATE)
                    .registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void setEnabled(boolean enabled)
+    {
+        getSharedPreferences().edit().putBoolean(VALUE_ENABLED, enabled).commit();
+        if (enabled) onCreate(getService());
+        else
+        {
+            onDestroy(getService());
+
+            for (Action action : mActions)
+                action.onParentDisabled();
+
+            for (Rule rule : mRules)
+                rule.onParentDisabled();
+        }
     }
 
     /**
@@ -290,7 +307,7 @@ public class AutomationImpl extends ConfigComponentBase
         edit.putStringSet(typeInterface.getIdListKey(), componentIDs);
         typeInterface.getList().add(component);
         component.addChangeListener(this);
-        component.onCreate(getService());
+        component.create(getService());
         boolean success = edit.commit();
         if (!success) Log.e(LOGGER_TAG, "Failed to commit changes to preferences.");
         else onComponentListChange();
@@ -326,7 +343,7 @@ public class AutomationImpl extends ConfigComponentBase
                 .getSharedPreferences(component.getSharedPreferencesName(), Context.MODE_PRIVATE)
                 .edit().clear().commit();
 
-        component.onDestroy(getService());
+        component.destroy(getService());
         typeInterface.getList().remove(component);
         boolean success = edit.commit();
         if (!success) Log.e(LOGGER_TAG, "Failed to commit changes to preferences.");
@@ -447,12 +464,12 @@ public class AutomationImpl extends ConfigComponentBase
             if (mIsActive)
             {
                 for (Action action : mActions)
-                    action.onActivate(getService());
+                    if (action.isEnabled()) action.onActivate(getService());
             }
             else
             {
                 for (Action action : mActions)
-                    action.onDeactivate(getService());
+                    if (action.isEnabled()) action.onDeactivate(getService());
             }
         }
     }
@@ -467,18 +484,18 @@ public class AutomationImpl extends ConfigComponentBase
     public void reloadComponents(AutomationService service)
     {
         for (Rule rule : mRules)
-            rule.onDestroy(service);
+            rule.destroy(service);
 
         for (Action action : mActions)
-            action.onDestroy(service);
+            action.destroy(service);
 
         loadConfig(service);
 
         for (Rule rule : mRules)
-            rule.onCreate(service);
+            rule.create(service);
 
         for (Action action : mActions)
-            action.onCreate(service);
+            action.create(service);
     }
 
     /**

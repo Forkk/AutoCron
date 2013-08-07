@@ -16,12 +16,12 @@
 
 package net.forkk.andcron.data.action;
 
-import android.content.Context;
 import android.preference.PreferenceFragment;
 
 import net.forkk.andcron.R;
 import net.forkk.andcron.data.Automation;
 import net.forkk.andcron.data.AutomationComponentBase;
+import net.forkk.andcron.data.AutomationService;
 
 
 /**
@@ -29,9 +29,9 @@ import net.forkk.andcron.data.AutomationComponentBase;
  */
 public abstract class ActionBase extends AutomationComponentBase implements Action
 {
-    public ActionBase(Automation parent, Context context, int id)
+    public ActionBase(Automation parent, AutomationService service, int id)
     {
-        super(parent, context, id);
+        super(parent, service, id);
     }
 
     @Override

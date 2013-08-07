@@ -31,23 +31,55 @@ public abstract class ConfigComponentBase
 
     public static final String VALUE_DESCRIPTION = "description";
 
+    public static final String VALUE_ENABLED = "enabled";
+
     private SharedPreferences mPreferences;
 
-    protected Context mContext;
+    protected AutomationService mService;
 
     private int mId;
 
-    public ConfigComponentBase(Context context, int id)
+    public ConfigComponentBase(AutomationService service, int id)
     {
         mId = id;
+        mService = service;
         mPreferences =
-                context.getSharedPreferences(getSharedPreferencesName(id), Context.MODE_PRIVATE);
+                service.getSharedPreferences(getSharedPreferencesName(id), Context.MODE_PRIVATE);
     }
 
-    protected Context getContext()
+    @Override
+    public void create(AutomationService service)
     {
-        return mContext;
+        if (isEnabled()) onCreate(service);
     }
+
+    @Override
+    public void destroy(AutomationService service)
+    {
+        if (isEnabled()) onDestroy(service);
+    }
+
+    protected AutomationService getService()
+    {
+        return mService;
+    }
+
+    /**
+     * Called after the automation service finishes loading components. This should perform all
+     * necessary initialization for this component.
+     *
+     * @param service
+     *         The automation service that this component belongs to.
+     */
+    protected abstract void onCreate(AutomationService service);
+
+    /**
+     * Called when the automation service is destroyed. This should perform all necessary cleanup.
+     *
+     * @param service
+     *         The automation service that this component belongs to.
+     */
+    protected abstract void onDestroy(AutomationService service);
 
     /**
      * Gets this component's shared preferences name for the given component ID.
@@ -97,6 +129,20 @@ public abstract class ConfigComponentBase
     public String getDescription()
     {
         return getSharedPreferences().getString(VALUE_DESCRIPTION, "");
+    }
+
+    @Override
+    public boolean isEnabled()
+    {
+        return getSharedPreferences().getBoolean(VALUE_ENABLED, false);
+    }
+
+    @Override
+    public void setEnabled(boolean enabled)
+    {
+        getSharedPreferences().edit().putBoolean(VALUE_ENABLED, enabled).commit();
+        if (enabled) onCreate(getService());
+        else onDestroy(getService());
     }
 
     @Override

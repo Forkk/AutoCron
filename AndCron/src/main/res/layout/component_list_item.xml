@@ -16,20 +16,29 @@
   ~ limitations under the License.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:paddingTop="12dp"
-              android:paddingBottom="12dp"
-              android:paddingLeft="16dp"
-              android:paddingRight="16dp"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
         >
+
+    <Switch android:id="@+id/component_enable_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerInParent="true"
+            android:focusable="false"
+            />
 
     <TextView android:id="@+id/component_name_view"
               android:text="This is a test"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
+              android:layout_toStartOf="@id/component_enable_switch"
+              android:layout_alignParentStart="true"
               android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"
             />
 
@@ -37,6 +46,10 @@
               android:text="This is a description of the test list entry."
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
+              android:layout_below="@id/component_name_view"
+              android:layout_toStartOf="@id/component_enable_switch"
+              android:layout_alignParentStart="true"
               android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small"
             />
-</LinearLayout>
+
+</RelativeLayout>

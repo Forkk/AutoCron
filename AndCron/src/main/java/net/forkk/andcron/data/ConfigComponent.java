@@ -26,21 +26,20 @@ import android.preference.PreferenceFragment;
 public interface ConfigComponent
 {
     /**
-     * Called after the automation service finishes loading components. This should perform all
-     * necessary initialization for this component.
+     * Initializes the component, calling onCreate if it is enabled
      *
      * @param service
      *         The automation service that this component belongs to.
      */
-    public abstract void onCreate(AutomationService service);
+    public abstract void create(AutomationService service);
 
     /**
-     * Called when the automation service is destroyed. This should perform all necessary cleanup.
+     * Destroy the component, calling onDestroy if it is enabled
      *
      * @param service
      *         The automation service that this component belongs to.
      */
-    public abstract void onDestroy(AutomationService service);
+    public abstract void destroy(AutomationService service);
 
     /**
      * @return This component's ID.
@@ -56,6 +55,19 @@ public interface ConfigComponent
      * @return The user-given description for this component.
      */
     public abstract String getDescription();
+
+    /**
+     * Enables or disables the component.
+     * <p/>
+     * onCreate is called when the component is enabled and onDestroy is called when it is
+     * disabled.
+     */
+    public abstract void setEnabled(boolean enabled);
+
+    /**
+     * @return Whether this component is enabled or not.
+     */
+    public abstract boolean isEnabled();
 
     /**
      * Gets this component's shared preferences name.

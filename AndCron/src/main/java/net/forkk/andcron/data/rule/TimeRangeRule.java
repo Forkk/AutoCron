@@ -46,9 +46,9 @@ public class TimeRangeRule extends RuleBase implements AutomationService.IntentL
 
     private TimePreference mEndTimePreference;
 
-    public TimeRangeRule(Automation parent, Context context, int id)
+    public TimeRangeRule(Automation parent, AutomationService service, int id)
     {
-        super(parent, context, id);
+        super(parent, service, id);
     }
 
     protected long startTriggerTime()

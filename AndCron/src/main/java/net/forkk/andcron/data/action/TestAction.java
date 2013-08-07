@@ -16,7 +16,6 @@
 
 package net.forkk.andcron.data.action;
 
-import android.content.Context;
 import android.preference.PreferenceFragment;
 import android.widget.Toast;
 
@@ -30,11 +29,9 @@ import net.forkk.andcron.data.AutomationService;
  */
 public class TestAction extends ActionBase
 {
-    private Context mContext;
-
-    public TestAction(Automation parent, Context context, int id)
+    public TestAction(Automation parent, AutomationService service, int id)
     {
-        super(parent, context, id);
+        super(parent, service, id);
     }
 
     /**
@@ -59,13 +56,13 @@ public class TestAction extends ActionBase
     @Override
     public void onCreate(AutomationService service)
     {
-        mContext = service;
+
     }
 
     @Override
     public void onDestroy(AutomationService service)
     {
-        mContext = null;
+
     }
 
     @Override
@@ -77,13 +74,13 @@ public class TestAction extends ActionBase
 
     protected String getActivationMessage()
     {
-        return getSharedPreferences().getString("activate_message",
-                                                mContext.getString(R.string.pref_default_test_action_activate));
+        return getSharedPreferences().getString("activate_message", getService()
+                                                                            .getString(R.string.pref_default_test_action_activate));
     }
 
     protected String getDeactivationMessage()
     {
-        return getSharedPreferences().getString("deactivate_message",
-                                                mContext.getString(R.string.pref_default_test_action_deactivate));
+        return getSharedPreferences().getString("deactivate_message", getService()
+                                                                              .getString(R.string.pref_default_test_action_deactivate));
     }
 }

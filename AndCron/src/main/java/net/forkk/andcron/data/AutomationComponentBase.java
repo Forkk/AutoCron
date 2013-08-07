@@ -16,7 +16,6 @@
 
 package net.forkk.andcron.data;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 
 import java.util.ArrayList;
@@ -32,13 +31,31 @@ public abstract class AutomationComponentBase extends ConfigComponentBase
 
     protected ArrayList<ComponentChangeListener> mListeners;
 
-    public AutomationComponentBase(Automation parent, Context context, int id)
+    public AutomationComponentBase(Automation parent, AutomationService service, int id)
     {
-        super(context, id);
+        super(service, id);
         mAutomation = parent;
 
         mListeners = new ArrayList<ComponentChangeListener>();
         getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void create(AutomationService service)
+    {
+        if (getParent().isEnabled()) super.create(service);
+    }
+
+    @Override
+    public void destroy(AutomationService service)
+    {
+        if (getParent().isEnabled()) super.destroy(service);
+    }
+
+    @Override
+    public void onParentDisabled()
+    {
+        super.destroy(getService());
     }
 
     /**

@@ -30,9 +30,9 @@ import net.forkk.andcron.data.AutomationService;
  */
 public class RingerModeAction extends ActionBase
 {
-    public RingerModeAction(Automation parent, Context context, int id)
+    public RingerModeAction(Automation parent, AutomationService service, int id)
     {
-        super(parent, context, id);
+        super(parent, service, id);
     }
 
     @Override
