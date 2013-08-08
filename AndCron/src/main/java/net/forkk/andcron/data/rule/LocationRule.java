@@ -24,6 +24,7 @@ import android.content.res.Resources;
 import android.os.IBinder;
 import android.preference.PreferenceFragment;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.Geofence;
 
@@ -211,9 +212,9 @@ public class LocationRule extends RuleBase
             int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(context);
             switch (status)
             {
-            //            case ConnectionResult.SUCCESS:
-            //                // TODO: Do further checking for availability of the location service.
-            //                return true;
+            case ConnectionResult.SUCCESS:
+                // TODO: Do further checking for availability of the location service.
+                return true;
 
             default:
                 String errorMessage = "Required Google Play services are not available: " +
