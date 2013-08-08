@@ -17,14 +17,7 @@
   -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="@string/pref_title_name_and_desc">
-        <EditTextPreference
-                android:key="name"
-                android:title="@string/pref_rule_name_title"
-                android:summary="@string/pref_rule_name_summary"
-                android:dialogTitle="@string/pref_rule_name_dialog_title"
-                />
-
+    <PreferenceCategory android:title="@string/pref_component_generic_info">
         <EditTextPreference
                 android:key="description"
                 android:title="@string/pref_rule_desc_title"

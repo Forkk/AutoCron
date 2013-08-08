@@ -83,4 +83,10 @@ public class TestAction extends ActionBase
         return getSharedPreferences().getString("deactivate_message", getService()
                                                                               .getString(R.string.pref_default_test_action_deactivate));
     }
+
+    @Override
+    public String getTypeName()
+    {
+        return getResources().getString(R.string.test_action_title);
+    }
 }

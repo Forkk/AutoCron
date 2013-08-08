@@ -84,16 +84,12 @@
     <string name="pref_automation_desc_summary">A short description explaining what this automation does.</string>
     <string name="pref_automation_desc_dialog_title">Enter a description for this automation.</string>
 
-    <string name="pref_rule_name_title">Name</string>
-    <string name="pref_rule_name_summary">A short name for the rule.</string>
-    <string name="pref_rule_name_dialog_title">Enter a name for this rule.</string>
+    <string name="pref_component_generic_info">General Information</string>
+
     <string name="pref_rule_desc_title">Description</string>
     <string name="pref_rule_desc_summary">A short description explaining what this rule does.</string>
     <string name="pref_rule_desc_dialog_title">Enter a description for this rule.</string>
 
-    <string name="pref_action_name_title">Name</string>
-    <string name="pref_action_name_summary">A short name for the action.</string>
-    <string name="pref_action_name_dialog_title">Enter a name for this action.</string>
     <string name="pref_action_desc_title">Description</string>
     <string name="pref_action_desc_summary">A short description explaining what this action does.</string>
     <string name="pref_action_desc_dialog_title">Enter a description for this action.</string>

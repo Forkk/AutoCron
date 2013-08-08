@@ -165,4 +165,10 @@ public class SendSMSAction extends ActionBase
         super.addPreferencesToFragment(fragment);
         fragment.addPreferencesFromResource(R.xml.prefs_sms_action);
     }
+
+    @Override
+    public String getTypeName()
+    {
+        return getResources().getString(R.string.send_sms_action_title);
+    }
 }

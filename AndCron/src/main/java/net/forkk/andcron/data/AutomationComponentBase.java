@@ -29,14 +29,14 @@ public abstract class AutomationComponentBase extends ConfigComponentBase
 {
     protected Automation mAutomation;
 
-    protected ArrayList<ComponentChangeListener> mListeners;
+    protected ArrayList<AutomationComponent.ComponentChangeListener> mListeners;
 
     public AutomationComponentBase(Automation parent, AutomationService service, int id)
     {
         super(service, id);
         mAutomation = parent;
 
-        mListeners = new ArrayList<ComponentChangeListener>();
+        mListeners = new ArrayList<AutomationComponent.ComponentChangeListener>();
         getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
@@ -50,6 +50,12 @@ public abstract class AutomationComponentBase extends ConfigComponentBase
     public void destroy(AutomationService service)
     {
         if (getParent().isEnabled()) super.destroy(service);
+    }
+
+    @Override
+    public String getName()
+    {
+        return getTypeName();
     }
 
     @Override
@@ -69,24 +75,19 @@ public abstract class AutomationComponentBase extends ConfigComponentBase
     @Override
     public void onSharedPreferenceChanged(SharedPreferences preferences, String s)
     {
-        for (ComponentChangeListener listener : mListeners)
+        for (AutomationComponent.ComponentChangeListener listener : mListeners)
             listener.onComponentChange();
     }
 
     @Override
-    public void addChangeListener(ComponentChangeListener listener)
+    public void addChangeListener(AutomationComponent.ComponentChangeListener listener)
     {
         mListeners.add(listener);
     }
 
     @Override
-    public void removeChangeListener(ComponentChangeListener listener)
+    public void removeChangeListener(AutomationComponent.ComponentChangeListener listener)
     {
         mListeners.remove(listener);
-    }
-
-    public interface ComponentChangeListener
-    {
-        public abstract void onComponentChange();
     }
 }

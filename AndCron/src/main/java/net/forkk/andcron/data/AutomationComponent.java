@@ -21,9 +21,30 @@ package net.forkk.andcron.data;
  */
 public interface AutomationComponent extends ConfigComponent
 {
-    public abstract void addChangeListener(AutomationComponentBase.ComponentChangeListener listener);
+    public abstract void addChangeListener(ComponentChangeListener listener);
 
-    public abstract void removeChangeListener(AutomationComponentBase.ComponentChangeListener listener);
+    public abstract void removeChangeListener(ComponentChangeListener listener);
 
+    /**
+     * Called when this component's parent automation is disabled. This should call destroy on the
+     * component, causing the component's onDestroy function to be called if the component is
+     * enabled.
+     */
     public abstract void onParentDisabled();
+
+    /**
+     * Gets this component's type name. That is, the name of this component type as it should be
+     * displayed in the user interface.
+     *
+     * @return The component's type name.
+     */
+    public abstract String getTypeName();
+
+    /**
+     * Class for listening to changes to the component's configuration.
+     */
+    public interface ComponentChangeListener
+    {
+        public abstract void onComponentChange();
+    }
 }

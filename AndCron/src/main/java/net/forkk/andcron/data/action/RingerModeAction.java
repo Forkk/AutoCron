@@ -80,4 +80,10 @@ public class RingerModeAction extends ActionBase
         super.addPreferencesToFragment(fragment);
         fragment.addPreferencesFromResource(R.xml.prefs_ringer_mode_action);
     }
+
+    @Override
+    public String getTypeName()
+    {
+        return getResources().getString(R.string.ringer_mode_action_title);
+    }
 }

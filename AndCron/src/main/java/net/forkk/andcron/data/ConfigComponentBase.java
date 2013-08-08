@@ -18,6 +18,7 @@ package net.forkk.andcron.data;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.preference.PreferenceFragment;
 
 
@@ -149,5 +150,13 @@ public abstract class ConfigComponentBase
     public void addPreferencesToFragment(PreferenceFragment fragment)
     {
 
+    }
+
+    /**
+     * @return The Resources object.
+     */
+    public Resources getResources()
+    {
+        return getService().getResources();
     }
 }

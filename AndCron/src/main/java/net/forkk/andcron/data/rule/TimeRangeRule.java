@@ -175,4 +175,10 @@ public class TimeRangeRule extends RuleBase implements AutomationService.IntentL
         }
         else setAlarms(getParent().getService());
     }
+
+    @Override
+    public String getTypeName()
+    {
+        return getResources().getString(R.string.time_range_rule_title);
+    }
 }

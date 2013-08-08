@@ -177,4 +177,10 @@ public class LocationRule extends RuleBase
     {
 
     }
+
+    @Override
+    public String getTypeName()
+    {
+        return getResources().getString(R.string.location_rule_title);
+    }
 }

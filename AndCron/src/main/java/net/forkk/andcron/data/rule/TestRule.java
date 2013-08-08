@@ -111,4 +111,10 @@ public class TestRule extends RuleBase implements AutomationService.IntentListen
     {
         setActive(!isActive());
     }
+
+    @Override
+    public String getTypeName()
+    {
+        return getResources().getString(R.string.test_rule_title);
+    }
 }
