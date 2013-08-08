@@ -20,7 +20,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 
-import net.forkk.andcron.R;
 import net.forkk.andcron.data.Automation;
 import net.forkk.andcron.data.AutomationService;
 import net.forkk.andcron.data.ComponentType;
@@ -83,16 +82,12 @@ public class RuleType extends ComponentType<Rule>
 
         ArrayList<RuleType> types = new ArrayList<RuleType>();
 
-        types.add(new RuleType(res.getString(R.string.time_range_rule_title),
-                               res.getString(R.string.time_range_rule_description),
-                               TimeRangeRule.class));
+        types.add(TimeRangeRule.initComponentType(res));
+        types.add(LocationRule.initComponentType(res));
+        types.add(TestRule.initComponentType(res));
 
-        types.add(new RuleType(res.getString(R.string.location_rule_title),
-                               res.getString(R.string.location_rule_description),
-                               LocationRule.class));
-
-        types.add(new RuleType(res.getString(R.string.test_rule_title),
-                               res.getString(R.string.test_rule_description), TestRule.class));
+        for (RuleType type : types)
+            type.checkIfSupported(context);
 
         RULE_TYPES = types.toArray(new RuleType[types.size()]);
     }

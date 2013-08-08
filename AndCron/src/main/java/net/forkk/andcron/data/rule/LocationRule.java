@@ -16,20 +16,21 @@
 
 package net.forkk.andcron.data.rule;
 
-import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.res.Resources;
 import android.os.IBinder;
 import android.preference.PreferenceFragment;
 
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.Geofence;
-import com.google.android.gms.location.LocationClient;
 
 import net.forkk.andcron.R;
 import net.forkk.andcron.data.Automation;
 import net.forkk.andcron.data.AutomationService;
+import net.forkk.andcron.data.ComponentType;
 import net.forkk.andcron.data.GeofenceService;
 
 
@@ -39,17 +40,23 @@ import net.forkk.andcron.data.GeofenceService;
 public class LocationRule extends RuleBase
         implements GeofenceService.GeofenceClient, ServiceConnection
 {
+    private static RuleType sComponentType;
+
     public static final String LOGGER_TAG = AutomationService.LOGGER_TAG;
-
-    private int mIntentListenerId;
-
-    private PendingIntent mPendingIntent;
-
-    private LocationClient mLocationClient;
 
     private GeofenceService.LocalBinder mBinder;
 
     private String mRequestId;
+
+    public static RuleType initComponentType(Resources res)
+    {
+        return sComponentType = new LocationRuleType(res);
+    }
+
+    public static RuleType getComponentType()
+    {
+        return sComponentType;
+    }
 
     public LocationRule(Automation parent, AutomationService service, int id)
     {
@@ -178,9 +185,42 @@ public class LocationRule extends RuleBase
 
     }
 
+    /**
+     * Gets this automation's component type. This should return the same object for all components
+     * of this type.
+     *
+     * @return The component type object for this component.
+     */
     @Override
-    public String getTypeName()
+    public ComponentType getType()
     {
-        return getResources().getString(R.string.location_rule_title);
+        return getComponentType();
+    }
+
+    public static class LocationRuleType extends RuleType
+    {
+        public LocationRuleType(Resources res)
+        {
+            super(res.getString(R.string.location_rule_title),
+                  res.getString(R.string.location_rule_description), LocationRule.class);
+        }
+
+        @Override
+        public boolean checkIfSupported(Context context)
+        {
+            int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(context);
+            switch (status)
+            {
+            //            case ConnectionResult.SUCCESS:
+            //                // TODO: Do further checking for availability of the location service.
+            //                return true;
+
+            default:
+                String errorMessage = "Required Google Play services are not available: " +
+                                      GooglePlayServicesUtil.getErrorString(status);
+                setSupportError(errorMessage);
+                return false;
+            }
+        }
     }
 }

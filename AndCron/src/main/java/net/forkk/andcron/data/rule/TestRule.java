@@ -21,11 +21,13 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.support.v4.app.NotificationCompat;
 
 import net.forkk.andcron.R;
 import net.forkk.andcron.data.Automation;
 import net.forkk.andcron.data.AutomationService;
+import net.forkk.andcron.data.ComponentType;
 
 
 /**
@@ -33,11 +35,25 @@ import net.forkk.andcron.data.AutomationService;
  */
 public class TestRule extends RuleBase implements AutomationService.IntentListener
 {
+    private static RuleType sComponentType;
+
     public static final String NOTIFICATION_TAG = "net.forkk.andcron.testrule";
 
     private Notification mNotification;
 
     private int mIntentListenerId;
+
+    public static RuleType initComponentType(Resources res)
+    {
+        return sComponentType = new RuleType(res.getString(R.string.test_rule_title),
+                                             res.getString(R.string.test_rule_description),
+                                             TestRule.class);
+    }
+
+    public static RuleType getComponentType()
+    {
+        return sComponentType;
+    }
 
     public TestRule(Automation parent, AutomationService service, int id)
     {
@@ -112,9 +128,15 @@ public class TestRule extends RuleBase implements AutomationService.IntentListen
         setActive(!isActive());
     }
 
+    /**
+     * Gets this automation's component type. This should return the same object for all components
+     * of this type.
+     *
+     * @return The component type object for this component.
+     */
     @Override
-    public String getTypeName()
+    public ComponentType getType()
     {
-        return getResources().getString(R.string.test_rule_title);
+        return getComponentType();
     }
 }

@@ -55,7 +55,7 @@ public abstract class AutomationComponentBase extends ConfigComponentBase
     @Override
     public String getName()
     {
-        return getTypeName();
+        return getType().getTypeName();
     }
 
     @Override

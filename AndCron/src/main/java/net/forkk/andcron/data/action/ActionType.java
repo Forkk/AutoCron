@@ -20,7 +20,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 
-import net.forkk.andcron.R;
 import net.forkk.andcron.data.Automation;
 import net.forkk.andcron.data.AutomationService;
 import net.forkk.andcron.data.ComponentType;
@@ -83,18 +82,12 @@ public class ActionType extends ComponentType<Action>
 
         ArrayList<ActionType> types = new ArrayList<ActionType>();
 
-        types.add(new ActionType(res.getString(R.string.ringer_mode_action_title),
-                                 res.getString(R.string.ringer_mode_action_description),
-                                 RingerModeAction.class));
+        types.add(RingerModeAction.initComponentType(res));
+        types.add(SendSMSAction.initComponentType(res));
+        types.add(TestAction.initComponentType(res));
 
-        // TODO: Disable the send SMS action when the device doesn't support SMS.
-        types.add(new ActionType(res.getString(R.string.send_sms_action_title),
-                                 res.getString(R.string.send_sms_action_description),
-                                 SendSMSAction.class));
-
-        types.add(new ActionType(res.getString(R.string.test_action_title),
-                                 res.getString(R.string.test_action_description),
-                                 TestAction.class));
+        for (ActionType type : types)
+            type.checkIfSupported(context);
 
         ACTION_TYPES = types.toArray(new ActionType[types.size()]);
     }

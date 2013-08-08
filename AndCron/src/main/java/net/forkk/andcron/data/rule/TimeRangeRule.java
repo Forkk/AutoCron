@@ -21,11 +21,13 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.preference.PreferenceFragment;
 
 import net.forkk.andcron.R;
 import net.forkk.andcron.data.Automation;
 import net.forkk.andcron.data.AutomationService;
+import net.forkk.andcron.data.ComponentType;
 import net.forkk.andcron.prefs.TimePreference;
 
 import java.util.Calendar;
@@ -36,6 +38,8 @@ import java.util.Calendar;
  */
 public class TimeRangeRule extends RuleBase implements AutomationService.IntentListener
 {
+    private static RuleType sComponentType;
+
     private int mStartListenerId;
 
     private int mEndListenerId;
@@ -45,6 +49,18 @@ public class TimeRangeRule extends RuleBase implements AutomationService.IntentL
     private PendingIntent mPendingEndIntent;
 
     private TimePreference mEndTimePreference;
+
+    public static RuleType initComponentType(Resources res)
+    {
+        return sComponentType = new RuleType(res.getString(R.string.time_range_rule_title),
+                                             res.getString(R.string.time_range_rule_description),
+                                             TimeRangeRule.class);
+    }
+
+    public static RuleType getComponentType()
+    {
+        return sComponentType;
+    }
 
     public TimeRangeRule(Automation parent, AutomationService service, int id)
     {
@@ -176,9 +192,15 @@ public class TimeRangeRule extends RuleBase implements AutomationService.IntentL
         else setAlarms(getParent().getService());
     }
 
+    /**
+     * Gets this automation's component type. This should return the same object for all components
+     * of this type.
+     *
+     * @return The component type object for this component.
+     */
     @Override
-    public String getTypeName()
+    public ComponentType getType()
     {
-        return getResources().getString(R.string.time_range_rule_title);
+        return getComponentType();
     }
 }

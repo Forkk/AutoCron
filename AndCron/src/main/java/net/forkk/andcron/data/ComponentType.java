@@ -38,6 +38,8 @@ public abstract class ComponentType<T extends AutomationComponent>
 
     private String mTypeId;
 
+    private String mSupportError;
+
     public abstract int getAvailableId(Context context);
 
     public abstract void incrementNextId(Context context);
@@ -146,5 +148,36 @@ public abstract class ComponentType<T extends AutomationComponent>
     public String getTypeId()
     {
         return mTypeId;
+    }
+
+    /**
+     * @return An error message explaining to the user why this component type is not supported on
+     * his/her device. Empty string if no error occurred.
+     */
+    public String getSupportError()
+    {
+        return mSupportError;
+    }
+
+    public boolean isSupported()
+    {
+        return mSupportError == null || mSupportError.isEmpty();
+    }
+
+    protected void setSupportError(String error)
+    {
+        mSupportError = error;
+    }
+
+    /**
+     * Checks if this component type will work with the current device configuration. If not, this
+     * function will return false and the error message can be retrieved via the getSupportError()
+     * function.
+     *
+     * @return True if this component type is supported by this device, otherwise, false.
+     */
+    public boolean checkIfSupported(Context context)
+    {
+        return true;
     }
 }

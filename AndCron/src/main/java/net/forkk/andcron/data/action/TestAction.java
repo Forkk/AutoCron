@@ -16,12 +16,14 @@
 
 package net.forkk.andcron.data.action;
 
+import android.content.res.Resources;
 import android.preference.PreferenceFragment;
 import android.widget.Toast;
 
 import net.forkk.andcron.R;
 import net.forkk.andcron.data.Automation;
 import net.forkk.andcron.data.AutomationService;
+import net.forkk.andcron.data.ComponentType;
 
 
 /**
@@ -29,6 +31,20 @@ import net.forkk.andcron.data.AutomationService;
  */
 public class TestAction extends ActionBase
 {
+    private static ActionType sComponentType;
+
+    public static ActionType initComponentType(Resources res)
+    {
+        return sComponentType = new ActionType(res.getString(R.string.test_action_title),
+                                               res.getString(R.string.test_action_description),
+                                               TestAction.class);
+    }
+
+    public static ActionType getComponentType()
+    {
+        return sComponentType;
+    }
+
     public TestAction(Automation parent, AutomationService service, int id)
     {
         super(parent, service, id);
@@ -84,9 +100,15 @@ public class TestAction extends ActionBase
                                                                               .getString(R.string.pref_default_test_action_deactivate));
     }
 
+    /**
+     * Gets this automation's component type. This should return the same object for all components
+     * of this type.
+     *
+     * @return The component type object for this component.
+     */
     @Override
-    public String getTypeName()
+    public ComponentType getType()
     {
-        return getResources().getString(R.string.test_action_title);
+        return getComponentType();
     }
 }

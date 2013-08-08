@@ -20,6 +20,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -257,16 +258,44 @@ public class AutomationComponentListFragment extends ComponentListFragment
         {
             ComponentType type = mComponentTypes[i];
 
-            view = mInflater.inflate(android.R.layout.simple_list_item_activated_2, null);
+            view = mInflater.inflate(R.layout.component_type_list_item, null);
 
             assert view != null;
-            TextView text1 = (TextView) view.findViewById(android.R.id.text1);
-            TextView text2 = (TextView) view.findViewById(android.R.id.text2);
+            TextView titleView = (TextView) view.findViewById(R.id.text_view_type_name);
+            TextView descView = (TextView) view.findViewById(R.id.text_view_type_description);
+            TextView errorView = (TextView) view.findViewById(R.id.text_view_type_error);
 
-            text1.setText(type.getTypeName());
-            text2.setText(type.getTypeDesc());
+            titleView.setText(type.getTypeName());
+            descView.setText(type.getTypeDesc());
+
+            if (!type.isSupported())
+            {
+                errorView.setText(type.getSupportError());
+                errorView.setVisibility(View.VISIBLE);
+                view.setBackgroundColor(Color.LTGRAY);
+            }
 
             return view;
+        }
+
+        @Override
+        public int getItemViewType(int position)
+        {
+            ComponentType type = mComponentTypes[position];
+            return type.isSupported() ? 0 : 1;
+        }
+
+        @Override
+        public int getViewTypeCount()
+        {
+            return 2;
+        }
+
+        @Override
+        public boolean isEnabled(int position)
+        {
+            ComponentType type = mComponentTypes[position];
+            return type.isSupported();
         }
     }
 }

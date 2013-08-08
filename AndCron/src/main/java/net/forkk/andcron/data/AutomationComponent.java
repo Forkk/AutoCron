@@ -33,12 +33,12 @@ public interface AutomationComponent extends ConfigComponent
     public abstract void onParentDisabled();
 
     /**
-     * Gets this component's type name. That is, the name of this component type as it should be
-     * displayed in the user interface.
+     * Gets this automation's component type. This should return the same object for all components
+     * of this type.
      *
-     * @return The component's type name.
+     * @return The component type object for this component.
      */
-    public abstract String getTypeName();
+    public abstract ComponentType getType();
 
     /**
      * Class for listening to changes to the component's configuration.

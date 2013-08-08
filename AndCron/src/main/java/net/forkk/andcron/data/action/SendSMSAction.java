@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.preference.PreferenceFragment;
 import android.telephony.SmsManager;
@@ -32,6 +33,7 @@ import android.util.Log;
 import net.forkk.andcron.R;
 import net.forkk.andcron.data.Automation;
 import net.forkk.andcron.data.AutomationService;
+import net.forkk.andcron.data.ComponentType;
 
 
 /**
@@ -41,12 +43,26 @@ public class SendSMSAction extends ActionBase
 {
     private static final String LOGGER_TAG = AutomationService.LOGGER_TAG;
 
+    private static ActionType sComponentType;
+
     public static final String ACTION_MESSAGE_SEND_FINISHED =
             "net.forkk.andcron.ACTION_MESSAGE_SEND_FINISHED";
 
     public static final String EXTRA_REQUEST_ID = "net.forkk.andcron.REQUEST_ID";
 
     private static int nextSentPendingId = 0;
+
+    public static ActionType initComponentType(Resources res)
+    {
+        return sComponentType = new ActionType(res.getString(R.string.send_sms_action_title),
+                                               res.getString(R.string.send_sms_action_description),
+                                               SendSMSAction.class);
+    }
+
+    public static ActionType getComponentType()
+    {
+        return sComponentType;
+    }
 
     public SendSMSAction(Automation parent, AutomationService service, int id)
     {
@@ -166,9 +182,15 @@ public class SendSMSAction extends ActionBase
         fragment.addPreferencesFromResource(R.xml.prefs_sms_action);
     }
 
+    /**
+     * Gets this automation's component type. This should return the same object for all components
+     * of this type.
+     *
+     * @return The component type object for this component.
+     */
     @Override
-    public String getTypeName()
+    public ComponentType getType()
     {
-        return getResources().getString(R.string.send_sms_action_title);
+        return getComponentType();
     }
 }
