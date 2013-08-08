@@ -84,6 +84,7 @@ public class ActionType extends ComponentType<Action>
 
         types.add(RingerModeAction.initComponentType(res));
         types.add(SendSMSAction.initComponentType(res));
+        types.add(NotificationAction.initComponentType(res));
         types.add(TestAction.initComponentType(res));
 
         for (ActionType type : types)
