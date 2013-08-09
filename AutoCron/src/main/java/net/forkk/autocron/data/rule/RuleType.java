@@ -83,6 +83,7 @@ public class RuleType extends ComponentType<Rule>
         ArrayList<RuleType> types = new ArrayList<RuleType>();
 
         types.add(TimeRangeRule.initComponentType(res));
+        types.add(WeekdayRule.initComponentType(res));
         types.add(LocationRule.initComponentType(res));
         types.add(TestRule.initComponentType(res));
 

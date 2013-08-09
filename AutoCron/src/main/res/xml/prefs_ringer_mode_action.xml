@@ -22,7 +22,7 @@
                 android:key="activate_mode"
                 android:title="@string/pref_title_activate_mode"
                 android:summary="@string/pref_summary_activate_mode"
-                android:entries="@array/pref_ringer_mode_entries"
+                android:entries="@array/pref_ringer_mode_entry_titles"
                 android:entryValues="@array/pref_ringer_entry_values"
                 android:defaultValue="none"
                 />
@@ -31,7 +31,7 @@
                 android:key="deactivate_mode"
                 android:title="@string/pref_title_deactivate_mode"
                 android:summary="@string/pref_summary_deactivate_mode"
-                android:entries="@array/pref_ringer_mode_entries"
+                android:entries="@array/pref_ringer_mode_entry_titles"
                 android:entryValues="@array/pref_ringer_entry_values"
                 android:defaultValue="none"
                 />

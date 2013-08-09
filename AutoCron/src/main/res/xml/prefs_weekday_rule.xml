@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ Copyright 2013 Andrew Okin
   ~
@@ -15,21 +16,14 @@
   ~ limitations under the License.
   -->
 
-<resources>
-    <string-array name="pref_ringer_entry_values">
-        <item>none</item>
-        <item>normal</item>
-        <item>vibrate</item>
-        <item>silent</item>
-    </string-array>
-
-    <string-array name="pref_weekday_entry_values">
-        <item>monday</item>
-        <item>tuesday</item>
-        <item>wednesday</item>
-        <item>thursday</item>
-        <item>friday</item>
-        <item>saturday</item>
-        <item>sunday</item>
-    </string-array>
-</resources>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/pref_title_weekday_rule_category">
+        <MultiSelectListPreference
+                android:key="weekdays"
+                android:title="@string/pref_title_weekday"
+                android:summary="@string/pref_summary_weekday"
+                android:entries="@array/pref_weekday_entry_titles"
+                android:entryValues="@array/pref_weekday_entry_values"
+                />
+    </PreferenceCategory>
+</PreferenceScreen>

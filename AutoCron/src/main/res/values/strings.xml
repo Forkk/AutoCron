@@ -72,6 +72,9 @@
     <string name="time_range_rule_title">Time Range Rule</string>
     <string name="time_range_rule_description">A rule that activates every day between the two given times.</string>
 
+    <string name="weekday_rule_title">Week Day Rule</string>
+    <string name="weekday_rule_description">A rule that activates only on certain days of the week.</string>
+
     <!-- Misc -->
     <string name="component_no_description">No description set.</string>
     <string name="component_list_empty_text">Click the \"Add new %1$s\" button in the top right corner to add a new %1$s.</string>
@@ -129,6 +132,12 @@
     <string name="pref_summary_activate_mode">The ringer mode to set when this action is activated.</string>
     <string name="pref_title_deactivate_mode">Deactivation Mode</string>
     <string name="pref_summary_deactivate_mode">The ringer mode to set when this action is deactivated.</string>
+    <string-array name="pref_ringer_mode_entry_titles">
+        <item>Don\'t Change</item>
+        <item>Normal</item>
+        <item>Vibrate</item>
+        <item>Silent</item>
+    </string-array>
 
     <string name="pref_title_sms_category">Message</string>
     <string name="pref_title_sms_destination">Send To</string>
@@ -146,11 +155,17 @@
     <string name="pref_notification_action_ongoing_title">Is Ongoing?</string>
     <string name="pref_notification_action_ongoing_summary">If this is enabled, this notification will be an ongoing notification. Ongoing notifications cannot be dismissed. This means that the action\'s notification will not be dismissed until the action is no longer active.</string>
 
-    <string-array name="pref_ringer_mode_entries">
-        <item>Don\'t Change</item>
-        <item>Normal</item>
-        <item>Vibrate</item>
-        <item>Silent</item>
+    <string name="pref_title_weekday_rule_category">Weekday</string>
+    <string name="pref_title_weekday">Active Weekdays</string>
+    <string name="pref_summary_weekday">Which week days this rule is active on.</string>
+    <string-array name="pref_weekday_entry_titles">
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+        <item>Sunday</item>
     </string-array>
 
     <!-- Names of Things -->
