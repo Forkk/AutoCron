@@ -35,6 +35,17 @@ public abstract class ActionBase extends AutomationComponentBase implements Acti
     }
 
     @Override
+    public void setEnabled(boolean enabled)
+    {
+        super.setEnabled(enabled);
+        if (enabled)
+        {
+            if (getParent().isActive()) onActivate(getService());
+            else onDeactivate(getService());
+        }
+    }
+
+    @Override
     protected String getSharedPreferencesName(int id)
     {
         return "action_" + id;
