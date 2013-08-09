@@ -455,8 +455,18 @@ public class AutomationImpl extends ConfigComponentBase
     public void updateActivationState()
     {
         boolean activated = true;
+        int enabledRuleCount = 0;
         for (Rule rule : mRules)
-            if (!rule.isActive()) activated = false;
+        {
+            if (rule.isEnabled())
+            {
+                enabledRuleCount++;
+                if (!rule.isActive()) activated = false;
+            }
+        }
+
+        // If there are no enabled rules, the automation does not activate.
+        if (enabledRuleCount <= 0) activated = false;
 
         if (mIsActive != activated)
         {

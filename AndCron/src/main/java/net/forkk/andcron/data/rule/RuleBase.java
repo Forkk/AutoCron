@@ -43,6 +43,13 @@ public abstract class RuleBase extends AutomationComponentBase implements Rule
     }
 
     @Override
+    public void setEnabled(boolean enabled)
+    {
+        super.setEnabled(enabled);
+        getParent().updateActivationState();
+    }
+
+    @Override
     public boolean isActive()
     {
         return mIsActive;
