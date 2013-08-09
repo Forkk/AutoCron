@@ -53,6 +53,14 @@ public abstract class AutomationComponentBase extends ConfigComponentBase
     }
 
     @Override
+    public void setEnabled(boolean enabled)
+    {
+        getSharedPreferences().edit().putBoolean(VALUE_ENABLED, enabled).commit();
+        if (getParent().isEnabled() && enabled) onCreate(getService());
+        else onDestroy(getService());
+    }
+
+    @Override
     public String getName()
     {
         return getType().getTypeName();

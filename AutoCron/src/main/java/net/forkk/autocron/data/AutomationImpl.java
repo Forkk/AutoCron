@@ -454,6 +454,8 @@ public class AutomationImpl extends ConfigComponentBase
     @Override
     public void updateActivationState()
     {
+        if (!isEnabled()) return;
+
         boolean activated = true;
         int enabledRuleCount = 0;
         for (Rule rule : mRules)

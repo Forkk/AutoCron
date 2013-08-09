@@ -40,9 +40,18 @@ public abstract class ActionBase extends AutomationComponentBase implements Acti
         super.setEnabled(enabled);
         if (enabled)
         {
+            // We need this here, because super.setEnabled calls onCreate(), not create().
             if (getParent().isActive()) onActivate(getService());
             else onDeactivate(getService());
         }
+    }
+
+    @Override
+    public void create(AutomationService service)
+    {
+        super.create(service);
+        if (getParent().isActive()) onActivate(getService());
+        else onDeactivate(getService());
     }
 
     @Override
