@@ -14,6 +14,23 @@
  * limitations under the License.
  */
 
+package net.forkk.autocron;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+
+import net.forkk.autocron.data.AutomationService;
 
 
-include ':AutoCron', ':'
+/**
+ * Broadcast receiver that starts the automation service.
+ */
+public class ServiceStartReceiver extends BroadcastReceiver
+{
+    @Override
+    public void onReceive(Context context, Intent intent)
+    {
+        context.startService(new Intent(context, AutomationService.class));
+    }
+}

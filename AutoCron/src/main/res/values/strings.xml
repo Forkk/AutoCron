@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ Copyright 2013 Andrew Okin
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ 	http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+
+    <!-- Generic Info -->
+    <string name="app_name">AutoCron</string>
+
+    <!-- Titles -->
+    <string name="title_automations">Automations</string>
+    <string name="title_edit_automation">Edit Automation</string>
+    <string name="title_activity_edit_component">Edit %1$s</string>
+    <string name="title_component_context_menu">Automation Menu</string>
+    <string name="title_automation_settings">Settings</string>
+    <string name="title_automation_rules">Rules</string>
+    <string name="title_automation_actions">Actions</string>
+    <string name="title_choose_type">Choose a type of %1$s to add.</string>
+
+    <!-- Message Boxes -->
+    <string name="title_new_component">Create New %1$s</string>
+    <string name="message_new_component">Enter a name for the new %1$s.</string>
+    <string name="title_confirm_delete_component">Are you sure you want to do that?</string>
+    <string name="message_confirm_delete_component">You\'re about to delete the %1$s \"%2$s\".\nDeleted items are gone FOREVER (a very long time).\nAre you sure you want to do this?</string>
+
+    <!-- Actions -->
+    <string name="action_settings">Settings</string>
+    <string name="action_add_component">Add new %1$s</string>
+    <string name="action_edit_component">Edit %1$s</string>
+    <string name="action_delete_component">Delete %1$s</string>
+
+    <!-- Generic Strings -->
+    <string name="okay">Okay</string>
+    <string name="cancel">Cancel</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
+    <!-- Action Type Info -->
+    <string name="test_action_title">Test Action</string>
+    <string name="test_action_description">This is a simple test action that just displays a toast notification on screen whenever it activates or deactivates. You can use this to test your automation\'s rules.</string>
+
+    <string name="ringer_mode_action_title">Ringer Mode Action</string>
+    <string name="ringer_mode_action_description">This action changes the device\'s ringer mode to either mute or vibrate.</string>
+
+    <string name="send_sms_action_title">Text Message Action</string>
+    <string name="send_sms_action_description">This action sends a text message.</string>
+
+    <string name="notification_action_title">Notification Action</string>
+    <string name="notification_action_description">An action that displays a notification.</string>
+
+    <!-- Rule Type Info -->
+    <string name="test_rule_title">Test Rule</string>
+    <string name="test_rule_description">This is a simple test rule that displays a notification that you can click on to activate and deactivate the rule. You can use this rule for testing an automation\'s actions.</string>
+
+    <string name="location_rule_title">Location Rule</string>
+    <string name="location_rule_description">A rule that activates when the device is in a certain location.</string>
+
+    <string name="time_range_rule_title">Time Range Rule</string>
+    <string name="time_range_rule_description">A rule that activates every day between the two given times.</string>
+
+    <!-- Misc -->
+    <string name="component_no_description">No description set.</string>
+    <string name="component_list_empty_text">Click the \"Add new %1$s\" button in the top right corner to add a new %1$s.</string>
+    <string name="notification_title_test_rule">Test rule \"%1$s\"</string>
+    <string name="notification_text_test_rule">Tap to %2$s test rule \"%1$s\".</string>
+
+    <!-- Preference Stuff -->
+    <string name="pref_title_name_and_desc">Name &amp; Description</string>
+    <string name="pref_automation_name_title">Name</string>
+    <string name="pref_automation_name_summary">A short name for the automation.</string>
+    <string name="pref_automation_name_dialog_title">Enter a name for this automation.</string>
+    <string name="pref_automation_desc_title">Description</string>
+    <string name="pref_automation_desc_summary">A short description explaining what this automation does.</string>
+    <string name="pref_automation_desc_dialog_title">Enter a description for this automation.</string>
+
+    <string name="pref_component_generic_info">General Information</string>
+
+    <string name="pref_rule_desc_title">Description</string>
+    <string name="pref_rule_desc_summary">A short description explaining what this rule does.</string>
+    <string name="pref_rule_desc_dialog_title">Enter a description for this rule.</string>
+
+    <string name="pref_action_desc_title">Description</string>
+    <string name="pref_action_desc_summary">A short description explaining what this action does.</string>
+    <string name="pref_action_desc_dialog_title">Enter a description for this action.</string>
+
+    <string name="pref_title_activation_msg">Activation Message</string>
+    <string name="pref_summary_activation_msg">Message to be displayed when the action is activated.</string>
+    <string name="pref_dialog_title_activation_msg">Enter a message to show when the action is activated.</string>
+    <string name="pref_default_test_action_activate">Test action activated.</string>
+
+    <string name="pref_title_deactivation_msg">Deactivation Message</string>
+    <string name="pref_summary_deactivation_msg">Message to be displayed when the action is deactivated.</string>
+    <string name="pref_dialog_title_deactivation_msg">Enter a message to show when the action is deactivated.</string>
+    <string name="pref_default_test_action_deactivate">Test action deactivated.</string>
+
+    <string name="pref_title_location">Location</string>
+    <string name="pref_latitude_title">Latitude</string>
+    <string name="pref_latitude_summary">The latitude of the center of the location\'s radius.</string>
+    <string name="pref_latitude_dialog_title">Enter the latitude of the area\'s center.</string>
+    <string name="pref_longitude_title">Longitude</string>
+    <string name="pref_longitude_summary">The longitude of the center of the location\'s radius.</string>
+    <string name="pref_longitude_dialog_title">Enter the longitude of the area\'s center.</string>
+    <string name="pref_radius_title">Radius</string>
+    <string name="pref_radius_summary">The location\'s radius.</string>
+    <string name="pref_radius_dialog_title">Enter the radius of the area.</string>
+
+    <string name="pref_title_time_range">Time Range</string>
+    <string name="pref_title_time_range_start">Start Time</string>
+    <string name="pref_summary_time_range_start">The time at which this rule will activate.</string>
+    <string name="pref_title_time_range_end">End Time</string>
+    <string name="pref_summary_time_range_end">The time at which this rule will deactivate.</string>
+
+    <string name="pref_title_ringer_modes_category">Modes to Set</string>
+    <string name="pref_title_activate_mode">Activation Mode</string>
+    <string name="pref_summary_activate_mode">The ringer mode to set when this action is activated.</string>
+    <string name="pref_title_deactivate_mode">Deactivation Mode</string>
+    <string name="pref_summary_deactivate_mode">The ringer mode to set when this action is deactivated.</string>
+
+    <string name="pref_title_sms_category">Message</string>
+    <string name="pref_title_sms_destination">Send To</string>
+    <string name="pref_summary_sms_destination">The phone number to send the text message to.</string>
+    <string name="pref_title_sms_content">Message Content</string>
+    <string name="pref_summary_sms_content">The content of the message to send.</string>
+
+    <string name="pref_notification_category_title">Notification</string>
+    <string name="pref_notification_action_title_title">Notification Title</string>
+    <string name="pref_notification_action_title_summary">The title for this action\'s notification.</string>
+    <string name="pref_notification_action_title_default">Notification Action Triggered</string>
+    <string name="pref_notification_action_text_title">Notification Text</string>
+    <string name="pref_notification_action_text_summary">The body text to show for this action\'s notification.</string>
+    <string name="pref_notification_action_text_default">Your notification action was activated!</string>
+    <string name="pref_notification_action_ongoing_title">Is Ongoing?</string>
+    <string name="pref_notification_action_ongoing_summary">If this is enabled, this notification will be an ongoing notification. Ongoing notifications cannot be dismissed. This means that the action\'s notification will not be dismissed until the action is no longer active.</string>
+
+    <string-array name="pref_ringer_mode_entries">
+        <item>Don\'t Change</item>
+        <item>Normal</item>
+        <item>Vibrate</item>
+        <item>Silent</item>
+    </string-array>
+
+    <!-- Names of Things -->
+    <string name="rule_upper">Rule</string>
+    <string name="rule_lower">rule</string>
+    <string name="action_upper">Action</string>
+    <string name="action_lower">action</string>
+    <string name="automation_upper">Automation</string>
+    <string name="automation_lower">automation</string>
+</resources>

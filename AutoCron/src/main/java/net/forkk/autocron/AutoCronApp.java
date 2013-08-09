@@ -14,6 +14,26 @@
  * limitations under the License.
  */
 
+package net.forkk.autocron;
+
+import android.app.Application;
+
+import net.forkk.autocron.data.action.ActionType;
+import net.forkk.autocron.data.rule.RuleType;
 
 
-include ':AutoCron', ':'
+/**
+ * AutoCron's application context.
+ */
+public class AutoCronApp extends Application
+{
+    @Override
+    public void onCreate()
+    {
+        super.onCreate();
+
+        // Load rule and action types.
+        RuleType.initialize(this);
+        ActionType.initialize(this);
+    }
+}

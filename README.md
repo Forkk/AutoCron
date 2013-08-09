@@ -1,4 +1,4 @@
-AndCron
+AutoCron
 =======
 
-AndCron is an android automation app. It performs user-specified actions automatically based on user-specified rules.
+AutoCron is an android automation app. It performs user-specified actions automatically based on user-specified rules.

@@ -14,6 +14,20 @@
  * limitations under the License.
  */
 
+package net.forkk.autocron.data.rule;
+
+import net.forkk.autocron.data.AutomationComponent;
 
 
-include ':AutoCron', ':'
+/**
+ * An automation rule that specifies when an automation should activate.
+ */
+public interface Rule extends AutomationComponent
+{
+    /**
+     * Checks if this rule is active.
+     *
+     * @return If the rule is active, true, else false.
+     */
+    public abstract boolean isActive();
+}
