@@ -16,30 +16,39 @@
   ~ limitations under the License.
   -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                  xmlns:autocron="http://schemas.android.com/apk/res/net.forkk.autocron">
     <PreferenceCategory android:title="@string/pref_title_location">
         <net.forkk.autocron.prefs.EditFloatPreference
                 android:key="latitude"
-                android:defaultValue="0.0"
+                android:defaultValue="0"
                 android:title="@string/pref_latitude_title"
                 android:summary="@string/pref_latitude_summary"
                 android:dialogTitle="@string/pref_latitude_dialog_title"
+                android:inputType="numberDecimal|numberSigned"
+                autocron:minValue="-90"
+                autocron:maxValue="+90"
                 />
 
         <net.forkk.autocron.prefs.EditFloatPreference
                 android:key="longitude"
-                android:defaultValue="0.0"
+                android:defaultValue="0"
                 android:title="@string/pref_longitude_title"
                 android:summary="@string/pref_longitude_summary"
                 android:dialogTitle="@string/pref_longitude_dialog_title"
+                android:inputType="numberDecimal|numberSigned"
+                autocron:minValue="-180"
+                autocron:maxValue="+180"
                 />
 
         <net.forkk.autocron.prefs.EditFloatPreference
                 android:key="radius"
-                android:defaultValue="5.0"
+                android:defaultValue="0"
                 android:title="@string/pref_radius_title"
                 android:summary="@string/pref_radius_summary"
                 android:dialogTitle="@string/pref_radius_dialog_title"
+                android:inputType="numberDecimal"
+                autocron:minValue="+1"
                 />
     </PreferenceCategory>
 </PreferenceScreen>

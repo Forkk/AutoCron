@@ -17,8 +17,17 @@
 package net.forkk.autocron.prefs;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.preference.EditTextPreference;
+import android.text.InputFilter;
 import android.util.AttributeSet;
+import android.widget.EditText;
+
+import net.forkk.autocron.R;
+import net.forkk.autocron.util.InputFilterMinMax;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 
 /**
@@ -26,23 +35,74 @@ import android.util.AttributeSet;
  */
 public class EditFloatPreference extends EditTextPreference
 {
+    protected Float mMin;
+
+    protected Float mMax;
+
     public EditFloatPreference(Context context, AttributeSet attrs)
     {
         super(context, attrs);
+
+        try
+        {
+            TypedArray values =
+                    context.obtainStyledAttributes(attrs, R.styleable.EditFloatPreference);
+            assert values != null;
+
+            mMin = null;
+            mMax = null;
+
+            if (values.hasValue(R.styleable.EditFloatPreference_minValue))
+                mMin = values.getFloat(R.styleable.EditFloatPreference_minValue, 0);
+
+            if (values.hasValue(R.styleable.EditFloatPreference_maxValue))
+                mMax = values.getFloat(R.styleable.EditFloatPreference_maxValue, 0);
+
+            if (mMin != null && mMax != null && mMin > mMax)
+                throw new IllegalArgumentException("The minimum value should be less than the maximum value.");
+
+            if (mMin != null || mMax != null)
+            {
+                EditText edit = getEditText();
+                assert edit != null;
+
+                ArrayList<InputFilter> filters = new ArrayList<InputFilter>();
+                Collections.addAll(filters, edit.getFilters());
+                filters.add(new InputFilterMinMax(mMin, mMax));
+                edit.setFilters(filters.toArray(new InputFilter[filters.size()]));
+            }
+        }
+        catch (NumberFormatException e)
+        {
+            throw new IllegalArgumentException("Min and max values must be valid floats.", e);
+        }
     }
 
     @Override
     protected String getPersistedString(String defaultReturnValue)
     {
-        float defaultValue = 0F;
+        float defaultValue = 0;
         if (defaultReturnValue != null) defaultValue = Float.valueOf(defaultReturnValue);
 
         return String.valueOf(getPersistedFloat(defaultValue));
     }
 
     @Override
-    protected boolean persistString(String value)
+    protected boolean persistString(String strValue)
     {
-        return persistFloat(Float.valueOf(value));
+        float value;
+
+        try
+        {
+            value = Float.parseFloat(strValue);
+        }
+        catch (NumberFormatException e)
+        {
+            value = 0;
+            if (mMax != null && value > mMax) value = mMax;
+            if (mMin != null && value < mMin) value = mMin;
+        }
+
+        return persistFloat(value);
     }
 }
