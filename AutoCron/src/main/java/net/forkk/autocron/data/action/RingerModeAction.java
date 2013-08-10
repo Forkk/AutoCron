@@ -52,13 +52,13 @@ public class RingerModeAction extends TriggerActionBase
     }
 
     @Override
-    public void onCreate(AutomationService service)
+    public void onCreate()
     {
 
     }
 
     @Override
-    public void onDestroy(AutomationService service)
+    public void onDestroy()
     {
 
     }

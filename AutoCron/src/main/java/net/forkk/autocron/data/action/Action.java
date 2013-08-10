@@ -17,7 +17,6 @@
 package net.forkk.autocron.data.action;
 
 import net.forkk.autocron.data.AutomationComponent;
-import net.forkk.autocron.data.AutomationService;
 
 
 /**
@@ -29,10 +28,10 @@ public interface Action extends AutomationComponent
      * Called when the action's automation has been activated. This should perform whatever this
      * action is meant to do on activation.
      */
-    public void onActivate(AutomationService service);
+    public void onActivate();
 
     /**
      * Called when the action's automation deactivates.
      */
-    public void onDeactivate(AutomationService service);
+    public void onDeactivate();
 }

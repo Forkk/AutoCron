@@ -40,6 +40,8 @@ public abstract class ConfigComponentBase
 
     private int mId;
 
+    private boolean mIsEnableStateChanging = false;
+
     public ConfigComponentBase(AutomationService service, int id)
     {
         mId = id;
@@ -49,15 +51,15 @@ public abstract class ConfigComponentBase
     }
 
     @Override
-    public void create(AutomationService service)
+    public void create()
     {
-        if (isEnabled()) onCreate(service);
+        if (isEnabled()) onCreate();
     }
 
     @Override
-    public void destroy(AutomationService service)
+    public void destroy()
     {
-        if (isEnabled()) onDestroy(service);
+        if (isEnabled()) onDestroy();
     }
 
     protected AutomationService getService()
@@ -68,19 +70,13 @@ public abstract class ConfigComponentBase
     /**
      * Called after the automation service finishes loading components. This should perform all
      * necessary initialization for this component.
-     *
-     * @param service
-     *         The automation service that this component belongs to.
      */
-    protected abstract void onCreate(AutomationService service);
+    protected abstract void onCreate();
 
     /**
      * Called when the automation service is destroyed. This should perform all necessary cleanup.
-     *
-     * @param service
-     *         The automation service that this component belongs to.
      */
-    protected abstract void onDestroy(AutomationService service);
+    protected abstract void onDestroy();
 
     /**
      * Gets this component's shared preferences name for the given component ID.
@@ -135,15 +131,18 @@ public abstract class ConfigComponentBase
     @Override
     public boolean isEnabled()
     {
-        return getSharedPreferences().getBoolean(VALUE_ENABLED, false);
+        return mIsEnableStateChanging || getSharedPreferences().getBoolean(VALUE_ENABLED, false);
     }
 
     @Override
     public void setEnabled(boolean enabled)
     {
+        // HACK: To fix some issues, components are always enabled while its enabled state is changing.
+        mIsEnableStateChanging = true;
+        if (enabled) create();
+        else destroy();
         getSharedPreferences().edit().putBoolean(VALUE_ENABLED, enabled).commit();
-        if (enabled) onCreate(getService());
-        else onDestroy(getService());
+        mIsEnableStateChanging = false;
     }
 
     @Override

@@ -26,13 +26,6 @@ public interface AutomationComponent extends ConfigComponent
     public abstract void removeChangeListener(ComponentChangeListener listener);
 
     /**
-     * Called when this component's parent automation is disabled. This should call destroy on the
-     * component, causing the component's onDestroy function to be called if the component is
-     * enabled.
-     */
-    public abstract void onParentDisabled();
-
-    /**
      * Gets this automation's component type. This should return the same object for all components
      * of this type.
      *

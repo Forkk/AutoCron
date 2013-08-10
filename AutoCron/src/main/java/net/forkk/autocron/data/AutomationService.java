@@ -132,7 +132,7 @@ public class AutomationService extends Service
 
         for (Automation automation : mAutomations)
         {
-            if (automation.isEnabled()) automation.create(this);
+            if (automation.isEnabled()) automation.create();
         }
     }
 
@@ -145,7 +145,7 @@ public class AutomationService extends Service
 
         for (Automation automation : mAutomations)
         {
-            automation.destroy(this);
+            automation.destroy();
         }
     }
 
@@ -209,7 +209,7 @@ public class AutomationService extends Service
 
         edit.putStringSet(VALUE_AUTOMATION_IDS, automationIDs);
         mAutomations.add(automation);
-        automation.create(this);
+        automation.create();
         boolean success = edit.commit();
         if (!success) Log.e(LOGGER_TAG, "Failed to commit changes to preferences.");
         else onAutomationListChange();
@@ -240,7 +240,7 @@ public class AutomationService extends Service
         getSharedPreferences(automation.getSharedPreferencesName(), MODE_PRIVATE).edit().clear()
                 .commit();
 
-        automation.destroy(this);
+        automation.destroy();
         mAutomations.remove(automation);
         boolean success = edit.commit();
         if (!success) Log.e(LOGGER_TAG, "Failed to commit changes to preferences.");

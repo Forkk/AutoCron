@@ -27,19 +27,13 @@ public interface ConfigComponent
 {
     /**
      * Initializes the component, calling onCreate if it is enabled
-     *
-     * @param service
-     *         The automation service that this component belongs to.
      */
-    public abstract void create(AutomationService service);
+    public abstract void create();
 
     /**
      * Destroy the component, calling onDestroy if it is enabled
-     *
-     * @param service
-     *         The automation service that this component belongs to.
      */
-    public abstract void destroy(AutomationService service);
+    public abstract void destroy();
 
     /**
      * @return This component's ID.

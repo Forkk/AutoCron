@@ -96,21 +96,18 @@ public class AutomationImpl extends ConfigComponentBase
     /**
      * Called after the automation service finishes loading components. This should perform all
      * necessary initialization for this component.
-     *
-     * @param service
-     *         Context to initialize with.
      */
     @Override
-    public void onCreate(AutomationService service)
+    public void onCreate()
     {
         for (Rule rule : mRules)
         {
-            rule.create(service);
+            rule.create();
         }
 
         for (Action action : mActions)
         {
-            action.create(service);
+            action.create();
         }
     }
 
@@ -118,16 +115,16 @@ public class AutomationImpl extends ConfigComponentBase
      * Called when the automation service is destroyed. This should perform all necessary cleanup.
      */
     @Override
-    public void onDestroy(AutomationService service)
+    public void onDestroy()
     {
         for (Rule rule : mRules)
         {
-            rule.destroy(service);
+            rule.destroy();
         }
 
         for (Action action : mActions)
         {
-            action.destroy(service);
+            action.destroy();
         }
     }
 
@@ -189,23 +186,6 @@ public class AutomationImpl extends ConfigComponentBase
         for (T component : list)
             context.getSharedPreferences(component.getSharedPreferencesName(), Context.MODE_PRIVATE)
                    .registerOnSharedPreferenceChangeListener(this);
-    }
-
-    @Override
-    public void setEnabled(boolean enabled)
-    {
-        getSharedPreferences().edit().putBoolean(VALUE_ENABLED, enabled).commit();
-        if (enabled) onCreate(getService());
-        else
-        {
-            onDestroy(getService());
-
-            for (Action action : mActions)
-                action.onParentDisabled();
-
-            for (Rule rule : mRules)
-                rule.onParentDisabled();
-        }
     }
 
     /**
@@ -307,7 +287,7 @@ public class AutomationImpl extends ConfigComponentBase
         edit.putStringSet(typeInterface.getIdListKey(), componentIDs);
         typeInterface.getList().add(component);
         component.addChangeListener(this);
-        component.create(getService());
+        component.create();
         boolean success = edit.commit();
         if (!success) Log.e(LOGGER_TAG, "Failed to commit changes to preferences.");
         else onComponentListChange();
@@ -343,7 +323,7 @@ public class AutomationImpl extends ConfigComponentBase
                 .getSharedPreferences(component.getSharedPreferencesName(), Context.MODE_PRIVATE)
                 .edit().clear().commit();
 
-        component.destroy(getService());
+        component.destroy();
         typeInterface.getList().remove(component);
         boolean success = edit.commit();
         if (!success) Log.e(LOGGER_TAG, "Failed to commit changes to preferences.");
@@ -479,12 +459,12 @@ public class AutomationImpl extends ConfigComponentBase
             if (mIsActive)
             {
                 for (Action action : mActions)
-                    if (action.isEnabled()) action.onActivate(getService());
+                    if (action.isEnabled()) action.onActivate();
             }
             else
             {
                 for (Action action : mActions)
-                    if (action.isEnabled()) action.onDeactivate(getService());
+                    if (action.isEnabled()) action.onDeactivate();
             }
         }
     }
@@ -499,18 +479,18 @@ public class AutomationImpl extends ConfigComponentBase
     public void reloadComponents(AutomationService service)
     {
         for (Rule rule : mRules)
-            rule.destroy(service);
+            rule.destroy();
 
         for (Action action : mActions)
-            action.destroy(service);
+            action.destroy();
 
         loadConfig(service);
 
         for (Rule rule : mRules)
-            rule.create(service);
+            rule.create();
 
         for (Action action : mActions)
-            action.create(service);
+            action.create();
     }
 
     /**

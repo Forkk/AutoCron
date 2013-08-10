@@ -41,35 +41,21 @@ public abstract class AutomationComponentBase extends ConfigComponentBase
     }
 
     @Override
-    public void create(AutomationService service)
+    public void create()
     {
-        if (getParent().isEnabled()) super.create(service);
+        if (getParent().isEnabled()) super.create();
     }
 
     @Override
-    public void destroy(AutomationService service)
+    public void destroy()
     {
-        if (getParent().isEnabled()) super.destroy(service);
-    }
-
-    @Override
-    public void setEnabled(boolean enabled)
-    {
-        getSharedPreferences().edit().putBoolean(VALUE_ENABLED, enabled).commit();
-        if (getParent().isEnabled() && enabled) onCreate(getService());
-        else onDestroy(getService());
+        if (getParent().isEnabled()) super.destroy();
     }
 
     @Override
     public String getName()
     {
         return getType().getTypeName();
-    }
-
-    @Override
-    public void onParentDisabled()
-    {
-        super.destroy(getService());
     }
 
     /**

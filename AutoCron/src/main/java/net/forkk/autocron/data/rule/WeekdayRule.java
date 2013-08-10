@@ -119,27 +119,23 @@ public class WeekdayRule extends RuleBase implements AutomationService.IntentLis
     /**
      * Called after the automation service finishes loading components. This should perform all
      * necessary initialization for this component.
-     *
-     * @param service
-     *         The automation service that this component belongs to.
      */
     @Override
-    protected void onCreate(AutomationService service)
+    protected void onCreate()
     {
-        mIntentListenerId = service.registerIntentListener(this);
+        mIntentListenerId = getService().registerIntentListener(this);
         setAlarm();
         updateState();
     }
 
     /**
      * Called when the automation service is destroyed. This should perform all necessary cleanup.
-     *
-     * @param service
-     *         The automation service that this component belongs to.
      */
     @Override
-    protected void onDestroy(AutomationService service)
+    protected void onDestroy()
     {
+        final AutomationService service = getService();
+
         AlarmManager alarmManager = (AlarmManager) service.getSystemService(Context.ALARM_SERVICE);
         assert alarmManager != null;
         alarmManager.cancel(mUpdateIntent);

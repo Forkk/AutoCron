@@ -141,24 +141,18 @@ public class SendSMSAction extends TriggerActionBase
     /**
      * Called after the automation service finishes loading components. This should perform all
      * necessary initialization for this component.
-     *
-     * @param service
-     *         The automation service that this component belongs to.
      */
     @Override
-    public void onCreate(AutomationService service)
+    public void onCreate()
     {
 
     }
 
     /**
      * Called when the automation service is destroyed. This should perform all necessary cleanup.
-     *
-     * @param service
-     *         The automation service that this component belongs to.
      */
     @Override
-    public void onDestroy(AutomationService service)
+    public void onDestroy()
     {
 
     }

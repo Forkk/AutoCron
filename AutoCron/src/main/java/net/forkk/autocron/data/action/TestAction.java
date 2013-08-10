@@ -55,28 +55,28 @@ public class TestAction extends ActionBase
      * action is meant to do on activation.
      */
     @Override
-    public void onActivate(AutomationService service)
+    public void onActivate()
     {
-        Toast.makeText(service, getActivationMessage(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(getService(), getActivationMessage(), Toast.LENGTH_SHORT).show();
     }
 
     /**
      * Called when the action's automation deactivates.
      */
     @Override
-    public void onDeactivate(AutomationService service)
+    public void onDeactivate()
     {
-        Toast.makeText(service, getDeactivationMessage(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(getService(), getDeactivationMessage(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onCreate(AutomationService service)
+    public void onCreate()
     {
 
     }
 
     @Override
-    public void onDestroy(AutomationService service)
+    public void onDestroy()
     {
 
     }

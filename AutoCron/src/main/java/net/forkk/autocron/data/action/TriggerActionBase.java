@@ -41,7 +41,7 @@ public abstract class TriggerActionBase extends ActionBase
      * action is meant to do on activation.
      */
     @Override
-    public void onActivate(AutomationService service)
+    public void onActivate()
     {
         if (getSharedPreferences().getBoolean("trigger_activate", false)) onTrigger();
     }
@@ -50,7 +50,7 @@ public abstract class TriggerActionBase extends ActionBase
      * Called when the action's automation deactivates.
      */
     @Override
-    public void onDeactivate(AutomationService service)
+    public void onDeactivate()
     {
         if (getSharedPreferences().getBoolean("trigger_deactivate", false)) onTrigger();
     }

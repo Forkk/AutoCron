@@ -67,26 +67,22 @@ public class LocationRule extends RuleBase
     /**
      * Called after the automation service finishes loading components. This should perform all
      * necessary initialization for this component.
-     *
-     * @param service
-     *         The automation service that this component belongs to.
      */
     @Override
-    public void onCreate(AutomationService service)
+    public void onCreate()
     {
+        final AutomationService service = getService();
         service.bindService(new Intent(service, GeofenceService.class), this,
                             Context.BIND_AUTO_CREATE);
     }
 
     /**
      * Called when the automation service is destroyed. This should perform all necessary cleanup.
-     *
-     * @param service
-     *         The automation service that this component belongs to.
      */
     @Override
-    public void onDestroy(AutomationService service)
+    public void onDestroy()
     {
+        final AutomationService service = getService();
         mBinder.unregisterClient(mRequestId);
 
         service.unbindService(this);
@@ -104,7 +100,7 @@ public class LocationRule extends RuleBase
 
     private float getRadius()
     {
-        return getSharedPreferences().getFloat("radius", 5);
+        return getSharedPreferences().getFloat("radius", 100);
     }
 
     @Override

@@ -63,13 +63,11 @@ public class TestRule extends RuleBase implements AutomationService.IntentListen
     /**
      * Called after the automation service finishes loading components. This should perform all
      * necessary initialization for this component.
-     *
-     * @param service
-     *         Context to initialize with.
      */
     @Override
-    public void onCreate(AutomationService service)
+    public void onCreate()
     {
+        final AutomationService service = getService();
         mIntentListenerId = service.registerIntentListener(this);
         updateNotification(service);
     }
@@ -78,8 +76,9 @@ public class TestRule extends RuleBase implements AutomationService.IntentListen
      * Called when the automation service is destroyed. This should perform all necessary cleanup.
      */
     @Override
-    public void onDestroy(AutomationService service)
+    public void onDestroy()
     {
+        final AutomationService service = getService();
         NotificationManager notificationManager =
                 (NotificationManager) service.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(NOTIFICATION_TAG, getId());

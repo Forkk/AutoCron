@@ -93,37 +93,36 @@ public class TimeRangeRule extends RuleBase implements AutomationService.IntentL
     /**
      * Called after the automation service finishes loading components. This should perform all
      * necessary initialization for this component.
-     *
-     * @param service
-     *         The automation service that this component belongs to.
      */
     @Override
-    public void onCreate(AutomationService service)
+    public void onCreate()
     {
+        final AutomationService service = getService();
+
         mStartListenerId = service.registerIntentListener(this);
         mEndListenerId = service.registerIntentListener(this);
 
-        setAlarms(service);
+        setAlarms();
     }
 
     /**
      * Called when the automation service is destroyed. This should perform all necessary cleanup.
-     *
-     * @param service
-     *         The automation service that this component belongs to.
      */
     @Override
-    public void onDestroy(AutomationService service)
+    public void onDestroy()
     {
-        AlarmManager alarmManager = (AlarmManager) service.getSystemService(Context.ALARM_SERVICE);
+        AlarmManager alarmManager =
+                (AlarmManager) getService().getSystemService(Context.ALARM_SERVICE);
         assert alarmManager != null;
 
         alarmManager.cancel(mPendingStartIntent);
         alarmManager.cancel(mPendingEndIntent);
     }
 
-    public void setAlarms(AutomationService service)
+    public void setAlarms()
     {
+        final AutomationService service = getService();
+
         AlarmManager alarmManager = (AlarmManager) service.getSystemService(Context.ALARM_SERVICE);
         assert alarmManager != null;
 
@@ -189,7 +188,7 @@ public class TimeRangeRule extends RuleBase implements AutomationService.IntentL
             // Hack to update the end time in the UI when it is corrected to start time + 1.
             mEndTimePreference.setValues(hour, minute);
         }
-        else setAlarms(getParent().getService());
+        else setAlarms();
     }
 
     /**

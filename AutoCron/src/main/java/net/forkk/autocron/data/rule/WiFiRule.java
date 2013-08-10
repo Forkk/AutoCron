@@ -84,28 +84,22 @@ public class WiFiRule extends RuleBase
     /**
      * Called after the automation service finishes loading components. This should perform all
      * necessary initialization for this component.
-     *
-     * @param service
-     *         The automation service that this component belongs to.
      */
     @Override
-    protected void onCreate(AutomationService service)
+    protected void onCreate()
     {
-        service.registerReceiver(mReceiver,
-                                 new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        getService().registerReceiver(mReceiver,
+                                      new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         updateState();
     }
 
     /**
      * Called when the automation service is destroyed. This should perform all necessary cleanup.
-     *
-     * @param service
-     *         The automation service that this component belongs to.
      */
     @Override
-    protected void onDestroy(AutomationService service)
+    protected void onDestroy()
     {
-        service.unregisterReceiver(mReceiver);
+        getService().unregisterReceiver(mReceiver);
     }
 
     @Override
