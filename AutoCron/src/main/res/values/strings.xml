@@ -75,6 +75,9 @@
     <string name="weekday_rule_title">Week Day Rule</string>
     <string name="weekday_rule_description">A rule that activates only on certain days of the week.</string>
 
+    <string name="wifi_rule_title">Wi-Fi Rule</string>
+    <string name="wifi_rule_description">A rule that activates based on your current Wi-Fi network.</string>
+
     <!-- Misc -->
     <string name="component_no_description">No description set.</string>
     <string name="component_list_empty_text">Click the \"Add new %1$s\" button in the top right corner to add a new %1$s.</string>
@@ -168,6 +171,11 @@
         <item>Sunday</item>
     </string-array>
 
+    <string name="pref_title_wifi_category">Wi-Fi</string>
+    <string name="pref_title_wifi_ssid">Network SSID</string>
+    <string name="pref_summary_wifi_ssid">The SSID of the Wi-Fi network that activates this rule.</string>
+    <string name="pref_dialog_msg_wifi_ssid">Enter the SSID of the Wi-Fi network that should activate this rule. Leave this blank for any network.</string>
+
     <!-- Names of Things -->
     <string name="rule_upper">Rule</string>
     <string name="rule_lower">rule</string>
@@ -175,10 +183,4 @@
     <string name="action_lower">action</string>
     <string name="automation_upper">Automation</string>
     <string name="automation_lower">automation</string>
-    <string name="wifi_rule_title">Wi-Fi Rule</string>
-    <string name="wifi_rule_description">A rule that activates based on your current Wi-Fi network.</string>
-    <string name="pref_title_wifi_category">Wi-Fi</string>
-    <string name="pref_title_wifi_ssid">Network SSID</string>
-    <string name="pref_summary_wifi_ssid">The SSID of the Wi-Fi network that activates this rule.</string>
-    <string name="pref_dialog_msg_wifi_ssid">Enter the SSID of the Wi-Fi network that should activate this rule. Leave this blank for any network.</string>
 </resources>
