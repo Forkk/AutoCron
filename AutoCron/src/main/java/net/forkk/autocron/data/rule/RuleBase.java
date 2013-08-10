@@ -56,6 +56,12 @@ public abstract class RuleBase extends AutomationComponentBase implements Rule
     }
 
     @Override
+    public boolean isInverted()
+    {
+        return getSharedPreferences().getBoolean("inverted", false);
+    }
+
+    @Override
     protected String getSharedPreferencesName(int id)
     {
         return "rule_" + id;

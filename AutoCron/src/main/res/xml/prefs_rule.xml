@@ -25,4 +25,13 @@
                 android:dialogTitle="@string/pref_rule_desc_dialog_title"
                 />
     </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_title_rule_settings">
+        <CheckBoxPreference
+                android:key="inverted"
+                android:title="@string/pref_title_rule_inverted"
+                android:summary="@string/pref_summary_rule_inverted"
+                android:defaultValue="false"
+                />
+    </PreferenceCategory>
 </PreferenceScreen>

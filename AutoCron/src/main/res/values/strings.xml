@@ -176,6 +176,10 @@
     <string name="pref_summary_wifi_ssid">The SSID of the Wi-Fi network that activates this rule.</string>
     <string name="pref_dialog_msg_wifi_ssid">Enter the SSID of the Wi-Fi network that should activate this rule. Leave this blank for any network.</string>
 
+    <string name="pref_title_rule_settings">Rule Settings</string>
+    <string name="pref_title_rule_inverted">Invert Rule</string>
+    <string name="pref_summary_rule_inverted">Inverted rules activate their automation when they are inactive and deactivate it when they are active.</string>
+
     <!-- Names of Things -->
     <string name="rule_upper">Rule</string>
     <string name="rule_lower">rule</string>

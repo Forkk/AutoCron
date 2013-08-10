@@ -30,4 +30,10 @@ public interface Rule extends AutomationComponent
      * @return If the rule is active, true, else false.
      */
     public abstract boolean isActive();
+
+    /**
+     * Checks if this is an inverted rule. If a rule is inverted, its active state is inverted when
+     * determining if the automation should be active.
+     */
+    public abstract boolean isInverted();
 }

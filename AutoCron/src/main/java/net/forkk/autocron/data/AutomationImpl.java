@@ -463,7 +463,10 @@ public class AutomationImpl extends ConfigComponentBase
             if (rule.isEnabled())
             {
                 enabledRuleCount++;
-                if (!rule.isActive()) activated = false;
+
+                // If the rule is inverted and active or the rule is not inverted and inactive, 
+                // consider the rule inactive.
+                if (rule.isInverted() == rule.isActive()) activated = false;
             }
         }
 
