@@ -30,7 +30,7 @@ import net.forkk.autocron.data.ComponentType;
 /**
  * An action that changes the device's ringer mode.
  */
-public class RingerModeAction extends ActionBase
+public class RingerModeAction extends TriggerActionBase
 {
     private static ActionType sComponentType;
 
@@ -64,20 +64,21 @@ public class RingerModeAction extends ActionBase
     }
 
     @Override
-    public void onActivate(AutomationService service)
+    public void onTrigger()
     {
-        changeMode(service, getSharedPreferences().getString("activate_mode", "none"));
+        changeMode(getService(), getSharedPreferences().getString("mode", null));
     }
 
     @Override
-    public void onDeactivate(AutomationService service)
+    public void addPreferencesToFragment(PreferenceFragment fragment)
     {
-        changeMode(service, getSharedPreferences().getString("deactivate_mode", "none"));
+        super.addPreferencesToFragment(fragment);
+        fragment.addPreferencesFromResource(R.xml.prefs_ringer_mode_action);
     }
 
     public void changeMode(Context context, String mode)
     {
-        if (!mode.equals("none"))
+        if (mode != null)
         {
             AudioManager audioManager =
                     (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
@@ -88,13 +89,6 @@ public class RingerModeAction extends ActionBase
             else if (mode.equals("silent"))
                 audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
         }
-    }
-
-    @Override
-    public void addPreferencesToFragment(PreferenceFragment fragment)
-    {
-        super.addPreferencesToFragment(fragment);
-        fragment.addPreferencesFromResource(R.xml.prefs_ringer_mode_action);
     }
 
     /**

@@ -39,7 +39,7 @@ import net.forkk.autocron.data.ComponentType;
 /**
  * An action that sends an SMS message.
  */
-public class SendSMSAction extends ActionBase
+public class SendSMSAction extends TriggerActionBase
 {
     private static final String LOGGER_TAG = AutomationService.LOGGER_TAG;
 
@@ -74,14 +74,11 @@ public class SendSMSAction extends ActionBase
         return nextSentPendingId++;
     }
 
-    /**
-     * Called when the action's automation has been activated. This should perform whatever this
-     * action is meant to do on activation.
-     */
     @Override
-    public void onActivate(final AutomationService service)
+    public void onTrigger()
     {
         // TODO: Handle errors with sending SMS.
+        final AutomationService service = getService();
 
         SharedPreferences preferences = getSharedPreferences();
 
@@ -139,15 +136,6 @@ public class SendSMSAction extends ActionBase
             SmsManager smsManager = SmsManager.getDefault();
             smsManager.sendTextMessage(smsDestAddress, null, smsContent, sentIntent, null);
         }
-    }
-
-    /**
-     * Called when the action's automation deactivates.
-     */
-    @Override
-    public void onDeactivate(AutomationService service)
-    {
-
     }
 
     /**

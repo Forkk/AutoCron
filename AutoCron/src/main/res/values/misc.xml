@@ -17,7 +17,6 @@
 
 <resources>
     <string-array name="pref_ringer_entry_values">
-        <item>none</item>
         <item>normal</item>
         <item>vibrate</item>
         <item>silent</item>

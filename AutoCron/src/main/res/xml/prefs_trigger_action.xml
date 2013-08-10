@@ -17,13 +17,19 @@
   -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="@string/pref_title_ringer_modes_category">
-        <ListPreference
-                android:key="mode"
-                android:title="@string/pref_title_activate_mode"
-                android:summary="@string/pref_summary_activate_mode"
-                android:entries="@array/pref_ringer_mode_entry_titles"
-                android:entryValues="@array/pref_ringer_entry_values"
+    <PreferenceCategory android:title="@string/pref_title_trigger">
+        <CheckBoxPreference
+                android:key="trigger_activate"
+                android:title="@string/pref_title_trigger_activate"
+                android:summary="@string/pref_summary_trigger_activate"
+                android:defaultValue="false"
+                />
+
+        <CheckBoxPreference
+                android:key="trigger_deactivate"
+                android:title="@string/pref_title_trigger_deactivate"
+                android:summary="@string/pref_summary_trigger_deactivate"
+                android:defaultValue="false"
                 />
     </PreferenceCategory>
 </PreferenceScreen>
