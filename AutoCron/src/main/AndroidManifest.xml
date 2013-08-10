@@ -21,7 +21,7 @@
           android:versionCode="1"
           android:versionName="0.1.0">
 
-<uses-sdk
+    <uses-sdk
             android:minSdkVersion="14"
             android:targetSdkVersion="18"/>
 
@@ -30,6 +30,8 @@
     <uses-permission android:name="android.permission.SEND_SMS"/>
     <uses-permission android:name="android.permission.WRITE_SMS"/>
     <uses-permission android:name="android.permission.READ_SMS"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 
     <application
             android:name=".AutoCronApp"

@@ -175,4 +175,10 @@
     <string name="action_lower">action</string>
     <string name="automation_upper">Automation</string>
     <string name="automation_lower">automation</string>
+    <string name="wifi_rule_title">Wi-Fi Rule</string>
+    <string name="wifi_rule_description">A rule that activates based on your current Wi-Fi network.</string>
+    <string name="pref_title_wifi_category">Wi-Fi</string>
+    <string name="pref_title_wifi_ssid">Network SSID</string>
+    <string name="pref_summary_wifi_ssid">The SSID of the Wi-Fi network that activates this rule.</string>
+    <string name="pref_dialog_msg_wifi_ssid">Enter the SSID of the Wi-Fi network that should activate this rule. Leave this blank for any network.</string>
 </resources>
