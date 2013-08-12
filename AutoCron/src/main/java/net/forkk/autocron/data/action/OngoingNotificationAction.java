@@ -33,19 +33,20 @@ import net.forkk.autocron.data.ComponentType;
 /**
  * An action that displays a notification in the UI.
  */
-public class NotificationAction extends ActionBase
+public class OngoingNotificationAction extends ActionBase
 {
     private static ActionType sComponentType;
 
-    private static final String NOTIFICATION_TAG = "net.forkk.autocron.notification_action";
+    private static final String NOTIFICATION_TAG = "net.forkk.autocron.OngoingNotificationAction";
 
     private Notification mNotification;
 
     public static ActionType initComponentType(Resources res)
     {
-        return sComponentType = new ActionType(res.getString(R.string.notification_action_title),
-                                               res.getString(R.string.notification_action_description),
-                                               NotificationAction.class);
+        return sComponentType =
+                       new ActionType(res.getString(R.string.ongoing_notification_action_title),
+                                      res.getString(R.string.ongoing_notification_action_description),
+                                      OngoingNotificationAction.class);
     }
 
     public static ActionType getComponentType()
@@ -53,7 +54,7 @@ public class NotificationAction extends ActionBase
         return sComponentType;
     }
 
-    public NotificationAction(Automation parent, AutomationService service, int id)
+    public OngoingNotificationAction(Automation parent, AutomationService service, int id)
     {
         super(parent, service, id);
     }
@@ -91,16 +92,16 @@ public class NotificationAction extends ActionBase
 
         SharedPreferences prefs = getSharedPreferences();
 
-        String title = prefs.getString("notification_title", getResources()
-                                                                     .getString(R.string.pref_notification_action_title_default));
-        String text = prefs.getString("notification_text", getResources()
-                                                                   .getString(R.string.pref_notification_action_text_default));
-        boolean isOngoing = prefs.getBoolean("notification_ongoing", false);
+        String defTitle = getResources().getString(R.string.pref_notification_action_title_default);
+        String defText = getResources().getString(R.string.pref_notification_action_text_default);
+
+        String title = prefs.getString("notification_title", defTitle);
+        String text = prefs.getString("notification_text", defText);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(service);
         builder.setContentTitle(title);
         builder.setContentText(text);
-        builder.setOngoing(isOngoing);
+        builder.setOngoing(true);
         builder.setSmallIcon(R.drawable.ic_notification_icon);
 
         mNotification = builder.build();

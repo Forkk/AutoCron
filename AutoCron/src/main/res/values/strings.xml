@@ -59,8 +59,11 @@
     <string name="send_sms_action_title">Text Message Action</string>
     <string name="send_sms_action_description">This action sends a text message.</string>
 
-    <string name="notification_action_title">Notification Action</string>
-    <string name="notification_action_description">An action that displays a notification.</string>
+    <string name="ongoing_notification_action_title">Ongoing Notification Action</string>
+    <string name="ongoing_notification_action_description">An action that displays a notification while it is active and hides the notification when it deactivates.</string>
+
+    <string name="trigger_notification_action_title">Triggered Notification Action</string>
+    <string name="trigger_notification_action_description">An action that displays a notification when it is triggered.</string>
 
     <!-- Rule Type Info -->
     <string name="test_rule_title">Test Rule</string>
@@ -148,12 +151,10 @@
     <string name="pref_notification_category_title">Notification</string>
     <string name="pref_notification_action_title_title">Notification Title</string>
     <string name="pref_notification_action_title_summary">The title for this action\'s notification.</string>
-    <string name="pref_notification_action_title_default">Notification Action Triggered</string>
+    <string name="pref_notification_action_title_default">Notification</string>
     <string name="pref_notification_action_text_title">Notification Text</string>
     <string name="pref_notification_action_text_summary">The body text to show for this action\'s notification.</string>
-    <string name="pref_notification_action_text_default">Your notification action was activated!</string>
-    <string name="pref_notification_action_ongoing_title">Is Ongoing?</string>
-    <string name="pref_notification_action_ongoing_summary">If this is enabled, this notification will be an ongoing notification. Ongoing notifications cannot be dismissed. This means that the action\'s notification will not be dismissed until the action is no longer active.</string>
+    <string name="pref_notification_action_text_default">Notification action activated!</string>
 
     <string name="pref_title_weekday_rule_category">Weekday</string>
     <string name="pref_title_weekday">Active Weekdays</string>

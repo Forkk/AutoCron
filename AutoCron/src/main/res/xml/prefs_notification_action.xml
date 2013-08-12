@@ -31,12 +31,5 @@
                 android:summary="@string/pref_notification_action_text_summary"
                 android:defaultValue="@string/pref_notification_action_text_default"
                 />
-
-        <CheckBoxPreference
-                android:key="notification_ongoing"
-                android:title="@string/pref_notification_action_ongoing_title"
-                android:summary="@string/pref_notification_action_ongoing_summary"
-                android:defaultValue="false"
-                />
     </PreferenceCategory>
 </PreferenceScreen>
