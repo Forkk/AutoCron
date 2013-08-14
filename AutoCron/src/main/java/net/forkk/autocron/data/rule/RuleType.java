@@ -86,6 +86,7 @@ public class RuleType extends ComponentType<Rule>
         types.add(WeekdayRule.initComponentType(res));
         types.add(LocationRule.initComponentType(res));
         types.add(WiFiRule.initComponentType(res));
+        types.add(NfcRule.initComponentType(res));
         types.add(TestRule.initComponentType(res));
 
         for (RuleType type : types)

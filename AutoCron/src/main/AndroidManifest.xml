@@ -32,6 +32,7 @@
     <uses-permission android:name="android.permission.READ_SMS"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.NFC"/>
 
     <application
             android:name=".AutoCronApp"
@@ -59,6 +60,17 @@
                 android:label="@string/title_activity_edit_component"
                 />
 
+        <activity android:name="net.forkk.autocron.data.NfcHandler">
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="application/net.forkk.autocron"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name="net.forkk.autocron.NfcRuleWriteActivity"
+                  android:theme="@android:style/Theme.NoDisplay"/>
+
         <receiver android:name="net.forkk.autocron.ServiceStartReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
@@ -72,6 +84,11 @@
 
         <service
                 android:name="net.forkk.autocron.data.GeofenceService"
+                android:enabled="true"
+                android:exported="false"/>
+
+        <service
+                android:name="net.forkk.autocron.data.NfcService"
                 android:enabled="true"
                 android:exported="false"/>
     </application>

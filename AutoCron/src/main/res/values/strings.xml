@@ -31,12 +31,6 @@
     <string name="title_automation_actions">Actions</string>
     <string name="title_choose_type">Choose a type of %1$s to add.</string>
 
-    <!-- Message Boxes -->
-    <string name="title_new_component">Create New %1$s</string>
-    <string name="message_new_component">Enter a name for the new %1$s.</string>
-    <string name="title_confirm_delete_component">Are you sure you want to do that?</string>
-    <string name="message_confirm_delete_component">You\'re about to delete the %1$s \"%2$s\".\nDeleted items are gone FOREVER (a very long time).\nAre you sure you want to do this?</string>
-
     <!-- Actions -->
     <string name="action_settings">Settings</string>
     <string name="action_add_component">Add new %1$s</string>
@@ -80,6 +74,9 @@
 
     <string name="wifi_rule_title">Wi-Fi Rule</string>
     <string name="wifi_rule_description">A rule that activates based on your current Wi-Fi network.</string>
+
+    <string name="nfc_rule_title">NFC Rule</string>
+    <string name="nfc_rule_description">A rule that activates when an NFC tag is discovered that contains this rule\'s ID.</string>
 
     <!-- Misc -->
     <string name="component_no_description">No description set.</string>
@@ -184,6 +181,14 @@
     <string name="pref_title_trigger_deactivate">Trigger on deactivate?</string>
     <string name="pref_summary_trigger_deactivate">If checked, this action will be executed when the automation becomes deactivated.</string>
 
+    <string name="pref_title_nfc_rule">NFC</string>
+    <string name="pref_title_nfc_write_activate">Write Activate Tag</string>
+    <string name="pref_summary_nfc_write_activate">Write an NFC tag that will activate this rule.</string>
+    <string name="pref_title_nfc_write_deactivate">Write Deactivate Tag</string>
+    <string name="pref_summary_nfc_write_deactivate">Write an NFC tag that will deactivate this rule.</string>
+    <string name="pref_title_nfc_write_toggle">Write Toggle Tag</string>
+    <string name="pref_summary_nfc_write_toggle">Write an NFC tag that will toggle this rule.</string>
+
     <!-- Names of Things -->
     <string name="rule_upper">Rule</string>
     <string name="rule_lower">rule</string>
@@ -191,4 +196,31 @@
     <string name="action_lower">action</string>
     <string name="automation_upper">Automation</string>
     <string name="automation_lower">automation</string>
+
+    <!-- Messages -->
+    <string name="title_new_component">Create New %1$s</string>
+    <string name="message_new_component">Enter a name for the new %1$s.</string>
+    <string name="title_confirm_delete_component">Are you sure you want to do that?</string>
+    <string name="message_confirm_delete_component">You\'re about to delete the %1$s \"%2$s\".\nDeleted items are gone FOREVER (a very long time).\nAre you sure you want to do this?</string>
+
+    <string name="nfc_write_wait_message">Please place your device within range of an NFC tag to write it.</string>
+    <string name="nfc_write_wait_title">Write NFC Tag</string>
+    <string name="nfc_writing_message">Writing NFC tag, please wait.</string>
+
+    <string name="title_tag_write_success">Success</string>
+    <string name="message_tag_write_success">The NFC tag was written successfully.</string>
+
+    <!-- Errors -->
+    <string name="error_nfc_tag_generic_title">Error Writing NFC Tag</string>
+    <string name="error_message_unexpected">An unexpected error occurred.</string>
+    <string name="error_message_tag_cant_ndef">Either this NFC tag does not support NDEF or this device cannot format the tag to NDEF.</string>
+    <string name="error_message_tag_lost">The connection to the NFC tag was lost while trying to write data to it.</string>
+    <string name="error_message_tag_formatting_error">An unknown error occurred when trying to format the NFC tag.</string>
+    <string name="error_rule_requires_nfc">This rule requires NFC support. Your device does not seem to support NFC.</string>
+    <string name="error_message_tag_connect_error">An unknown error occurred when trying to connect to the NFC tag.</string>
+    <string name="error_message_tag_read_only">This NFC tag is read-only.</string>
+    <string name="error_message_tag_too_small">We\'re gonna need a bigger tag. This NFC tag does not have enough space on it.</string>
+    <string name="error_message_malformed_ndef_message">The NDEF message to write is malformed.</string>
+    <string name="error_message_tag_write_unknown">An unknown error occurred when trying to write data to the NFC tag.</string>
+    <string name="error_tag_write_cancelled">The operation was cancelled.</string>
 </resources>
