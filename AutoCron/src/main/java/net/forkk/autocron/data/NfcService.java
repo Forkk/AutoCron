@@ -47,11 +47,16 @@ public class NfcService extends Service
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
-        String id = intent.getStringExtra(EXTRA_NFC_LISTENER_ID);
+        // I don't know why, but sometimes intent is null, and this check fixes it.
+        // It works, don't question it.
+        if (intent != null)
+        {
+            String id = intent.getStringExtra(EXTRA_NFC_LISTENER_ID);
 
-        if (mListeners.containsKey(id))
-            mListeners.get(id).tagTriggered(intent.getStringExtra(EXTRA_NFC_LISTENER_ACTION));
-        else Log.w(LOGGER_TAG, "Unknown NFC tag ID encountered.");
+            if (mListeners.containsKey(id))
+                mListeners.get(id).tagTriggered(intent.getStringExtra(EXTRA_NFC_LISTENER_ACTION));
+            else Log.w(LOGGER_TAG, "Unknown NFC tag ID encountered.");
+        }
 
         return super.onStartCommand(intent, flags, startId);
     }
