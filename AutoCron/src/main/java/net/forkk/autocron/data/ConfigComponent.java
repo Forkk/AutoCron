@@ -71,4 +71,12 @@ public interface ConfigComponent
     public abstract String getSharedPreferencesName();
 
     public abstract void addPreferencesToFragment(PreferenceFragment fragment);
+
+    /**
+     * Gets a component pointer that points to this component.
+     *
+     * @return A component pointer pointing to this component or null if this component type doesn't
+     * support component pointers.
+     */
+    public abstract ComponentPointer getPointer();
 }

@@ -61,7 +61,7 @@ public abstract class AutomationComponentBase extends ConfigComponentBase
     /**
      * Gets this component's parent automation.
      */
-    protected Automation getParent()
+    public Automation getParent()
     {
         return mAutomation;
     }

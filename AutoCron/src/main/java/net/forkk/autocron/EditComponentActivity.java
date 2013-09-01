@@ -17,24 +17,18 @@
 package net.forkk.autocron;
 
 import android.app.FragmentTransaction;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 
-import net.forkk.autocron.data.Automation;
-import net.forkk.autocron.data.AutomationComponent;
-import net.forkk.autocron.data.AutomationService;
+import net.forkk.autocron.data.ComponentPointer;
+import net.forkk.autocron.data.action.Action;
+import net.forkk.autocron.data.rule.Rule;
 
 
-public class EditComponentActivity extends FragmentActivity implements ServiceConnection
+public class EditComponentActivity extends FragmentActivity
 {
-    public static final String EXTRA_COMPONENT_ID = "net.forkk.autocron.component_id";
-
-    public static final String EXTRA_COMPONENT_TYPE = "net.forkk.autocron.component_type";
+    public static final String EXTRA_COMPONENT_POINTER = "net.forkk.autocron.component_ptr";
 
     public EditComponentActivity()
     {
@@ -47,67 +41,29 @@ public class EditComponentActivity extends FragmentActivity implements ServiceCo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_component);
 
-        switch (getIntent().getIntExtra(EXTRA_COMPONENT_TYPE, -1))
+        Intent intent = getIntent();
+        assert intent != null;
+
+        ComponentPointer pointer =
+                (ComponentPointer) intent.getSerializableExtra(EXTRA_COMPONENT_POINTER);
+
+        // Hack to get the title to display properly.
+        String componentName = "";
+        if (pointer instanceof Rule.Pointer) componentName = getString(R.string.rule_upper);
+        if (pointer instanceof Action.Pointer) componentName = getString(R.string.action_upper);
+        setTitle(getString(R.string.title_activity_edit_component, componentName));
+
+        if (savedInstanceState == null)
         {
-        case 0:
-            setTitle(getResources().getString(R.string.title_activity_edit_component,
-                                              getResources().getString(R.string.rule_upper)));
-            break;
-        case 1:
-            setTitle(getResources().getString(R.string.title_activity_edit_component,
-                                              getResources().getString(R.string.action_upper)));
-            break;
-        default:
-            Log.wtf(AutomationService.LOGGER_TAG, "Invalid component type.");
-            finish();
-            return;
+            Bundle fragArgs = new Bundle();
+            fragArgs.putSerializable(ComponentPreferenceFragment.VALUE_COMPONENT_POINTER, pointer);
+
+            ComponentPreferenceFragment fragment = new ComponentPreferenceFragment();
+            fragment.setArguments(fragArgs);
+
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragment_edit_component_container, fragment);
+            transaction.commit();
         }
-
-        bindService(new Intent(this, AutomationService.class), this, BIND_AUTO_CREATE);
-    }
-
-    @Override
-    protected void onDestroy()
-    {
-        super.onDestroy();
-        unbindService(this);
-    }
-
-    @Override
-    public void onServiceConnected(ComponentName componentName, IBinder iBinder)
-    {
-        AutomationService.LocalBinder binder = (AutomationService.LocalBinder) iBinder;
-
-        int automationId = getIntent().getIntExtra(EditAutomationActivity.EXTRA_AUTOMATION_ID, -1);
-        int componentId = getIntent().getIntExtra(EXTRA_COMPONENT_ID, -1);
-
-        Automation mAutomation = binder.findAutomationById(automationId);
-        AutomationComponent component;
-
-        switch (getIntent().getIntExtra(EXTRA_COMPONENT_TYPE, -1))
-        {
-        case 0:
-            component = mAutomation.findRuleById(componentId);
-            break;
-        case 1:
-            component = mAutomation.findActionById(componentId);
-            break;
-        default:
-            Log.wtf(AutomationService.LOGGER_TAG, "Invalid component type.");
-            finish();
-            return;
-        }
-
-        ComponentPreferenceFragment fragment = new ComponentPreferenceFragment(component);
-
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        transaction.add(R.id.fragment_edit_component_container, fragment);
-        transaction.commit();
-    }
-
-    @Override
-    public void onServiceDisconnected(ComponentName componentName)
-    {
-
     }
 }

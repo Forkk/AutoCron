@@ -22,6 +22,7 @@ import net.forkk.autocron.R;
 import net.forkk.autocron.data.Automation;
 import net.forkk.autocron.data.AutomationComponentBase;
 import net.forkk.autocron.data.AutomationService;
+import net.forkk.autocron.data.ComponentPointer;
 
 
 /**
@@ -61,5 +62,11 @@ public abstract class ActionBase extends AutomationComponentBase implements Acti
     {
         super.addPreferencesToFragment(fragment);
         fragment.addPreferencesFromResource(R.xml.prefs_action);
+    }
+
+    @Override
+    public ComponentPointer getPointer()
+    {
+        return new Pointer(this);
     }
 }

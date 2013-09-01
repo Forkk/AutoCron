@@ -16,9 +16,17 @@
 
 package net.forkk.autocron;
 
+import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.preference.PreferenceFragment;
 
+import net.forkk.autocron.data.AutomationService;
+import net.forkk.autocron.data.ComponentPointer;
 import net.forkk.autocron.data.ConfigComponent;
 
 
@@ -27,13 +35,22 @@ import net.forkk.autocron.data.ConfigComponent;
  */
 public class ComponentPreferenceFragment extends PreferenceFragment
 {
+    public static final String VALUE_COMPONENT_POINTER = "net.forkk.autocron.component_pointer";
+
     private ConfigComponent mComponent;
 
-    public ComponentPreferenceFragment(ConfigComponent component)
+    private ComponentPointer mPointer;
+
+    public ComponentPreferenceFragment()
     {
         super();
-        assert component != null;
-        mComponent = component;
+    }
+
+    public ComponentPreferenceFragment(ComponentPointer pointer)
+    {
+        Bundle arguments = new Bundle();
+        arguments.putSerializable(VALUE_COMPONENT_POINTER, pointer);
+        setArguments(arguments);
     }
 
     @Override
@@ -41,6 +58,55 @@ public class ComponentPreferenceFragment extends PreferenceFragment
     {
         super.onCreate(savedInstanceState);
 
+        Bundle arguments = getArguments();
+        assert arguments != null;
+        mPointer = (ComponentPointer) arguments.getSerializable(VALUE_COMPONENT_POINTER);
+        assert mPointer != null;
+        loadComponent();
+    }
+
+    public void loadComponent()
+    {
+        assert mPointer != null;
+        ServiceConnection connection = new ServiceConnection()
+        {
+            @Override
+            public void onServiceConnected(ComponentName componentName, IBinder iBinder)
+            {
+                AutomationService.LocalBinder binder = (AutomationService.LocalBinder) iBinder;
+                mComponent = mPointer.getComponent(binder);
+                assert mComponent != null;
+                initFromComponent();
+
+                Activity activity = getActivity();
+                assert activity != null;
+                activity.unbindService(this);
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName componentName)
+            {
+
+            }
+        };
+
+        Activity activity = getActivity();
+        assert activity != null;
+
+        Intent service = new Intent(activity, AutomationService.class);
+        activity.bindService(service, connection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+
+        outState.putSerializable(VALUE_COMPONENT_POINTER, mComponent.getPointer());
+    }
+
+    public void initFromComponent()
+    {
         //noinspection ConstantConditions
         getPreferenceManager().setSharedPreferencesName(mComponent.getSharedPreferencesName());
 

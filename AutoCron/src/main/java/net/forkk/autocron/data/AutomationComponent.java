@@ -34,6 +34,11 @@ public interface AutomationComponent extends ConfigComponent
     public abstract ComponentType getType();
 
     /**
+     * Gets this component's parent automation.
+     */
+    public abstract Automation getParent();
+
+    /**
      * Class for listening to changes to the component's configuration.
      */
     public interface ComponentChangeListener

@@ -21,6 +21,7 @@ import net.forkk.autocron.data.action.ActionType;
 import net.forkk.autocron.data.rule.Rule;
 import net.forkk.autocron.data.rule.RuleType;
 
+import java.io.Serializable;
 import java.util.List;
 
 
@@ -118,4 +119,25 @@ public interface Automation extends ConfigComponent
     void registerComponentListObserver(AutomationImpl.ComponentListChangeListener listener);
 
     void unregisterComponentListObserver(AutomationImpl.ComponentListChangeListener listener);
+
+    public static class Pointer implements ComponentPointer, Serializable
+    {
+        protected int mAutomationId;
+
+        public Pointer(Automation automation)
+        {
+            mAutomationId = automation.getId();
+        }
+
+        public Pointer(int id)
+        {
+            mAutomationId = id;
+        }
+
+        @Override
+        public ConfigComponent getComponent(AutomationService.LocalBinder binder)
+        {
+            return binder.findAutomationById(mAutomationId);
+        }
+    }
 }

@@ -16,12 +16,16 @@
 
 package net.forkk.autocron;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +34,7 @@ import android.widget.TextView;
 
 import net.forkk.autocron.data.Automation;
 import net.forkk.autocron.data.AutomationImpl;
+import net.forkk.autocron.data.AutomationService;
 import net.forkk.autocron.data.ComponentType;
 import net.forkk.autocron.data.ConfigComponent;
 import net.forkk.autocron.data.action.Action;
@@ -45,23 +50,53 @@ import java.util.List;
  * List fragment for listing components of an automation.
  */
 public class AutomationComponentListFragment extends ComponentListFragment
-        implements AutomationImpl.ComponentListChangeListener
+        implements AutomationImpl.ComponentListChangeListener, ServiceConnection
 {
+    private static final String VALUE_AUTOMATION_POINTER = "net.forkk.autocron.automation_id";
+
+    private static final String VALUE_COMPONENT_TYPE = "net.forkk.autocron.component_type";
+
     private Automation mAutomation;
+
+    private Automation.Pointer mAutomationPointer;
 
     private ComponentListType mType;
 
-    public AutomationComponentListFragment(Automation automation, ComponentListType type)
+    public AutomationComponentListFragment()
     {
-        mType = type;
-        mAutomation = automation;
+
+    }
+
+    public AutomationComponentListFragment(Automation.Pointer automationPointer,
+                                           ComponentListType type)
+    {
+        Bundle arguments = new Bundle();
+        arguments.putSerializable(VALUE_AUTOMATION_POINTER, automationPointer);
+        arguments.putSerializable(VALUE_COMPONENT_TYPE, type);
+        setArguments(arguments);
+    }
+
+    private void loadAutomation()
+    {
+        Activity activity = getActivity();
+        assert activity != null;
+        activity.bindService(new Intent(activity, AutomationService.class), this,
+                             Context.BIND_AUTO_CREATE);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        mAutomation.registerComponentListObserver(this);
+
+        Bundle arguments = getArguments();
+        assert arguments != null;
+
+        mAutomationPointer =
+                (Automation.Pointer) arguments.getSerializable(VALUE_AUTOMATION_POINTER);
+        mType = (ComponentListType) arguments.getSerializable(VALUE_COMPONENT_TYPE);
+
+        loadAutomation();
     }
 
     @Override
@@ -75,15 +110,18 @@ public class AutomationComponentListFragment extends ComponentListFragment
      * @return An array of the components that this list should contain.
      */
     @Override
-    protected List<ConfigComponent> getComponentList()
+    protected List<? extends ConfigComponent> getComponentList()
     {
+        if (mAutomation == null) return new ArrayList<ConfigComponent>();
+
         switch (mType)
         {
         case Rule:
-            return new ArrayList<ConfigComponent>(mAutomation.getRules());
+            // When mAutomation gets set, update the list.
+            return mAutomation.getRules();
 
         case Action:
-            return new ArrayList<ConfigComponent>(mAutomation.getActions());
+            return mAutomation.getActions();
         }
         return null;
     }
@@ -136,7 +174,6 @@ public class AutomationComponentListFragment extends ComponentListFragment
             adapter = new ComponentTypeAdapter(getActivity(), ActionType.getActionTypes());
             break;
         }
-        assert adapter != null;
 
         builder.setAdapter(adapter, new DialogInterface.OnClickListener()
         {
@@ -165,16 +202,16 @@ public class AutomationComponentListFragment extends ComponentListFragment
     protected void onEditComponent(long id)
     {
         Intent intent = new Intent(getActivity(), EditComponentActivity.class);
-        intent.putExtra(EditAutomationActivity.EXTRA_AUTOMATION_ID, mAutomation.getId());
-        intent.putExtra(EditComponentActivity.EXTRA_COMPONENT_ID, (int) id);
 
         switch (mType)
         {
         case Rule:
-            intent.putExtra(EditComponentActivity.EXTRA_COMPONENT_TYPE, 0);
+            intent.putExtra(EditComponentActivity.EXTRA_COMPONENT_POINTER,
+                            new Rule.Pointer(mAutomation.getId(), (int) id));
             break;
         case Action:
-            intent.putExtra(EditComponentActivity.EXTRA_COMPONENT_TYPE, 1);
+            intent.putExtra(EditComponentActivity.EXTRA_COMPONENT_POINTER,
+                            new Action.Pointer(mAutomation.getId(), (int) id));
             break;
         }
 
@@ -215,6 +252,28 @@ public class AutomationComponentListFragment extends ComponentListFragment
     public void onComponentListChange()
     {
         mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onServiceConnected(ComponentName componentName, IBinder iBinder)
+    {
+        AutomationService.LocalBinder binder = (AutomationService.LocalBinder) iBinder;
+
+        mAutomation = (Automation) mAutomationPointer.getComponent(binder);
+        assert mAutomation != null;
+        mAutomation.registerComponentListObserver(this);
+
+        Activity activity = getActivity();
+        assert activity != null;
+        activity.unbindService(this);
+
+        mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName componentName)
+    {
+
     }
 
     public enum ComponentListType

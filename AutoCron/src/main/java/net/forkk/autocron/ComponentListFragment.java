@@ -61,7 +61,7 @@ public abstract class ComponentListFragment extends ListFragment
     /**
      * @return An array of the components that this list should contain.
      */
-    protected abstract List<ConfigComponent> getComponentList();
+    protected abstract List<? extends ConfigComponent> getComponentList();
 
     /**
      * @return Whether or not there are items in the list.

@@ -27,6 +27,7 @@ import android.os.IBinder;
 import android.view.View;
 import android.widget.EditText;
 
+import net.forkk.autocron.data.Automation;
 import net.forkk.autocron.data.AutomationService;
 import net.forkk.autocron.data.ConfigComponent;
 
@@ -69,7 +70,8 @@ public class AutomationListFragment extends ComponentListFragment
     protected void onEditComponent(long id)
     {
         Intent intent = new Intent(getActivity(), EditAutomationActivity.class);
-        intent.putExtra(EditAutomationActivity.EXTRA_AUTOMATION_ID, (int) id);
+        intent.putExtra(EditAutomationActivity.EXTRA_AUTOMATION_POINTER,
+                        new Automation.Pointer((int) id));
         startActivity(intent);
     }
 

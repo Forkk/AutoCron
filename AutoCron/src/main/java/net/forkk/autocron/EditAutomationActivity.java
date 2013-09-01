@@ -20,29 +20,27 @@ import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 
 import net.forkk.autocron.data.Automation;
-import net.forkk.autocron.data.AutomationService;
 
 import java.util.Locale;
 
 
-public class EditAutomationActivity extends FragmentActivity
-        implements ActionBar.TabListener, ServiceConnection
+public class EditAutomationActivity extends FragmentActivity implements ActionBar.TabListener
 {
-    public static final String EXTRA_AUTOMATION_ID = "net.forkk.autocron.automation_id";
+    public static final String EXTRA_AUTOMATION_POINTER = "net.forkk.autocron.automation_ptr";
 
-    private Automation mAutomation;
+    protected Automation.Pointer mAutomationPointer;
 
-    private AutomationService.LocalBinder mBinder;
+    public EditAutomationActivity()
+    {
+
+    }
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide fragments for each of the
@@ -50,57 +48,23 @@ public class EditAutomationActivity extends FragmentActivity
      * keep every loaded fragment in memory. If this becomes too memory intensive, it may be best to
      * switch to a {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
-    SectionsPagerAdapter mPagerAdapter;
+    protected SectionsPagerAdapter mPagerAdapter;
 
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    ViewPager mViewPager;
+    protected ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        bindService(new Intent(this, AutomationService.class), this, BIND_AUTO_CREATE);
-    }
 
-    @Override
-    protected void onDestroy()
-    {
-        super.onDestroy();
-        unbindService(this);
-    }
+        Intent intent = getIntent();
+        assert intent != null;
+        mAutomationPointer =
+                (Automation.Pointer) intent.getSerializableExtra(EXTRA_AUTOMATION_POINTER);
 
-    @Override
-    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction)
-    {
-        // When the given tab is selected, switch to the corresponding page in
-        // the ViewPager.
-        mViewPager.setCurrentItem(tab.getPosition());
-    }
-
-    @Override
-    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction)
-    {
-
-    }
-
-    @Override
-    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction)
-    {
-
-    }
-
-    @Override
-    public void onServiceConnected(ComponentName componentName, IBinder iBinder)
-    {
-        mBinder = (AutomationService.LocalBinder) iBinder;
-        int automationId = getIntent().getIntExtra(EXTRA_AUTOMATION_ID, -1);
-        assert automationId > 0;
-        mAutomation = mBinder.findAutomationById(automationId);
-        assert mAutomation != null;
-
-        // Now that we've loaded the automation's data, we can proceed to set up the tabs.
         setContentView(R.layout.activity_edit_automation);
 
         // Set up the action bar.
@@ -141,9 +105,23 @@ public class EditAutomationActivity extends FragmentActivity
     }
 
     @Override
-    public void onServiceDisconnected(ComponentName componentName)
+    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction)
     {
-        mBinder = null;
+        // When the given tab is selected, switch to the corresponding page in
+        // the ViewPager.
+        mViewPager.setCurrentItem(tab.getPosition());
+    }
+
+    @Override
+    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction)
+    {
+
+    }
+
+    @Override
+    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction)
+    {
+
     }
 
     /**
@@ -164,13 +142,13 @@ public class EditAutomationActivity extends FragmentActivity
             switch (position)
             {
             case 0:
-                return new ComponentPreferenceFragment(mAutomation);
+                return new ComponentPreferenceFragment(mAutomationPointer);
 
             case 1:
-                return new AutomationComponentListFragment(mAutomation,
+                return new AutomationComponentListFragment(mAutomationPointer,
                                                            AutomationComponentListFragment.ComponentListType.Rule);
             case 2:
-                return new AutomationComponentListFragment(mAutomation,
+                return new AutomationComponentListFragment(mAutomationPointer,
                                                            AutomationComponentListFragment.ComponentListType.Action);
             }
             return null;

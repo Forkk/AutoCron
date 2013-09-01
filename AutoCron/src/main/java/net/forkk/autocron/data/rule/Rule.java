@@ -16,7 +16,13 @@
 
 package net.forkk.autocron.data.rule;
 
+import net.forkk.autocron.data.Automation;
 import net.forkk.autocron.data.AutomationComponent;
+import net.forkk.autocron.data.AutomationService;
+import net.forkk.autocron.data.ComponentPointer;
+import net.forkk.autocron.data.ConfigComponent;
+
+import java.io.Serializable;
 
 
 /**
@@ -36,4 +42,31 @@ public interface Rule extends AutomationComponent
      * determining if the automation should be active.
      */
     public abstract boolean isInverted();
+
+    public static class Pointer implements ComponentPointer, Serializable
+    {
+        protected int mAutomationId;
+
+        protected int mRuleId;
+
+        public Pointer(Rule rule)
+        {
+            mAutomationId = rule.getParent().getId();
+            mRuleId = rule.getId();
+        }
+
+        public Pointer(int automationId, int ruleId)
+        {
+            mAutomationId = automationId;
+            mRuleId = ruleId;
+        }
+
+        @Override
+        public ConfigComponent getComponent(AutomationService.LocalBinder binder)
+        {
+            Automation parent = binder.findAutomationById(mAutomationId);
+            if (parent == null) return null;
+            return parent.findRuleById(mRuleId);
+        }
+    }
 }

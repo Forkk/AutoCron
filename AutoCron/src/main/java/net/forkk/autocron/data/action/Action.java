@@ -16,7 +16,13 @@
 
 package net.forkk.autocron.data.action;
 
+import net.forkk.autocron.data.Automation;
 import net.forkk.autocron.data.AutomationComponent;
+import net.forkk.autocron.data.AutomationService;
+import net.forkk.autocron.data.ComponentPointer;
+import net.forkk.autocron.data.ConfigComponent;
+
+import java.io.Serializable;
 
 
 /**
@@ -34,4 +40,31 @@ public interface Action extends AutomationComponent
      * Called when the action's automation deactivates.
      */
     public void onDeactivate();
+
+    public static class Pointer implements ComponentPointer, Serializable
+    {
+        protected int mAutomationId;
+
+        protected int mActionId;
+
+        public Pointer(Action action)
+        {
+            mAutomationId = action.getParent().getId();
+            mActionId = action.getId();
+        }
+
+        public Pointer(int automationId, int actionId)
+        {
+            mAutomationId = automationId;
+            mActionId = actionId;
+        }
+
+        @Override
+        public ConfigComponent getComponent(AutomationService.LocalBinder binder)
+        {
+            Automation parent = binder.findAutomationById(mAutomationId);
+            if (parent == null) return null;
+            return parent.findActionById(mActionId);
+        }
+    }
 }

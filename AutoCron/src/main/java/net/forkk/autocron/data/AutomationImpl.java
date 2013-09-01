@@ -557,4 +557,10 @@ public class AutomationImpl extends ConfigComponentBase
     {
         public void onComponentListChange();
     }
+
+    @Override
+    public ComponentPointer getPointer()
+    {
+        return new Pointer(this);
+    }
 }
