@@ -23,6 +23,8 @@
 
     <!-- Titles -->
     <string name="title_automations">Automations</string>
+    <string name="title_states">States</string>
+    <string name="title_events">Events</string>
     <string name="title_edit_automation">Edit Automation</string>
     <string name="title_activity_edit_component">Edit %1$s</string>
     <string name="title_component_context_menu">Automation Menu</string>
@@ -195,7 +197,11 @@
     <string name="action_upper">Action</string>
     <string name="action_lower">action</string>
     <string name="automation_upper">Automation</string>
-    <string name="automation_lower">state</string>
+    <string name="automation_lower">automation</string>
+    <string name="event_lower">event</string>
+    <string name="event_upper">Event</string>
+    <string name="state_lower">state</string>
+    <string name="state_upper">State</string>
 
     <!-- Messages -->
     <string name="title_new_component">Create New %1$s</string>

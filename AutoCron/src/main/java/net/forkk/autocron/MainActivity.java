@@ -128,7 +128,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             switch (position)
             {
             case 0:
-                return new AutomationListFragment();
+                return new AutomationListFragment(AutomationListFragment.AutomationListType.State);
+
+            case 1:
+                return new AutomationListFragment(AutomationListFragment.AutomationListType.Event);
             }
             return null;
         }
@@ -136,7 +139,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         @Override
         public int getCount()
         {
-            return 1;
+            return 2;
         }
 
         @Override
@@ -146,7 +149,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             switch (position)
             {
             case 0:
-                return getString(R.string.title_automations).toUpperCase(l);
+                return getString(R.string.title_states).toUpperCase(l);
+
+            case 1:
+                return getString(R.string.title_events).toUpperCase(l);
             }
             return null;
         }

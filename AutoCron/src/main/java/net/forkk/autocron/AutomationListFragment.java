@@ -16,6 +16,7 @@
 
 package net.forkk.autocron;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -28,7 +29,9 @@ import android.view.View;
 import android.widget.EditText;
 
 import net.forkk.autocron.data.AutomationService;
+import net.forkk.autocron.data.ComponentPointer;
 import net.forkk.autocron.data.ConfigComponent;
+import net.forkk.autocron.data.Event;
 import net.forkk.autocron.data.State;
 
 import java.util.ArrayList;
@@ -41,11 +44,29 @@ import java.util.List;
 public class AutomationListFragment extends ComponentListFragment
         implements ServiceConnection, AutomationService.AutomationListChangeListener
 {
+    private static final String VALUE_AUTOMATION_TYPE = "net.forkk.autocron.automation_type";
+
     private AutomationService.LocalBinder mBinder;
 
+    private AutomationListType mType;
+
+    public enum AutomationListType
+    {
+        State,
+        Event
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
     public AutomationListFragment()
     {
         // Obligatory empty constructor.
+    }
+
+    public AutomationListFragment(AutomationListType type)
+    {
+        Bundle arguments = new Bundle();
+        arguments.putSerializable(VALUE_AUTOMATION_TYPE, type);
+        setArguments(arguments);
     }
 
     @Override
@@ -53,8 +74,15 @@ public class AutomationListFragment extends ComponentListFragment
     {
         super.onCreate(savedInstanceState);
 
+        Bundle arguments = getArguments();
+        assert arguments != null;
+        mType = (AutomationListType) arguments.getSerializable(VALUE_AUTOMATION_TYPE);
+
+        Activity activity = getActivity();
+        assert activity != null;
+
         Intent intent = new Intent(getActivity(), AutomationService.class);
-        getActivity().bindService(intent, this, Context.BIND_AUTO_CREATE);
+        activity.bindService(intent, this, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -63,30 +91,54 @@ public class AutomationListFragment extends ComponentListFragment
         super.onDestroy();
 
         if (mBinder != null) mBinder.unregisterAutomationListChangeListener(this);
-        getActivity().unbindService(this);
+
+        Activity activity = getActivity();
+        assert activity != null;
+        activity.unbindService(this);
     }
 
     @Override
     protected void onEditComponent(long id)
     {
         Intent intent = new Intent(getActivity(), EditAutomationActivity.class);
-        intent.putExtra(EditAutomationActivity.EXTRA_AUTOMATION_POINTER,
-                        new State.Pointer((int) id));
+
+        ComponentPointer pointer = null;
+
+        switch (mType)
+        {
+        case State:
+            pointer = new State.Pointer((int) id);
+            break;
+        case Event:
+            pointer = new Event.Pointer((int) id);
+            break;
+        }
+
+        intent.putExtra(EditAutomationActivity.EXTRA_AUTOMATION_POINTER, pointer);
         startActivity(intent);
     }
 
     @Override
     protected void onDeleteComponent(int id)
     {
-        mBinder.deleteAutomation(id);
+        switch (mType)
+        {
+        case State:
+            mBinder.deleteState(id);
+            break;
+        case Event:
+            mBinder.deleteEvent(id);
+        }
     }
 
     @Override
     protected void onActionAddComponent()
     {
-        final View inputView =
-                getActivity().getLayoutInflater().inflate(R.layout.text_entry_view, null);
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        Activity activity = getActivity();
+        assert activity != null;
+
+        final View inputView = activity.getLayoutInflater().inflate(R.layout.text_entry_view, null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(getResources().getString(R.string.title_new_component,
                                                   getComponentTypeName(true)));
         builder.setMessage(getResources().getString(R.string.message_new_component,
@@ -104,7 +156,15 @@ public class AutomationListFragment extends ComponentListFragment
                 final String name = input.getText().toString();
 
                 // Add a new component with the given name.
-                mBinder.createNewAutomation(name);
+                switch (mType)
+                {
+                case State:
+                    mBinder.createNewState(name);
+                    break;
+                case Event:
+                    mBinder.createNewEvent(name);
+                    break;
+                }
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener()
@@ -121,14 +181,30 @@ public class AutomationListFragment extends ComponentListFragment
     @Override
     public String getComponentTypeName(boolean upper)
     {
-        if (upper) return getResources().getString(R.string.automation_upper);
-        else return getResources().getString(R.string.automation_lower);
+        switch (mType)
+        {
+        case State:
+            return getResources().getString(upper ? R.string.state_upper : R.string.state_lower);
+
+        case Event:
+            return getResources().getString(upper ? R.string.event_upper : R.string.event_lower);
+        }
+
+        return getResources()
+                       .getString(upper ? R.string.automation_upper : R.string.automation_lower);
     }
 
     @Override
     protected List<ConfigComponent> getComponentList()
     {
-        return new ArrayList<ConfigComponent>(mBinder.getAutomationList());
+        switch (mType)
+        {
+        case State:
+            return new ArrayList<ConfigComponent>(mBinder.getStateList());
+        case Event:
+            return new ArrayList<ConfigComponent>(mBinder.getEventList());
+        }
+        return null;
     }
 
     @Override
@@ -144,7 +220,16 @@ public class AutomationListFragment extends ComponentListFragment
     protected ConfigComponent findComponentById(int id)
     {
         if (mBinder == null) return null;
-        return mBinder.findStateById(id);
+
+        switch (mType)
+        {
+        case State:
+            return mBinder.findStateById(id);
+        case Event:
+            return mBinder.findEventById(id);
+        }
+
+        return null;
     }
 
     @Override

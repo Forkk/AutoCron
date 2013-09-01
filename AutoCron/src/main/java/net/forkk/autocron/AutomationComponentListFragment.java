@@ -32,10 +32,11 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import net.forkk.autocron.data.Automation;
 import net.forkk.autocron.data.AutomationService;
+import net.forkk.autocron.data.ComponentPointer;
 import net.forkk.autocron.data.ComponentType;
 import net.forkk.autocron.data.ConfigComponent;
-import net.forkk.autocron.data.State;
 import net.forkk.autocron.data.StateBase;
 import net.forkk.autocron.data.action.Action;
 import net.forkk.autocron.data.action.ActionType;
@@ -56,18 +57,20 @@ public class AutomationComponentListFragment extends ComponentListFragment
 
     private static final String VALUE_COMPONENT_TYPE = "net.forkk.autocron.component_type";
 
-    private State mAutomation;
+    private Automation mAutomation;
 
-    private State.Pointer mAutomationPointer;
+    private ComponentPointer mAutomationPointer;
 
     private ComponentListType mType;
 
+    @SuppressWarnings("UnusedDeclaration")
     public AutomationComponentListFragment()
     {
 
     }
 
-    public AutomationComponentListFragment(State.Pointer automationPointer, ComponentListType type)
+    public AutomationComponentListFragment(ComponentPointer automationPointer,
+                                           ComponentListType type)
     {
         Bundle arguments = new Bundle();
         arguments.putSerializable(VALUE_AUTOMATION_POINTER, automationPointer);
@@ -91,7 +94,7 @@ public class AutomationComponentListFragment extends ComponentListFragment
         Bundle arguments = getArguments();
         assert arguments != null;
 
-        mAutomationPointer = (State.Pointer) arguments.getSerializable(VALUE_AUTOMATION_POINTER);
+        mAutomationPointer = (ComponentPointer) arguments.getSerializable(VALUE_AUTOMATION_POINTER);
         mType = (ComponentListType) arguments.getSerializable(VALUE_COMPONENT_TYPE);
 
         loadAutomation();
@@ -157,7 +160,9 @@ public class AutomationComponentListFragment extends ComponentListFragment
     @Override
     protected void onActionAddComponent()
     {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        Activity activity = getActivity();
+        assert activity != null;
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(getResources().getString(R.string.title_choose_type,
                                                   getComponentTypeName(false)));
 
@@ -257,7 +262,7 @@ public class AutomationComponentListFragment extends ComponentListFragment
     {
         AutomationService.LocalBinder binder = (AutomationService.LocalBinder) iBinder;
 
-        mAutomation = (State) mAutomationPointer.getComponent(binder);
+        mAutomation = (Automation) mAutomationPointer.getComponent(binder);
         assert mAutomation != null;
         mAutomation.registerComponentListObserver(this);
 

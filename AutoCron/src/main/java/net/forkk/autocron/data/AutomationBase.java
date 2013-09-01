@@ -62,7 +62,6 @@ public abstract class AutomationBase extends ConfigComponentBase
         mComponentListObservers = new ArrayList<ComponentListChangeListener>();
         mRules = new ArrayList<Rule>();
         mActions = new ArrayList<Action>();
-        loadConfig(service);
     }
 
 

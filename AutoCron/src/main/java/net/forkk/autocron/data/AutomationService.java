@@ -23,6 +23,8 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
+import net.forkk.autocron.R;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -52,9 +54,13 @@ public class AutomationService extends Service
 
     private static final String VALUE_STATE_IDS = "state_ids";
 
+    private static final String VALUE_EVENT_IDS = "event_ids";
+
     private static final String VALUE_CONFIG_VERSION = "config_version";
 
     private ArrayList<State> mStates;
+
+    private ArrayList<Event> mEvents;
 
     private Map<Integer, IntentListener> mIntentListenerMap;
 
@@ -131,12 +137,19 @@ public class AutomationService extends Service
 
         mStates = new ArrayList<State>();
 
+        mEvents = new ArrayList<Event>();
+
         // Load automations from the config file.
         loadConfig();
 
         for (State state : mStates)
         {
             if (state.isEnabled()) state.create();
+        }
+
+        for (Event event : mEvents)
+        {
+            if (event.isEnabled()) event.create();
         }
     }
 
@@ -150,6 +163,11 @@ public class AutomationService extends Service
         for (State state : mStates)
         {
             state.destroy();
+        }
+
+        for (Event event : mEvents)
+        {
+            event.destroy();
         }
     }
 
@@ -176,51 +194,57 @@ public class AutomationService extends Service
             currentVersion = -1;
             Log.i(LOGGER_TAG, "Configuration is blank.");
         }
-        else
+        else if (currentVersion < CONFIG_FORMAT_VERSION)
         {
-            if (currentVersion < CONFIG_FORMAT_VERSION)
-            {
-                Log.i(LOGGER_TAG, "Detected old configuration format. Upgrading.");
-                upgradeConfig(prefs, currentVersion);
-            }
-            else
-            {
-                Log.i(LOGGER_TAG, "Configuration format is up to date (" + CONFIG_FORMAT_VERSION +
-                                  ").");
-            }
+            Log.i(LOGGER_TAG, "Detected old configuration format. Upgrading.");
+            upgradeConfig(prefs, currentVersion);
         }
+        else Log.i(LOGGER_TAG, "Configuration format is up to date (" + CONFIG_FORMAT_VERSION +
+                               ").");
 
         Log.i(LOGGER_TAG, "Loading states.");
-        Set<String> stateIDs = prefs.getStringSet(VALUE_STATE_IDS, new HashSet<String>());
+        loadAutomationList(prefs, mStateTypeInterface);
 
-        ArrayList<State> tempStateList = new ArrayList<State>();
-        for (String stringVal : stateIDs)
-        {
-            try
-            {
-                int id = Integer.parseInt(stringVal);
-                State state = StateBase.fromSharedPreferences(this, id);
-                tempStateList.add(state);
-                Log.d(LOGGER_TAG, "Loaded state \"" + state.getName() + "\".");
-            }
-            catch (NumberFormatException e)
-            {
-                Log.e(LOGGER_TAG, "Found non-integer in automation ID set.", e);
-            }
-        }
-
-        for (State state : mStates)
-            getSharedPreferences(state.getSharedPreferencesName(), MODE_PRIVATE)
-                    .unregisterOnSharedPreferenceChangeListener(this);
-        mStates.clear();
-        mStates.addAll(tempStateList);
-        for (State state : mStates)
-            getSharedPreferences(state.getSharedPreferencesName(), MODE_PRIVATE)
-                    .registerOnSharedPreferenceChangeListener(this);
+        Log.i(LOGGER_TAG, "Loading events.");
+        loadAutomationList(prefs, mEventTypeInterface);
 
         Log.i(LOGGER_TAG, "Done loading configuration.");
 
         onAutomationListChange();
+    }
+
+    public <T extends Automation> void loadAutomationList(SharedPreferences prefs,
+                                                          AutomationTypeInterface<T> type)
+    {
+        Set<String> ids = prefs.getStringSet(type.getIdListKey(), new HashSet<String>());
+
+        ArrayList<T> tempList = new ArrayList<T>();
+        for (String stringVal : ids)
+        {
+            try
+            {
+                int id = Integer.parseInt(stringVal);
+                T automation = type.loadFromPrefs(id);
+                tempList.add(automation);
+                Log.d(LOGGER_TAG,
+                      "Loaded " + type.getTypeName(false) + " \"" + automation.getName() + "\".");
+            }
+            catch (NumberFormatException e)
+            {
+                Log.e(LOGGER_TAG,
+                      "Found non-integer value in " + type.getTypeName(false) + " ID set.", e);
+            }
+        }
+
+        List<T> list = type.getList();
+        for (T automation : list)
+            getSharedPreferences(automation.getSharedPreferencesName(), MODE_PRIVATE)
+                    .unregisterOnSharedPreferenceChangeListener(this);
+        list.clear();
+        list.addAll(tempList);
+        for (T automation : list)
+            getSharedPreferences(automation.getSharedPreferencesName(), MODE_PRIVATE)
+                    .registerOnSharedPreferenceChangeListener(this);
     }
 
     /**
@@ -329,36 +353,39 @@ public class AutomationService extends Service
     }
 
     /**
-     * Adds the given state's ID to the state ID list.
+     * Adds the given automation's ID to the ID list.
      *
-     * @param state
-     *         The state to add.
+     * @param automation
+     *         The automation to add.
      */
-    public void addAutomation(State state)
+    public <T extends Automation> void addAutomation(T automation, AutomationTypeInterface<T> type)
     {
+        List<T> list = type.getList();
+
         SharedPreferences prefs = getSharedPreferences(PREF_AUTOMATIONS, MODE_PRIVATE);
         SharedPreferences.Editor edit = prefs.edit();
 
         Set<String> automationIDs = new HashSet<String>();
-        automationIDs.add(((Integer) state.getId()).toString());
-        automationIDs.addAll(prefs.getStringSet(VALUE_STATE_IDS, new HashSet<String>()));
+        automationIDs.add(((Integer) automation.getId()).toString());
+        automationIDs.addAll(prefs.getStringSet(type.getIdListKey(), new HashSet<String>()));
 
-        edit.putStringSet(VALUE_STATE_IDS, automationIDs);
-        mStates.add(state);
-        state.create();
+        edit.putStringSet(type.getIdListKey(), automationIDs);
+        list.add(automation);
+        automation.create();
         boolean success = edit.commit();
         if (!success) Log.e(LOGGER_TAG, "Failed to commit changes to preferences.");
         else onAutomationListChange();
 
-        assert prefs.getStringSet(VALUE_STATE_IDS, new HashSet<String>()).equals(automationIDs);
+        assert prefs.getStringSet(type.getIdListKey(), new HashSet<String>()).equals(automationIDs);
     }
 
-    private void deleteAutomation(int id)
+    private void deleteAutomation(int id, AutomationTypeInterface type)
     {
-        State state = findAutomationById(id);
-        if (state == null)
+        Automation automation = type.findById(id);
+        if (automation == null)
         {
-            Log.e(LOGGER_TAG, "Attempted to delete a state that doesn't exist.");
+            Log.e(LOGGER_TAG,
+                  "Attempted to delete a " + type.getTypeName(false) + " that doesn't exist.");
             return;
         }
 
@@ -366,36 +393,29 @@ public class AutomationService extends Service
         SharedPreferences.Editor edit = prefs.edit();
 
         Set<String> automationIDs = new HashSet<String>();
-        automationIDs.addAll(prefs.getStringSet(VALUE_STATE_IDS, new HashSet<String>()));
+        automationIDs.addAll(prefs.getStringSet(type.getIdListKey(), new HashSet<String>()));
         automationIDs.remove(((Integer) id).toString());
 
-        edit.putStringSet(VALUE_STATE_IDS, automationIDs);
+        edit.putStringSet(type.getIdListKey(), automationIDs);
 
         // Clear the component's preferences.
-        getSharedPreferences(state.getSharedPreferencesName(), MODE_PRIVATE).edit().clear()
+        getSharedPreferences(automation.getSharedPreferencesName(), MODE_PRIVATE).edit().clear()
                 .commit();
 
-        state.destroy();
-        mStates.remove(state);
+        automation.destroy();
+        type.getList().remove(automation);
         boolean success = edit.commit();
         if (!success) Log.e(LOGGER_TAG, "Failed to commit changes to preferences.");
         else onAutomationListChange();
     }
 
-    private State findAutomationById(int id)
-    {
-        for (State state : mStates)
-            if (state.getId() == id) return state;
-        return null;
-    }
-
-    public int getUnusedAutomationId()
+    public int findUnusedId(AutomationTypeInterface type)
     {
         SharedPreferences prefs = getSharedPreferences(PREF_AUTOMATIONS, MODE_PRIVATE);
-        Set<String> usedAutomationIds = prefs.getStringSet(VALUE_STATE_IDS, new HashSet<String>());
+        Set<String> usedIds = prefs.getStringSet(type.getIdListKey(), new HashSet<String>());
 
         int greatestValue = 0;
-        for (String stringVal : usedAutomationIds)
+        for (String stringVal : usedIds)
         {
             try
             {
@@ -404,7 +424,8 @@ public class AutomationService extends Service
             }
             catch (NumberFormatException e)
             {
-                Log.w(LOGGER_TAG, "Found non-integer in automation ID set.", e);
+                Log.w(LOGGER_TAG,
+                      "Found non-integer value in " + type.getTypeName(false) + " ID set.", e);
             }
         }
 
@@ -421,22 +442,40 @@ public class AutomationService extends Service
 
     public class LocalBinder extends Binder
     {
-        public List<State> getAutomationList()
+        public List<State> getStateList()
         {
             return mStates;
         }
 
+        public List<Event> getEventList()
+        {
+            return mEvents;
+        }
+
         /**
-         * Attempts to get the automation with the given ID.
+         * Attempts to get the state with the given ID.
          *
          * @param id
-         *         The ID of the automation to find.
+         *         The ID of the state to find.
          *
-         * @return The automation with the given ID or null if no automation was found.
+         * @return The state with the given ID or null if no automation was found.
          */
         public State findStateById(int id)
         {
-            return AutomationService.this.findAutomationById(id);
+            return AutomationService.this.mStateTypeInterface.findById(id);
+        }
+
+        /**
+         * Attempts to get the event with the given ID.
+         *
+         * @param id
+         *         The ID of the event to find.
+         *
+         * @return The event with the given ID or null if no event was found.
+         */
+        public ConfigComponent findEventById(int id)
+        {
+            return AutomationService.this.mEventTypeInterface.findById(id);
         }
 
         /**
@@ -445,11 +484,11 @@ public class AutomationService extends Service
          * @param name
          *         The name of the new automation.
          */
-        public void createNewAutomation(String name)
+        public void createNewState(String name)
         {
-            State state =
-                    StateBase.createNewState(name, AutomationService.this, getUnusedAutomationId());
-            addAutomation(state);
+            State state = StateBase.createNewState(name, AutomationService.this,
+                                                   findUnusedId(mStateTypeInterface));
+            addAutomation(state, mStateTypeInterface);
         }
 
         /**
@@ -458,10 +497,36 @@ public class AutomationService extends Service
          * @param id
          *         The ID of the automation to delete.
          */
-        public void deleteAutomation(int id)
+        public void deleteState(int id)
         {
-            AutomationService.this.deleteAutomation(id);
+            AutomationService.this.deleteAutomation(id, mStateTypeInterface);
         }
+
+
+        /**
+         * Creates a new event and adds it to the event list.
+         *
+         * @param name
+         *         The name of the new event.
+         */
+        public void createNewEvent(String name)
+        {
+            Event event = EventBase.createNewEvent(name, AutomationService.this,
+                                                   findUnusedId(mEventTypeInterface));
+            AutomationService.this.addAutomation(event, mEventTypeInterface);
+        }
+
+        /**
+         * Tries to delete the automation with the given ID.
+         *
+         * @param id
+         *         The ID of the automation to delete.
+         */
+        public void deleteEvent(int id)
+        {
+            AutomationService.this.deleteAutomation(id, mEventTypeInterface);
+        }
+
 
         public void registerAutomationListChangeListener(AutomationListChangeListener listener)
         {
@@ -485,6 +550,101 @@ public class AutomationService extends Service
         {
             if (listener != null) listener.onAutomationListChange();
         }
+    }
+
+
+    private StateTypeInterface mStateTypeInterface = new StateTypeInterface();
+
+    private EventTypeInterface mEventTypeInterface = new EventTypeInterface();
+
+
+    private class StateTypeInterface implements AutomationTypeInterface<State>
+    {
+        @Override
+        public String getTypeName(boolean upper)
+        {
+            return upper ? getString(R.string.state_upper) : getString(R.string.state_lower);
+        }
+
+        @Override
+        public String getIdListKey()
+        {
+            return VALUE_STATE_IDS;
+        }
+
+        @Override
+        public List<State> getList()
+        {
+            return mStates;
+        }
+
+        @Override
+        public State loadFromPrefs(int id)
+        {
+            return StateBase.fromSharedPreferences(AutomationService.this, id);
+        }
+
+        @Override
+        public State findById(int id)
+        {
+            for (State state : mStates)
+                if (state.getId() == id) return state;
+            return null;
+        }
+    }
+
+    private class EventTypeInterface implements AutomationTypeInterface<Event>
+    {
+        @Override
+        public String getTypeName(boolean upper)
+        {
+            return upper ? getString(R.string.event_upper) : getString(R.string.event_lower);
+        }
+
+        @Override
+        public String getIdListKey()
+        {
+            return VALUE_EVENT_IDS;
+        }
+
+        @Override
+        public List<Event> getList()
+        {
+            return mEvents;
+        }
+
+        @Override
+        public Event loadFromPrefs(int id)
+        {
+            return EventBase.fromSharedPreferences(AutomationService.this, id);
+        }
+
+        @Override
+        public Event findById(int id)
+        {
+            for (Event event : mEvents)
+                if (event.getId() == id) return event;
+            return null;
+        }
+    }
+
+
+    /**
+     * An interface for managing automation types.
+     *
+     * @param <T>
+     */
+    private interface AutomationTypeInterface<T extends Automation>
+    {
+        public abstract String getTypeName(boolean upper);
+
+        public abstract String getIdListKey();
+
+        public abstract List<T> getList();
+
+        public abstract T loadFromPrefs(int id);
+
+        public abstract T findById(int id);
     }
 
     /**

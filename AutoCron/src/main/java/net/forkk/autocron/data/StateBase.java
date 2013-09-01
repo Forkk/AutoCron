@@ -21,8 +21,6 @@ import android.content.SharedPreferences;
 import net.forkk.autocron.data.action.Action;
 import net.forkk.autocron.data.rule.Rule;
 
-import java.util.ArrayList;
-
 
 /**
  * Standard implementation for the state interface.
@@ -63,10 +61,6 @@ public class StateBase extends AutomationBase
     public StateBase(AutomationService service, int sharedPreferencesId)
     {
         super(service, sharedPreferencesId);
-        mAutomationService = service;
-        mComponentListObservers = new ArrayList<ComponentListChangeListener>();
-        mRules = new ArrayList<Rule>();
-        mActions = new ArrayList<Action>();
         mIsActive = false;
         loadConfig(service);
     }

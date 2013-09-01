@@ -26,7 +26,7 @@ import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 
-import net.forkk.autocron.data.State;
+import net.forkk.autocron.data.ComponentPointer;
 
 import java.util.Locale;
 
@@ -35,7 +35,7 @@ public class EditAutomationActivity extends FragmentActivity implements ActionBa
 {
     public static final String EXTRA_AUTOMATION_POINTER = "net.forkk.autocron.automation_ptr";
 
-    protected State.Pointer mAutomationPointer;
+    protected ComponentPointer mAutomationPointer;
 
     public EditAutomationActivity()
     {
@@ -62,7 +62,8 @@ public class EditAutomationActivity extends FragmentActivity implements ActionBa
 
         Intent intent = getIntent();
         assert intent != null;
-        mAutomationPointer = (State.Pointer) intent.getSerializableExtra(EXTRA_AUTOMATION_POINTER);
+        mAutomationPointer =
+                (ComponentPointer) intent.getSerializableExtra(EXTRA_AUTOMATION_POINTER);
 
         setContentView(R.layout.activity_edit_automation);
 
