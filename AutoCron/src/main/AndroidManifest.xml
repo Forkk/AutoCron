@@ -16,10 +16,20 @@
   ~ limitations under the License.
   -->
 
+<!--
+  ~ A brief note about the versionCode: The version code is done the way it is so that it 
+  ~ somewhat matches up with the version name. The first digit is the major version number,
+  ~ the next two digits are the minor version number, and the final two are the revision number
+  ~ this way, most version names can be easily represented in the version code.
+  ~ 
+  ~ For example: 0.3.0 would be 00300, 0.3.1 would be 00301, 0.3.13 would be 00313, 
+  ~ 1.13.2 would be 11302, and so on...
+-->
+
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="net.forkk.autocron"
-          android:versionCode="030"
-          android:versionName="0.3.0">
+          android:versionCode="00301"
+          android:versionName="0.3.1">
 
 <uses-sdk
             android:minSdkVersion="14"
