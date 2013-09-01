@@ -87,6 +87,8 @@ public class TimeRangeRule extends RuleBase implements AutomationService.IntentL
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY, hours);
         cal.set(Calendar.MINUTE, minutes);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
         return cal.getTimeInMillis();
     }
 
@@ -123,6 +125,9 @@ public class TimeRangeRule extends RuleBase implements AutomationService.IntentL
     {
         final AutomationService service = getService();
 
+        long startTime = startTriggerTime();
+        long endTime = endTriggerTime();
+
         AlarmManager alarmManager = (AlarmManager) service.getSystemService(Context.ALARM_SERVICE);
         assert alarmManager != null;
 
@@ -130,16 +135,15 @@ public class TimeRangeRule extends RuleBase implements AutomationService.IntentL
         startIntent.putExtra(AutomationService.LISTENER_ID_EXTRA, mStartListenerId);
         mPendingStartIntent = PendingIntent.getService(service, mStartListenerId, startIntent,
                                                        PendingIntent.FLAG_ONE_SHOT);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, startTriggerTime(),
-                                  AlarmManager.INTERVAL_DAY, mPendingStartIntent);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, startTime, AlarmManager.INTERVAL_DAY,
+                                  mPendingStartIntent);
 
         Intent endIntent = new Intent(service, AutomationService.class);
         endIntent.putExtra(AutomationService.LISTENER_ID_EXTRA, mEndListenerId);
         mPendingEndIntent = PendingIntent.getService(service, mEndListenerId, endIntent,
                                                      PendingIntent.FLAG_ONE_SHOT);
-        alarmManager
-                .setRepeating(AlarmManager.RTC_WAKEUP, endTriggerTime(), AlarmManager.INTERVAL_DAY,
-                              mPendingEndIntent);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, endTime, AlarmManager.INTERVAL_DAY,
+                                  mPendingEndIntent);
     }
 
     @Override
@@ -169,24 +173,27 @@ public class TimeRangeRule extends RuleBase implements AutomationService.IntentL
     {
         super.onSharedPreferenceChanged(preferences, s);
 
-        if (startTriggerTime() >= endTriggerTime())
+        long startTime = startTriggerTime();
+        long endTime = endTriggerTime();
+
+        if (startTime >= endTime)
         {
             SharedPreferences.Editor edit = preferences.edit();
 
             // If the end time is less than or equal to the start time, set the end time to the
             // start time plus one minute.
             Calendar cal = Calendar.getInstance();
-            cal.setTimeInMillis(startTriggerTime());
+            cal.setTimeInMillis(startTime);
             cal.add(Calendar.MINUTE, 1);
 
             Integer hour = cal.get(Calendar.HOUR_OF_DAY);
-            Integer minute = cal.get(Calendar.MINUTE) + 1;
+            Integer minute = cal.get(Calendar.MINUTE);
 
             edit.putString("range_end", hour.toString() + ":" + minute.toString());
             edit.commit();
 
             // Hack to update the end time in the UI when it is corrected to start time + 1.
-            mEndTimePreference.setValues(hour, minute);
+            if (mEndTimePreference != null) mEndTimePreference.setValues(hour, minute);
         }
         else setAlarms();
     }
