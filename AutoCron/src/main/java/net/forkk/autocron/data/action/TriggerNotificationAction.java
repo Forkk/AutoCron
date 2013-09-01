@@ -33,7 +33,7 @@ import net.forkk.autocron.data.ComponentType;
 /**
  * A trigger action that displays a notification when it is triggered.
  */
-public class TriggerNotificationAction extends TriggerActionBase
+public class TriggerNotificationAction extends TriggerAction
 {
     private static final String NOTIFICATION_TAG = "net.forkk.autocron.TriggerNotificationAction";
 

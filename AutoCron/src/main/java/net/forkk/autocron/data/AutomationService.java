@@ -43,14 +43,18 @@ public class AutomationService extends Service
 
     public static final String LISTENER_ID_EXTRA = "net.forkk.autocron.listener_id";
 
+    public static final int CONFIG_FORMAT_VERSION = 1;
+
     /**
      * Name of the SharedPreferences that stores automations.
      */
     public static final String PREF_AUTOMATIONS = "automations";
 
-    private static final String VALUE_AUTOMATION_IDS = "automation_ids";
+    private static final String VALUE_STATE_IDS = "state_ids";
 
-    private ArrayList<Automation> mAutomations;
+    private static final String VALUE_CONFIG_VERSION = "config_version";
+
+    private ArrayList<State> mStates;
 
     private Map<Integer, IntentListener> mIntentListenerMap;
 
@@ -125,14 +129,14 @@ public class AutomationService extends Service
 
         super.onCreate();
 
-        mAutomations = new ArrayList<Automation>();
+        mStates = new ArrayList<State>();
 
         // Load automations from the config file.
         loadConfig();
 
-        for (Automation automation : mAutomations)
+        for (State state : mStates)
         {
-            if (automation.isEnabled()) automation.create();
+            if (state.isEnabled()) state.create();
         }
     }
 
@@ -143,9 +147,9 @@ public class AutomationService extends Service
 
         super.onDestroy();
 
-        for (Automation automation : mAutomations)
+        for (State state : mStates)
         {
-            automation.destroy();
+            state.destroy();
         }
     }
 
@@ -160,17 +164,44 @@ public class AutomationService extends Service
         Log.i(LOGGER_TAG, "Loading configuration.");
 
         SharedPreferences prefs = getSharedPreferences(PREF_AUTOMATIONS, MODE_PRIVATE);
-        Set<String> automationIDs = prefs.getStringSet(VALUE_AUTOMATION_IDS, new HashSet<String>());
 
-        ArrayList<Automation> tempAutomationList = new ArrayList<Automation>();
-        for (String stringVal : automationIDs)
+        Log.d(LOGGER_TAG, "Checking configuration version.");
+        int currentVersion = prefs.getInt(VALUE_CONFIG_VERSION, 0);
+
+        // Version 0 didn't store its version in the configs, so we need to do some extra stuff
+        // to verify that it actually is version 0 and not just a blank config.
+        if (currentVersion == 0 && !prefs.contains("automation_ids"))
+        {
+            // If it isn't actually version 0, then set currentVersion to -1.
+            currentVersion = -1;
+            Log.i(LOGGER_TAG, "Configuration is blank.");
+        }
+        else
+        {
+            if (currentVersion < CONFIG_FORMAT_VERSION)
+            {
+                Log.i(LOGGER_TAG, "Detected old configuration format. Upgrading.");
+                upgradeConfig(prefs, currentVersion);
+            }
+            else
+            {
+                Log.i(LOGGER_TAG, "Configuration format is up to date (" + CONFIG_FORMAT_VERSION +
+                                  ").");
+            }
+        }
+
+        Log.i(LOGGER_TAG, "Loading states.");
+        Set<String> stateIDs = prefs.getStringSet(VALUE_STATE_IDS, new HashSet<String>());
+
+        ArrayList<State> tempStateList = new ArrayList<State>();
+        for (String stringVal : stateIDs)
         {
             try
             {
                 int id = Integer.parseInt(stringVal);
-                Automation automation = AutomationImpl.fromSharedPreferences(this, id);
-                tempAutomationList.add(automation);
-                Log.i(LOGGER_TAG, "Loaded automation \"" + automation.getName() + "\".");
+                State state = StateBase.fromSharedPreferences(this, id);
+                tempStateList.add(state);
+                Log.d(LOGGER_TAG, "Loaded state \"" + state.getName() + "\".");
             }
             catch (NumberFormatException e)
             {
@@ -178,13 +209,13 @@ public class AutomationService extends Service
             }
         }
 
-        for (Automation automation : mAutomations)
-            getSharedPreferences(automation.getSharedPreferencesName(), MODE_PRIVATE)
+        for (State state : mStates)
+            getSharedPreferences(state.getSharedPreferencesName(), MODE_PRIVATE)
                     .unregisterOnSharedPreferenceChangeListener(this);
-        mAutomations.clear();
-        mAutomations.addAll(tempAutomationList);
-        for (Automation automation : mAutomations)
-            getSharedPreferences(automation.getSharedPreferencesName(), MODE_PRIVATE)
+        mStates.clear();
+        mStates.addAll(tempStateList);
+        for (State state : mStates)
+            getSharedPreferences(state.getSharedPreferencesName(), MODE_PRIVATE)
                     .registerOnSharedPreferenceChangeListener(this);
 
         Log.i(LOGGER_TAG, "Done loading configuration.");
@@ -193,37 +224,141 @@ public class AutomationService extends Service
     }
 
     /**
-     * Adds the given automation's ID to the automation ID list.
+     * Upgrades the config format from the given old version to the current version.
      *
-     * @param automation
-     *         The automation to add.
+     * @param oldVersion
+     *         The version to upgrade from.
      */
-    public void addAutomation(Automation automation)
+    protected void upgradeConfig(SharedPreferences prefs, int oldVersion)
+    {
+        int nextVersion = oldVersion;
+        while (nextVersion < CONFIG_FORMAT_VERSION)
+        {
+            Log.d(LOGGER_TAG, "Configuration upgrade: Upgrading to version " + ++nextVersion + ".");
+            doConfigMigration(prefs, nextVersion);
+        }
+    }
+
+    /**
+     * Upgrades the configuration from the version prior to the specified version.
+     * <p/>
+     * For example, calling this with a new version value of 1 will upgrade the config format from
+     * version 0 to version 1.
+     * <p/>
+     * When upgradeConfig() is called, it calls this function for each version until the config
+     * format is up to date.
+     *
+     * @param targetVersion
+     *         The version to upgrade to.
+     */
+    protected void doConfigMigration(SharedPreferences prefs, int targetVersion)
+    {
+        assert targetVersion <= CONFIG_FORMAT_VERSION;
+
+        switch (targetVersion)
+        {
+        case 1:
+            SharedPreferences.Editor editor = prefs.edit();
+
+            // Using hardcoded key names here because if the key name for state_ids changes in the
+            // future, this code will still need to use the old name.
+
+            // Rename the automation_ids value to state_ids
+            Log.d(LOGGER_TAG, "Renaming automation_ids set to state_ids.");
+            Set<String> stateIDs = prefs.getStringSet("automation_ids", new HashSet<String>());
+            editor.putStringSet("state_ids", stateIDs);
+            editor.remove("automation_ids");
+
+            // Now, rename all of the automation_<id> shared preferences objects to state_<id>.
+            Log.d(LOGGER_TAG, "Renaming shared preference files for automations.");
+            for (String id : stateIDs)
+            {
+                Log.d(LOGGER_TAG, "Renaming shared preferences file for state " + id + ".");
+                SharedPreferences oldPrefs = getSharedPreferences("automation_" + id, MODE_PRIVATE);
+                SharedPreferences newPrefs = getSharedPreferences("state_" + id, MODE_PRIVATE);
+
+                SharedPreferences.Editor stateEdit = newPrefs.edit();
+
+                // Copy everything from the old preferences file to the new preferences file.
+
+                // First, get all of the values.
+                Map<String, ?> values = oldPrefs.getAll();
+                assert values != null;
+
+                // Then copy over each of them to the new preferences file. 
+                for (Map.Entry<String, ?> entry : values.entrySet())
+                {
+                    String key = entry.getKey();
+                    Object value = entry.getValue();
+                    if (value instanceof String) stateEdit.putString(key, (String) value);
+                    else if (value instanceof Boolean) stateEdit.putBoolean(key, (Boolean) value);
+                    else if (value instanceof Float) stateEdit.putFloat(key, (Float) value);
+                    else if (value instanceof Integer) stateEdit.putInt(key, (Integer) value);
+                    else if (value instanceof Long) stateEdit.putLong(key, (Long) value);
+                    else if (value instanceof Set<?>)
+                    {
+                        try
+                        {
+                            //noinspection unchecked
+                            stateEdit.putStringSet(key, (Set<String>) value);
+                        }
+                        catch (ClassCastException e)
+                        {
+                            Log.wtf(LOGGER_TAG,
+                                    "Set value isn't a string set even though shared preferences " +
+                                    "only support string sets!", e);
+                        }
+                    }
+                    else
+                    {
+                        Log.w(LOGGER_TAG, "Unknown value type in shared preferences file.");
+                    }
+
+                    Log.d(LOGGER_TAG, "Copied value " + key +
+                                      " to new shared preferences file.");
+                }
+
+                // Finally, save the new configuration and clear the old one.
+                stateEdit.commit();
+                oldPrefs.edit().clear().commit();
+            }
+
+            editor.commit();
+            break;
+        }
+    }
+
+    /**
+     * Adds the given state's ID to the state ID list.
+     *
+     * @param state
+     *         The state to add.
+     */
+    public void addAutomation(State state)
     {
         SharedPreferences prefs = getSharedPreferences(PREF_AUTOMATIONS, MODE_PRIVATE);
         SharedPreferences.Editor edit = prefs.edit();
 
         Set<String> automationIDs = new HashSet<String>();
-        automationIDs.add(((Integer) automation.getId()).toString());
-        automationIDs.addAll(prefs.getStringSet(VALUE_AUTOMATION_IDS, new HashSet<String>()));
+        automationIDs.add(((Integer) state.getId()).toString());
+        automationIDs.addAll(prefs.getStringSet(VALUE_STATE_IDS, new HashSet<String>()));
 
-        edit.putStringSet(VALUE_AUTOMATION_IDS, automationIDs);
-        mAutomations.add(automation);
-        automation.create();
+        edit.putStringSet(VALUE_STATE_IDS, automationIDs);
+        mStates.add(state);
+        state.create();
         boolean success = edit.commit();
         if (!success) Log.e(LOGGER_TAG, "Failed to commit changes to preferences.");
         else onAutomationListChange();
 
-        assert prefs.getStringSet(VALUE_AUTOMATION_IDS, new HashSet<String>())
-                    .equals(automationIDs);
+        assert prefs.getStringSet(VALUE_STATE_IDS, new HashSet<String>()).equals(automationIDs);
     }
 
     private void deleteAutomation(int id)
     {
-        Automation automation = findAutomationById(id);
-        if (automation == null)
+        State state = findAutomationById(id);
+        if (state == null)
         {
-            Log.e(LOGGER_TAG, "Attempted to delete an automation that doesn't exist.");
+            Log.e(LOGGER_TAG, "Attempted to delete a state that doesn't exist.");
             return;
         }
 
@@ -231,34 +366,33 @@ public class AutomationService extends Service
         SharedPreferences.Editor edit = prefs.edit();
 
         Set<String> automationIDs = new HashSet<String>();
-        automationIDs.addAll(prefs.getStringSet(VALUE_AUTOMATION_IDS, new HashSet<String>()));
+        automationIDs.addAll(prefs.getStringSet(VALUE_STATE_IDS, new HashSet<String>()));
         automationIDs.remove(((Integer) id).toString());
 
-        edit.putStringSet(VALUE_AUTOMATION_IDS, automationIDs);
+        edit.putStringSet(VALUE_STATE_IDS, automationIDs);
 
         // Clear the component's preferences.
-        getSharedPreferences(automation.getSharedPreferencesName(), MODE_PRIVATE).edit().clear()
+        getSharedPreferences(state.getSharedPreferencesName(), MODE_PRIVATE).edit().clear()
                 .commit();
 
-        automation.destroy();
-        mAutomations.remove(automation);
+        state.destroy();
+        mStates.remove(state);
         boolean success = edit.commit();
         if (!success) Log.e(LOGGER_TAG, "Failed to commit changes to preferences.");
         else onAutomationListChange();
     }
 
-    private Automation findAutomationById(int id)
+    private State findAutomationById(int id)
     {
-        for (Automation automation : mAutomations)
-            if (automation.getId() == id) return automation;
+        for (State state : mStates)
+            if (state.getId() == id) return state;
         return null;
     }
 
     public int getUnusedAutomationId()
     {
         SharedPreferences prefs = getSharedPreferences(PREF_AUTOMATIONS, MODE_PRIVATE);
-        Set<String> usedAutomationIds =
-                prefs.getStringSet(VALUE_AUTOMATION_IDS, new HashSet<String>());
+        Set<String> usedAutomationIds = prefs.getStringSet(VALUE_STATE_IDS, new HashSet<String>());
 
         int greatestValue = 0;
         for (String stringVal : usedAutomationIds)
@@ -287,9 +421,9 @@ public class AutomationService extends Service
 
     public class LocalBinder extends Binder
     {
-        public List<Automation> getAutomationList()
+        public List<State> getAutomationList()
         {
-            return mAutomations;
+            return mStates;
         }
 
         /**
@@ -300,7 +434,7 @@ public class AutomationService extends Service
          *
          * @return The automation with the given ID or null if no automation was found.
          */
-        public Automation findAutomationById(int id)
+        public State findStateById(int id)
         {
             return AutomationService.this.findAutomationById(id);
         }
@@ -313,9 +447,9 @@ public class AutomationService extends Service
          */
         public void createNewAutomation(String name)
         {
-            Automation automation = AutomationImpl.createNewAutomation(name, AutomationService.this,
-                                                                       getUnusedAutomationId());
-            addAutomation(automation);
+            State state =
+                    StateBase.createNewState(name, AutomationService.this, getUnusedAutomationId());
+            addAutomation(state);
         }
 
         /**

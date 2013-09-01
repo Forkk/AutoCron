@@ -27,9 +27,9 @@ import android.os.IBinder;
 import android.view.View;
 import android.widget.EditText;
 
-import net.forkk.autocron.data.Automation;
 import net.forkk.autocron.data.AutomationService;
 import net.forkk.autocron.data.ConfigComponent;
+import net.forkk.autocron.data.State;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +71,7 @@ public class AutomationListFragment extends ComponentListFragment
     {
         Intent intent = new Intent(getActivity(), EditAutomationActivity.class);
         intent.putExtra(EditAutomationActivity.EXTRA_AUTOMATION_POINTER,
-                        new Automation.Pointer((int) id));
+                        new State.Pointer((int) id));
         startActivity(intent);
     }
 
@@ -144,7 +144,7 @@ public class AutomationListFragment extends ComponentListFragment
     protected ConfigComponent findComponentById(int id)
     {
         if (mBinder == null) return null;
-        return mBinder.findAutomationById(id);
+        return mBinder.findStateById(id);
     }
 
     @Override

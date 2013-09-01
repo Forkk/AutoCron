@@ -30,7 +30,7 @@ import net.forkk.autocron.data.ComponentType;
 /**
  * An action that changes the device's ringer mode.
  */
-public class RingerModeAction extends TriggerActionBase
+public class RingerModeAction extends TriggerAction
 {
     private static ActionType sComponentType;
 

@@ -103,11 +103,11 @@ public abstract class ComponentType<T extends AutomationComponent>
      */
     public T construct(Automation parent, Context context, int id)
     {
-        Constructor<? extends T> constructor = null;
+        Constructor<? extends T> constructor;
         try
         {
             constructor =
-                    mTypeClass.getConstructor(Automation.class, AutomationService.class, int.class);
+                    mTypeClass.getConstructor(State.class, AutomationService.class, int.class);
         }
         catch (NoSuchMethodException e)
         {

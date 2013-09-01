@@ -45,7 +45,7 @@
 
     <!-- Action Type Info -->
     <string name="test_action_title">Test Action</string>
-    <string name="test_action_description">This is a simple test action that just displays a toast notification on screen whenever it activates or deactivates. You can use this to test your automation\'s rules.</string>
+    <string name="test_action_description">This is a simple test action that just displays a toast notification on screen whenever it activates or deactivates. You can use this to test your state\'s rules.</string>
 
     <string name="ringer_mode_action_title">Ringer Mode Action</string>
     <string name="ringer_mode_action_description">This action changes the device\'s ringer mode to either mute or vibrate.</string>
@@ -61,7 +61,7 @@
 
     <!-- Rule Type Info -->
     <string name="test_rule_title">Test Rule</string>
-    <string name="test_rule_description">This is a simple test rule that displays a notification that you can click on to activate and deactivate the rule. You can use this rule for testing an automation\'s actions.</string>
+    <string name="test_rule_description">This is a simple test rule that displays a notification that you can click on to activate and deactivate the rule. You can use this rule for testing an state\'s actions.</string>
 
     <string name="location_rule_title">Location Rule</string>
     <string name="location_rule_description">A rule that activates when the device is in a certain location.</string>
@@ -87,11 +87,11 @@
     <!-- Preference Stuff -->
     <string name="pref_title_name_and_desc">Name &amp; Description</string>
     <string name="pref_automation_name_title">Name</string>
-    <string name="pref_automation_name_summary">A short name for the automation.</string>
-    <string name="pref_automation_name_dialog_title">Enter a name for this automation.</string>
+    <string name="pref_automation_name_summary">A short name for the state.</string>
+    <string name="pref_automation_name_dialog_title">Enter a name for this state.</string>
     <string name="pref_automation_desc_title">Description</string>
-    <string name="pref_automation_desc_summary">A short description explaining what this automation does.</string>
-    <string name="pref_automation_desc_dialog_title">Enter a description for this automation.</string>
+    <string name="pref_automation_desc_summary">A short description explaining what this state does.</string>
+    <string name="pref_automation_desc_dialog_title">Enter a description for this state.</string>
 
     <string name="pref_component_generic_info">General Information</string>
 
@@ -173,13 +173,13 @@
 
     <string name="pref_title_rule_settings">Rule Settings</string>
     <string name="pref_title_rule_inverted">Invert Rule</string>
-    <string name="pref_summary_rule_inverted">Inverted rules activate their automation when they are inactive and deactivate it when they are active.</string>
+    <string name="pref_summary_rule_inverted">Inverted rules activate their state when they are inactive and deactivate it when they are active.</string>
 
     <string name="pref_title_trigger">Trigger</string>
     <string name="pref_title_trigger_activate">Trigger on activate?</string>
-    <string name="pref_summary_trigger_activate">If checked, this action will be executed when the automation becomes activated.</string>
+    <string name="pref_summary_trigger_activate">If checked, this action will be executed when the state becomes activated.</string>
     <string name="pref_title_trigger_deactivate">Trigger on deactivate?</string>
-    <string name="pref_summary_trigger_deactivate">If checked, this action will be executed when the automation becomes deactivated.</string>
+    <string name="pref_summary_trigger_deactivate">If checked, this action will be executed when the state becomes deactivated.</string>
 
     <string name="pref_title_nfc_rule">NFC</string>
     <string name="pref_title_nfc_write_activate">Write Activate Tag</string>
@@ -195,7 +195,7 @@
     <string name="action_upper">Action</string>
     <string name="action_lower">action</string>
     <string name="automation_upper">Automation</string>
-    <string name="automation_lower">automation</string>
+    <string name="automation_lower">state</string>
 
     <!-- Messages -->
     <string name="title_new_component">Create New %1$s</string>

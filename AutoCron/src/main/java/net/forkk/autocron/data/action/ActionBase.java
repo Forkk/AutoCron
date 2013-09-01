@@ -23,6 +23,7 @@ import net.forkk.autocron.data.Automation;
 import net.forkk.autocron.data.AutomationComponentBase;
 import net.forkk.autocron.data.AutomationService;
 import net.forkk.autocron.data.ComponentPointer;
+import net.forkk.autocron.data.State;
 
 
 /**
@@ -41,8 +42,13 @@ public abstract class ActionBase extends AutomationComponentBase implements Acti
         super.create();
         if (getParent().isEnabled() && isEnabled())
         {
-            if (getParent().isActive()) onActivate();
-            else onDeactivate();
+            Automation parent = getParent();
+            if (parent instanceof State)
+            {
+                State state = (State) parent;
+                if (state.isActive()) onActivate();
+                else onDeactivate();
+            }
         }
     }
 

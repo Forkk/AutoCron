@@ -16,11 +16,11 @@
 
 package net.forkk.autocron.data.rule;
 
-import net.forkk.autocron.data.Automation;
 import net.forkk.autocron.data.AutomationComponent;
 import net.forkk.autocron.data.AutomationService;
 import net.forkk.autocron.data.ComponentPointer;
 import net.forkk.autocron.data.ConfigComponent;
+import net.forkk.autocron.data.State;
 
 import java.io.Serializable;
 
@@ -64,7 +64,7 @@ public interface Rule extends AutomationComponent
         @Override
         public ConfigComponent getComponent(AutomationService.LocalBinder binder)
         {
-            Automation parent = binder.findAutomationById(mAutomationId);
+            State parent = binder.findStateById(mAutomationId);
             if (parent == null) return null;
             return parent.findRuleById(mRuleId);
         }

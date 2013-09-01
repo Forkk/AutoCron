@@ -21,15 +21,30 @@ import net.forkk.autocron.data.action.ActionType;
 import net.forkk.autocron.data.rule.Rule;
 import net.forkk.autocron.data.rule.RuleType;
 
-import java.io.Serializable;
 import java.util.List;
 
 
 /**
- * Interface for automations. Provides access to all of the necessary stuff.
+ * Interface for automations. Includes things that states and triggers share in common.
  */
 public interface Automation extends ConfigComponent
 {
+    /**
+     * @return The automation service that this automation is attached to.
+     */
+    public AutomationService getService();
+
+
+    void registerComponentListObserver(StateBase.ComponentListChangeListener listener);
+
+    void unregisterComponentListObserver(StateBase.ComponentListChangeListener listener);
+
+    public static interface ComponentListChangeListener
+    {
+        public void onComponentListChange();
+    }
+
+
     /**
      * @return An array of this automation's rules.
      */
@@ -93,51 +108,10 @@ public interface Automation extends ConfigComponent
     public Action findActionById(int id);
 
     /**
-     * @return True or false depending on whether or not the automation is active.
-     */
-    public boolean isActive();
-
-    /**
-     * Called when a rule is activated or deactivated. This should recheck all of the rules and see
-     * if the automation should be activated.
-     */
-    public void updateActivationState();
-
-    /**
      * Reloads all components from configuration.
      * <p/>
      * This is generally called when some configuration options change. It re-creates all of the
      * rules and actions.
      */
     public void reloadComponents(AutomationService service);
-
-    /**
-     * @return The automation service that this automation is attached to.
-     */
-    public AutomationService getService();
-
-    void registerComponentListObserver(AutomationImpl.ComponentListChangeListener listener);
-
-    void unregisterComponentListObserver(AutomationImpl.ComponentListChangeListener listener);
-
-    public static class Pointer implements ComponentPointer, Serializable
-    {
-        protected int mAutomationId;
-
-        public Pointer(Automation automation)
-        {
-            mAutomationId = automation.getId();
-        }
-
-        public Pointer(int id)
-        {
-            mAutomationId = id;
-        }
-
-        @Override
-        public ConfigComponent getComponent(AutomationService.LocalBinder binder)
-        {
-            return binder.findAutomationById(mAutomationId);
-        }
-    }
 }

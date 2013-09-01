@@ -34,64 +34,37 @@ import java.util.Set;
 
 
 /**
- * Standard implementation for the automation interface.
+ * Base class for automations. Includes functionality shared by both automations and triggers.
  */
-public class AutomationImpl extends ConfigComponentBase
+public abstract class AutomationBase extends ConfigComponentBase
         implements Automation, SharedPreferences.OnSharedPreferenceChangeListener,
                            AutomationComponentBase.ComponentChangeListener
 {
     public static final String LOGGER_TAG = AutomationService.LOGGER_TAG;
 
-    private static final String VALUE_RULE_IDS = "rule_ids";
+    protected static final String VALUE_RULE_IDS = "rule_ids";
 
-    private static final String VALUE_ACTION_IDS = "action_ids";
+    protected static final String VALUE_ACTION_IDS = "action_ids";
 
-    private ArrayList<Rule> mRules;
+    protected List<Rule> mRules;
 
-    private ArrayList<Action> mActions;
+    protected List<Action> mActions;
 
-    private ArrayList<ComponentListChangeListener> mComponentListObservers;
+    protected AutomationService mAutomationService;
 
-    private AutomationService mAutomationService;
+    protected ArrayList<ComponentListChangeListener> mComponentListObservers;
 
-    private boolean mIsActive;
 
-    /**
-     * Loads a new automation from the given SharedPreferences.
-     *
-     * @param service
-     *         The automation service.
-     * @param preferencesId
-     *         The ID of the shared preferences to load from.
-     *
-     * @return The new automation.
-     */
-    public static Automation fromSharedPreferences(AutomationService service, int preferencesId)
-    {
-        return new AutomationImpl(service, preferencesId);
-    }
-
-    public static Automation createNewAutomation(String name, AutomationService service,
-                                                 int preferencesId)
-    {
-        AutomationImpl automation = new AutomationImpl(service, preferencesId);
-        SharedPreferences.Editor edit = automation.getSharedPreferences().edit();
-        edit.clear().commit();
-        edit.putString(VALUE_NAME, name);
-        edit.commit();
-        return automation;
-    }
-
-    public AutomationImpl(AutomationService service, int sharedPreferencesId)
+    public AutomationBase(AutomationService service, int sharedPreferencesId)
     {
         super(service, sharedPreferencesId);
         mAutomationService = service;
         mComponentListObservers = new ArrayList<ComponentListChangeListener>();
         mRules = new ArrayList<Rule>();
         mActions = new ArrayList<Action>();
-        mIsActive = false;
         loadConfig(service);
     }
+
 
     /**
      * Called after the automation service finishes loading components. This should perform all
@@ -127,6 +100,32 @@ public class AutomationImpl extends ConfigComponentBase
             action.destroy();
         }
     }
+
+
+    private void onComponentListChange()
+    {
+        for (ComponentListChangeListener listener : mComponentListObservers)
+            listener.onComponentListChange();
+    }
+
+    @Override
+    public void registerComponentListObserver(ComponentListChangeListener listener)
+    {
+        mComponentListObservers.add(listener);
+    }
+
+    @Override
+    public void unregisterComponentListObserver(ComponentListChangeListener listener)
+    {
+        mComponentListObservers.remove(listener);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences preferences, String key)
+    {
+        if (key.equals("name") || key.equals("description")) onComponentListChange();
+    }
+
 
     protected void loadConfig(Context context)
     {
@@ -187,6 +186,7 @@ public class AutomationImpl extends ConfigComponentBase
             context.getSharedPreferences(component.getSharedPreferencesName(), Context.MODE_PRIVATE)
                    .registerOnSharedPreferenceChangeListener(this);
     }
+
 
     /**
      * @return An array of this automation's rules.
@@ -418,56 +418,19 @@ public class AutomationImpl extends ConfigComponentBase
         public abstract T findById(int id);
     }
 
-    /**
-     * @return True or false depending on whether or not the automation is active.
-     */
     @Override
-    public boolean isActive()
+    protected SharedPreferences getSharedPreferences()
     {
-        return mIsActive;
+        return getService().getSharedPreferences(getSharedPreferencesName(), Context.MODE_PRIVATE);
     }
 
-    /**
-     * Called when a rule is activated or deactivated. This should recheck all of the rules and see
-     * if the automation should be activated.
-     */
     @Override
-    public void updateActivationState()
+    public void addPreferencesToFragment(PreferenceFragment fragment)
     {
-        if (!isEnabled()) return;
-
-        boolean activated = true;
-        int enabledRuleCount = 0;
-        for (Rule rule : mRules)
-        {
-            if (rule.isEnabled())
-            {
-                enabledRuleCount++;
-
-                // If the rule is inverted and active or the rule is not inverted and inactive, 
-                // consider the rule inactive.
-                if (rule.isInverted() == rule.isActive()) activated = false;
-            }
-        }
-
-        // If there are no enabled rules, the automation does not activate.
-        if (enabledRuleCount <= 0) activated = false;
-
-        if (mIsActive != activated)
-        {
-            mIsActive = activated;
-            if (mIsActive)
-            {
-                for (Action action : mActions)
-                    if (action.isEnabled()) action.onActivate();
-            }
-            else
-            {
-                for (Action action : mActions)
-                    if (action.isEnabled()) action.onDeactivate();
-            }
-        }
+        super.addPreferencesToFragment(fragment);
+        fragment.addPreferencesFromResource(R.xml.prefs_automation);
     }
+
 
     /**
      * Reloads all components from configuration.
@@ -493,6 +456,7 @@ public class AutomationImpl extends ConfigComponentBase
             action.create();
     }
 
+
     /**
      * @return The automation service that this automation is attached to.
      */
@@ -500,67 +464,5 @@ public class AutomationImpl extends ConfigComponentBase
     public AutomationService getService()
     {
         return mAutomationService;
-    }
-
-    /**
-     * Gets this component's shared preferences name for the given component ID.
-     *
-     * @param id
-     *         The component's ID.
-     *
-     * @return The shared preferences ID for the corresponding ID.
-     */
-    @Override
-    protected String getSharedPreferencesName(int id)
-    {
-        return "automation_" + id;
-    }
-
-    @Override
-    protected SharedPreferences getSharedPreferences()
-    {
-        return getService().getSharedPreferences(getSharedPreferencesName(), Context.MODE_PRIVATE);
-    }
-
-    @Override
-    public void addPreferencesToFragment(PreferenceFragment fragment)
-    {
-        super.addPreferencesToFragment(fragment);
-        fragment.addPreferencesFromResource(R.xml.prefs_automation);
-    }
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences preferences, String key)
-    {
-        if (key.equals("name") || key.equals("description")) onComponentListChange();
-    }
-
-    @Override
-    public void registerComponentListObserver(ComponentListChangeListener listener)
-    {
-        mComponentListObservers.add(listener);
-    }
-
-    @Override
-    public void unregisterComponentListObserver(ComponentListChangeListener listener)
-    {
-        mComponentListObservers.remove(listener);
-    }
-
-    private void onComponentListChange()
-    {
-        for (ComponentListChangeListener listener : mComponentListObservers)
-            listener.onComponentListChange();
-    }
-
-    public static interface ComponentListChangeListener
-    {
-        public void onComponentListChange();
-    }
-
-    @Override
-    public ComponentPointer getPointer()
-    {
-        return new Pointer(this);
     }
 }

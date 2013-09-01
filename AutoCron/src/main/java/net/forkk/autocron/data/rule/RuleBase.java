@@ -23,6 +23,7 @@ import net.forkk.autocron.data.Automation;
 import net.forkk.autocron.data.AutomationComponentBase;
 import net.forkk.autocron.data.AutomationService;
 import net.forkk.autocron.data.ComponentPointer;
+import net.forkk.autocron.data.State;
 
 
 /**
@@ -40,14 +41,16 @@ public abstract class RuleBase extends AutomationComponentBase implements Rule
     public void setActive(boolean active)
     {
         mIsActive = active;
-        getParent().updateActivationState();
+        Automation parent = getParent();
+        if (parent instanceof State) ((State) parent).updateActivationState();
     }
 
     @Override
     public void setEnabled(boolean enabled)
     {
         super.setEnabled(enabled);
-        getParent().updateActivationState();
+        Automation parent = getParent();
+        if (parent instanceof State) ((State) parent).updateActivationState();
     }
 
     @Override

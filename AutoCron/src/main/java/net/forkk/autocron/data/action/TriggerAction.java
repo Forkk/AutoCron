@@ -21,15 +21,16 @@ import android.preference.PreferenceFragment;
 import net.forkk.autocron.R;
 import net.forkk.autocron.data.Automation;
 import net.forkk.autocron.data.AutomationService;
+import net.forkk.autocron.data.State;
 
 
 /**
  * Base class for "trigger" actions. Trigger actions are actions that allow the user to select
  * whether they execute their action on activate, on deactivate, or both.
  */
-public abstract class TriggerActionBase extends ActionBase
+public abstract class TriggerAction extends ActionBase
 {
-    public TriggerActionBase(Automation parent, AutomationService service, int id)
+    public TriggerAction(Automation parent, AutomationService service, int id)
     {
         super(parent, service, id);
     }
@@ -41,7 +42,7 @@ public abstract class TriggerActionBase extends ActionBase
      * action is meant to do on activation.
      */
     @Override
-    public void onActivate()
+    public final void onActivate()
     {
         if (getSharedPreferences().getBoolean("trigger_activate", false)) onTrigger();
     }
@@ -50,7 +51,7 @@ public abstract class TriggerActionBase extends ActionBase
      * Called when the action's automation deactivates.
      */
     @Override
-    public void onDeactivate()
+    public final void onDeactivate()
     {
         if (getSharedPreferences().getBoolean("trigger_deactivate", false)) onTrigger();
     }
@@ -59,6 +60,8 @@ public abstract class TriggerActionBase extends ActionBase
     public void addPreferencesToFragment(PreferenceFragment fragment)
     {
         super.addPreferencesToFragment(fragment);
-        fragment.addPreferencesFromResource(R.xml.prefs_trigger_action);
+
+        if (getParent() instanceof State)
+            fragment.addPreferencesFromResource(R.xml.prefs_trigger_action);
     }
 }

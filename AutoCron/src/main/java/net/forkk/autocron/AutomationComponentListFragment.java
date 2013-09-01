@@ -32,11 +32,11 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import net.forkk.autocron.data.Automation;
-import net.forkk.autocron.data.AutomationImpl;
 import net.forkk.autocron.data.AutomationService;
 import net.forkk.autocron.data.ComponentType;
 import net.forkk.autocron.data.ConfigComponent;
+import net.forkk.autocron.data.State;
+import net.forkk.autocron.data.StateBase;
 import net.forkk.autocron.data.action.Action;
 import net.forkk.autocron.data.action.ActionType;
 import net.forkk.autocron.data.rule.Rule;
@@ -50,15 +50,15 @@ import java.util.List;
  * List fragment for listing components of an automation.
  */
 public class AutomationComponentListFragment extends ComponentListFragment
-        implements AutomationImpl.ComponentListChangeListener, ServiceConnection
+        implements StateBase.ComponentListChangeListener, ServiceConnection
 {
     private static final String VALUE_AUTOMATION_POINTER = "net.forkk.autocron.automation_id";
 
     private static final String VALUE_COMPONENT_TYPE = "net.forkk.autocron.component_type";
 
-    private Automation mAutomation;
+    private State mAutomation;
 
-    private Automation.Pointer mAutomationPointer;
+    private State.Pointer mAutomationPointer;
 
     private ComponentListType mType;
 
@@ -67,8 +67,7 @@ public class AutomationComponentListFragment extends ComponentListFragment
 
     }
 
-    public AutomationComponentListFragment(Automation.Pointer automationPointer,
-                                           ComponentListType type)
+    public AutomationComponentListFragment(State.Pointer automationPointer, ComponentListType type)
     {
         Bundle arguments = new Bundle();
         arguments.putSerializable(VALUE_AUTOMATION_POINTER, automationPointer);
@@ -92,8 +91,7 @@ public class AutomationComponentListFragment extends ComponentListFragment
         Bundle arguments = getArguments();
         assert arguments != null;
 
-        mAutomationPointer =
-                (Automation.Pointer) arguments.getSerializable(VALUE_AUTOMATION_POINTER);
+        mAutomationPointer = (State.Pointer) arguments.getSerializable(VALUE_AUTOMATION_POINTER);
         mType = (ComponentListType) arguments.getSerializable(VALUE_COMPONENT_TYPE);
 
         loadAutomation();
@@ -259,7 +257,7 @@ public class AutomationComponentListFragment extends ComponentListFragment
     {
         AutomationService.LocalBinder binder = (AutomationService.LocalBinder) iBinder;
 
-        mAutomation = (Automation) mAutomationPointer.getComponent(binder);
+        mAutomation = (State) mAutomationPointer.getComponent(binder);
         assert mAutomation != null;
         mAutomation.registerComponentListObserver(this);
 

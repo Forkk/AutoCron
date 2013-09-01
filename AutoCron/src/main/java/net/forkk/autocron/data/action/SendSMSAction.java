@@ -39,7 +39,7 @@ import net.forkk.autocron.data.ComponentType;
 /**
  * An action that sends an SMS message.
  */
-public class SendSMSAction extends TriggerActionBase
+public class SendSMSAction extends TriggerAction
 {
     private static final String LOGGER_TAG = AutomationService.LOGGER_TAG;
 
