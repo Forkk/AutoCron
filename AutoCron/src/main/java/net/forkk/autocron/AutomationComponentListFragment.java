@@ -37,11 +37,14 @@ import net.forkk.autocron.data.AutomationService;
 import net.forkk.autocron.data.ComponentPointer;
 import net.forkk.autocron.data.ComponentType;
 import net.forkk.autocron.data.ConfigComponent;
+import net.forkk.autocron.data.Event;
 import net.forkk.autocron.data.StateBase;
 import net.forkk.autocron.data.action.Action;
 import net.forkk.autocron.data.action.ActionType;
 import net.forkk.autocron.data.rule.Rule;
 import net.forkk.autocron.data.rule.RuleType;
+import net.forkk.autocron.data.trigger.Trigger;
+import net.forkk.autocron.data.trigger.TriggerType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -123,6 +126,9 @@ public class AutomationComponentListFragment extends ComponentListFragment
 
         case Action:
             return mAutomation.getActions();
+
+        case Trigger:
+            return ((Event) mAutomation).getTriggers();
         }
         return null;
     }
@@ -153,6 +159,11 @@ public class AutomationComponentListFragment extends ComponentListFragment
             for (Action action : mAutomation.getActions())
                 if (action.getId() == id) return action;
             return null;
+
+        case Trigger:
+            for (Trigger trigger : ((Event) mAutomation).getTriggers())
+                if (trigger.getId() == id) return trigger;
+            return null;
         }
         return null;
     }
@@ -176,6 +187,10 @@ public class AutomationComponentListFragment extends ComponentListFragment
         case Action:
             adapter = new ComponentTypeAdapter(getActivity(), ActionType.getActionTypes());
             break;
+
+        case Trigger:
+            adapter = new ComponentTypeAdapter(getActivity(), TriggerType.getTriggerTypes());
+            break;
         }
 
         builder.setAdapter(adapter, new DialogInterface.OnClickListener()
@@ -192,6 +207,10 @@ public class AutomationComponentListFragment extends ComponentListFragment
 
                 case Action:
                     component = mAutomation.addAction(ActionType.getActionTypes()[i]);
+                    break;
+
+                case Trigger:
+                    component = ((Event) mAutomation).addTrigger(TriggerType.getTriggerTypes()[i]);
                     break;
                 }
                 onEditComponent(component.getId());
@@ -212,9 +231,15 @@ public class AutomationComponentListFragment extends ComponentListFragment
             intent.putExtra(EditComponentActivity.EXTRA_COMPONENT_POINTER,
                             new Rule.Pointer(mAutomation.getId(), (int) id));
             break;
+
         case Action:
             intent.putExtra(EditComponentActivity.EXTRA_COMPONENT_POINTER,
                             new Action.Pointer(mAutomation.getId(), (int) id));
+            break;
+
+        case Trigger:
+            intent.putExtra(EditComponentActivity.EXTRA_COMPONENT_POINTER,
+                            new Trigger.Pointer(mAutomation.getId(), (int) id));
             break;
         }
 
@@ -232,6 +257,9 @@ public class AutomationComponentListFragment extends ComponentListFragment
         case Action:
             mAutomation.deleteAction(id);
             break;
+        case Trigger:
+            ((Event) mAutomation).deleteTrigger(id);
+            break;
         }
     }
 
@@ -241,14 +269,16 @@ public class AutomationComponentListFragment extends ComponentListFragment
         switch (mType)
         {
         case Rule:
-            return upper ? getResources().getString(R.string.rule_upper)
-                         : getResources().getString(R.string.rule_lower);
+            return getResources().getString(upper ? R.string.rule_upper : R.string.rule_lower);
 
         case Action:
-            return upper ? getResources().getString(R.string.action_upper)
-                         : getResources().getString(R.string.action_lower);
+            return getResources().getString(upper ? R.string.action_upper : R.string.action_lower);
+
+        case Trigger:
+            return getResources()
+                           .getString(upper ? R.string.trigger_upper : R.string.trigger_lower);
         }
-        return null;
+        return "";
     }
 
     @Override
@@ -282,7 +312,8 @@ public class AutomationComponentListFragment extends ComponentListFragment
     public enum ComponentListType
     {
         Rule,
-        Action
+        Action,
+        Trigger,
     }
 
     private class ComponentTypeAdapter extends BaseAdapter

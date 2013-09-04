@@ -473,7 +473,7 @@ public class AutomationService extends Service
          *
          * @return The event with the given ID or null if no event was found.
          */
-        public ConfigComponent findEventById(int id)
+        public Event findEventById(int id)
         {
             return AutomationService.this.mEventTypeInterface.findById(id);
         }

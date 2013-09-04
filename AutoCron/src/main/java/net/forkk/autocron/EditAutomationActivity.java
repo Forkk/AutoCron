@@ -27,6 +27,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 
 import net.forkk.autocron.data.ComponentPointer;
+import net.forkk.autocron.data.Event;
 
 import java.util.Locale;
 
@@ -36,6 +37,8 @@ public class EditAutomationActivity extends FragmentActivity implements ActionBa
     public static final String EXTRA_AUTOMATION_POINTER = "net.forkk.autocron.automation_ptr";
 
     protected ComponentPointer mAutomationPointer;
+
+    protected boolean mShowTriggerList = false;
 
     public EditAutomationActivity()
     {
@@ -64,6 +67,8 @@ public class EditAutomationActivity extends FragmentActivity implements ActionBa
         assert intent != null;
         mAutomationPointer =
                 (ComponentPointer) intent.getSerializableExtra(EXTRA_AUTOMATION_POINTER);
+
+        mShowTriggerList = mAutomationPointer instanceof Event.Pointer;
 
         setContentView(R.layout.activity_edit_automation);
 
@@ -139,6 +144,14 @@ public class EditAutomationActivity extends FragmentActivity implements ActionBa
         @Override
         public Fragment getItem(int position)
         {
+            if (mShowTriggerList)
+            {
+                if (position > 1) position--;
+                else if (position == 1)
+                    return new AutomationComponentListFragment(mAutomationPointer,
+                                                               AutomationComponentListFragment.ComponentListType.Trigger);
+            }
+
             switch (position)
             {
             case 0:
@@ -158,13 +171,21 @@ public class EditAutomationActivity extends FragmentActivity implements ActionBa
         public int getCount()
         {
             // Show 3 total pages.
-            return 3;
+            return mShowTriggerList ? 4 : 3;
         }
 
         @Override
         public CharSequence getPageTitle(int position)
         {
             Locale l = Locale.getDefault();
+
+            if (mShowTriggerList)
+            {
+                if (position > 1) position--;
+                else if (position == 1)
+                    return getString(R.string.title_automation_triggers).toUpperCase(l);
+            }
+
             switch (position)
             {
             case 0:

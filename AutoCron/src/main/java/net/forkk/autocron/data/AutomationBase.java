@@ -101,7 +101,7 @@ public abstract class AutomationBase extends ConfigComponentBase
     }
 
 
-    private void onComponentListChange()
+    protected void onComponentListChange()
     {
         for (ComponentListChangeListener listener : mComponentListObservers)
             listener.onComponentListChange();
@@ -141,9 +141,9 @@ public abstract class AutomationBase extends ConfigComponentBase
         Log.i(LOGGER_TAG, "Done loading automation configuration for \"" + getName() + "\".");
     }
 
-    private <T extends AutomationComponent> void loadComponentList(Context context,
-                                                                   SharedPreferences prefs,
-                                                                   ComponentTypeInterface<T> typeInterface)
+    protected <T extends AutomationComponent> void loadComponentList(Context context,
+                                                                     SharedPreferences prefs,
+                                                                     ComponentTypeInterface<T> typeInterface)
     {
         String typeName = typeInterface.getTypeName(false);
 
@@ -330,7 +330,7 @@ public abstract class AutomationBase extends ConfigComponentBase
     }
 
 
-    private final ComponentTypeInterface<Rule> mRuleTypeInterface =
+    protected final ComponentTypeInterface<Rule> mRuleTypeInterface =
             new ComponentTypeInterface<Rule>()
             {
                 @Override
@@ -364,7 +364,7 @@ public abstract class AutomationBase extends ConfigComponentBase
                 }
             };
 
-    private final ComponentTypeInterface<Action> mActionTypeInterface =
+    protected final ComponentTypeInterface<Action> mActionTypeInterface =
             new ComponentTypeInterface<Action>()
             {
                 @Override
@@ -404,7 +404,7 @@ public abstract class AutomationBase extends ConfigComponentBase
         onComponentListChange();
     }
 
-    private interface ComponentTypeInterface<T extends AutomationComponent>
+    protected interface ComponentTypeInterface<T extends AutomationComponent>
     {
         public abstract String getTypeName(boolean upper);
 

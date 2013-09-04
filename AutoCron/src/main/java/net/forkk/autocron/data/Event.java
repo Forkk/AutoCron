@@ -16,7 +16,11 @@
 
 package net.forkk.autocron.data;
 
+import net.forkk.autocron.data.trigger.Trigger;
+import net.forkk.autocron.data.trigger.TriggerType;
+
 import java.io.Serializable;
+import java.util.List;
 
 
 /**
@@ -27,6 +31,37 @@ import java.io.Serializable;
  */
 public interface Event extends Automation
 {
+    /**
+     * @return An array of this automation's triggers.
+     */
+    public List<Trigger> getTriggers();
+
+    /**
+     * Adds a new trigger of the given type with the given name.
+     *
+     * @param type
+     *         The type of trigger to add.
+     */
+    public Trigger addTrigger(TriggerType type);
+
+    /**
+     * Removes the trigger with the given ID.
+     *
+     * @param id
+     *         The ID of the trigger to remove.
+     */
+    public void deleteTrigger(int id);
+
+    /**
+     * Tries to find a trigger with the given ID.
+     *
+     * @param id
+     *         The trigger ID to search for.
+     *
+     * @return The trigger with the given ID if one exists, otherwise null.
+     */
+    public Trigger findTriggerById(int id);
+
     public static class Pointer implements ComponentPointer, Serializable
     {
         protected int mEventId;
