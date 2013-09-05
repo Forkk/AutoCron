@@ -20,6 +20,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import net.forkk.autocron.data.action.Action;
+import net.forkk.autocron.data.action.TriggerAction;
+import net.forkk.autocron.data.rule.Rule;
 import net.forkk.autocron.data.trigger.Trigger;
 import net.forkk.autocron.data.trigger.TriggerType;
 
@@ -30,7 +33,7 @@ import java.util.List;
 /**
  * Base class for events.
  */
-public class EventBase extends AutomationBase implements Event
+public class EventBase extends AutomationBase implements Event, Trigger.TriggerListener
 {
     public static final String LOGGER_TAG = AutomationService.LOGGER_TAG;
 
@@ -70,6 +73,42 @@ public class EventBase extends AutomationBase implements Event
         super(service, sharedPreferencesId);
         mTriggers = new ArrayList<Trigger>();
         loadConfig(service);
+    }
+
+    @Override
+    public void onCreate()
+    {
+        super.onCreate();
+
+        for (Trigger trigger : mTriggers)
+            trigger.registerTriggerListener(this);
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+
+        for (Trigger trigger : mTriggers)
+            trigger.unregisterTriggerListener(this);
+    }
+
+    @Override
+    public void createComponents()
+    {
+        super.createComponents();
+
+        for (Trigger trigger : getTriggers())
+            trigger.create();
+    }
+
+    @Override
+    public void destroyComponents()
+    {
+        super.destroyComponents();
+
+        for (Trigger trigger : getTriggers())
+            trigger.destroy();
     }
 
     /**
@@ -166,12 +205,41 @@ public class EventBase extends AutomationBase implements Event
         Log.i(LOGGER_TAG, "Done loading automation configuration for \"" + getName() + "\".");
     }
 
+    /**
+     * Called when a trigger this listener is registered to becomes triggered.
+     *
+     * @param trigger
+     *         The trigger that was triggered.
+     */
+    @Override
+    public void onTriggered(Trigger trigger)
+    {
+        if (!isEnabled()) return;
+
+        for (Rule rule : getRules())
+            if (!rule.isActive()) return;
+
+        trigger();
+    }
+
+    /**
+     * Called when the event is triggered and all rules are active.
+     */
+    protected void trigger()
+    {
+        // Only trigger trigger actions.
+        for (Action action : getActions())
+        {
+            if (action instanceof TriggerAction) ((TriggerAction) action).onTrigger();
+        }
+    }
+
     protected class TriggerTypeInterface implements ComponentTypeInterface<Trigger>
     {
         @Override
         public String getTypeName(boolean upper)
         {
-            return upper ? "Trigger" : "action";
+            return upper ? "Trigger" : "trigger";
         }
 
         @Override

@@ -16,11 +16,11 @@
 
 package net.forkk.autocron.data.action;
 
+import net.forkk.autocron.data.Automation;
 import net.forkk.autocron.data.AutomationComponent;
+import net.forkk.autocron.data.AutomationComponentPointer;
 import net.forkk.autocron.data.AutomationService;
-import net.forkk.autocron.data.ComponentPointer;
 import net.forkk.autocron.data.ConfigComponent;
-import net.forkk.autocron.data.State;
 
 import java.io.Serializable;
 
@@ -41,28 +41,32 @@ public interface Action extends AutomationComponent
      */
     public void onDeactivate();
 
-    public static class Pointer implements ComponentPointer, Serializable
+    public static class Pointer extends AutomationComponentPointer implements Serializable
     {
-        protected int mAutomationId;
-
         protected int mActionId;
 
         public Pointer(Action action)
         {
-            mAutomationId = action.getParent().getId();
+            super(action.getParent());
             mActionId = action.getId();
         }
 
-        public Pointer(int automationId, int actionId)
+        public Pointer(Automation automation, int actionId)
         {
-            mAutomationId = automationId;
+            super(automation);
+            mActionId = actionId;
+        }
+
+        public Pointer(int automationId, AutomationType type, int actionId)
+        {
+            super(automationId, type);
             mActionId = actionId;
         }
 
         @Override
         public ConfigComponent getComponent(AutomationService.LocalBinder binder)
         {
-            State parent = binder.findStateById(mAutomationId);
+            Automation parent = getAutomation(binder);
             if (parent == null) return null;
             return parent.findActionById(mActionId);
         }

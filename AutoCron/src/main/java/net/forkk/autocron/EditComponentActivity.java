@@ -24,6 +24,7 @@ import android.support.v4.app.FragmentActivity;
 import net.forkk.autocron.data.ComponentPointer;
 import net.forkk.autocron.data.action.Action;
 import net.forkk.autocron.data.rule.Rule;
+import net.forkk.autocron.data.trigger.Trigger;
 
 
 public class EditComponentActivity extends FragmentActivity
@@ -51,6 +52,7 @@ public class EditComponentActivity extends FragmentActivity
         String componentName = "";
         if (pointer instanceof Rule.Pointer) componentName = getString(R.string.rule_upper);
         if (pointer instanceof Action.Pointer) componentName = getString(R.string.action_upper);
+        if (pointer instanceof Trigger.Pointer) componentName = getString(R.string.trigger_upper);
         setTitle(getString(R.string.title_activity_edit_component, componentName));
 
         if (savedInstanceState == null)

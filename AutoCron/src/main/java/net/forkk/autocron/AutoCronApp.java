@@ -20,6 +20,7 @@ import android.app.Application;
 
 import net.forkk.autocron.data.action.ActionType;
 import net.forkk.autocron.data.rule.RuleType;
+import net.forkk.autocron.data.trigger.TriggerType;
 
 
 /**
@@ -32,8 +33,9 @@ public class AutoCronApp extends Application
     {
         super.onCreate();
 
-        // Load rule and action types.
+        // Load rule, action, and trigger types.
         RuleType.initialize(this);
         ActionType.initialize(this);
+        TriggerType.initialize(this);
     }
 }

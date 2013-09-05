@@ -28,6 +28,12 @@ public abstract class AutomationComponentPointer implements ComponentPointer, Se
 
     protected AutomationType mAutomationType;
 
+    public AutomationComponentPointer(Automation automation)
+    {
+        mAutomationId = automation.getId();
+        mAutomationType = automation instanceof State ? AutomationType.State : AutomationType.Event;
+    }
+
     public AutomationComponentPointer(int automationId, AutomationType automationType)
     {
         mAutomationId = automationId;

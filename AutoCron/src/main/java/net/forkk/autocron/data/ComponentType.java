@@ -18,6 +18,7 @@ package net.forkk.autocron.data;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -29,6 +30,8 @@ import java.lang.reflect.InvocationTargetException;
 public abstract class ComponentType<T extends AutomationComponent>
 {
     public static final String VALUE_COMPONENT_TYPE = "component_type";
+
+    private static final String LOGGER_TAG = AutomationService.LOGGER_TAG;
 
     private String mTypeName;
 
@@ -107,11 +110,12 @@ public abstract class ComponentType<T extends AutomationComponent>
         try
         {
             constructor =
-                    mTypeClass.getConstructor(State.class, AutomationService.class, int.class);
+                    mTypeClass.getConstructor(Automation.class, AutomationService.class, int.class);
         }
         catch (NoSuchMethodException e)
         {
-            e.printStackTrace();
+            Log.wtf(LOGGER_TAG,
+                    "No valid constructor found for component type " + getTypeName() + ".", e);
             return null;
         }
 
@@ -122,15 +126,15 @@ public abstract class ComponentType<T extends AutomationComponent>
         catch (InstantiationException e)
         {
             // TODO: Handle these errors properly.
-            e.printStackTrace();
+            Log.wtf(LOGGER_TAG, "Error creating component " + getTypeName() + ".", e);
         }
         catch (IllegalAccessException e)
         {
-            e.printStackTrace();
+            Log.wtf(LOGGER_TAG, "Error creating component " + getTypeName() + ".", e);
         }
         catch (InvocationTargetException e)
         {
-            e.printStackTrace();
+            Log.wtf(LOGGER_TAG, "Error creating component " + getTypeName() + ".", e);
         }
         return null;
     }

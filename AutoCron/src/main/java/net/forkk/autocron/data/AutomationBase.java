@@ -72,15 +72,7 @@ public abstract class AutomationBase extends ConfigComponentBase
     @Override
     public void onCreate()
     {
-        for (Rule rule : mRules)
-        {
-            rule.create();
-        }
-
-        for (Action action : mActions)
-        {
-            action.create();
-        }
+        createComponents();
     }
 
     /**
@@ -89,15 +81,26 @@ public abstract class AutomationBase extends ConfigComponentBase
     @Override
     public void onDestroy()
     {
+        destroyComponents();
+    }
+
+
+    protected void createComponents()
+    {
         for (Rule rule : mRules)
-        {
-            rule.destroy();
-        }
+            rule.create();
 
         for (Action action : mActions)
-        {
+            action.create();
+    }
+
+    protected void destroyComponents()
+    {
+        for (Rule rule : mRules)
+            rule.destroy();
+
+        for (Action action : mActions)
             action.destroy();
-        }
     }
 
 
@@ -440,21 +443,10 @@ public abstract class AutomationBase extends ConfigComponentBase
     @Override
     public void reloadComponents(AutomationService service)
     {
-        for (Rule rule : mRules)
-            rule.destroy();
-
-        for (Action action : mActions)
-            action.destroy();
-
+        destroyComponents();
         loadConfig(service);
-
-        for (Rule rule : mRules)
-            rule.create();
-
-        for (Action action : mActions)
-            action.create();
+        createComponents();
     }
-
 
     /**
      * @return The automation service that this automation is attached to.

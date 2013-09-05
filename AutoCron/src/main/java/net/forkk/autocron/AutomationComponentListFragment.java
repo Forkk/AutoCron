@@ -229,17 +229,17 @@ public class AutomationComponentListFragment extends ComponentListFragment
         {
         case Rule:
             intent.putExtra(EditComponentActivity.EXTRA_COMPONENT_POINTER,
-                            new Rule.Pointer(mAutomation.getId(), (int) id));
+                            new Rule.Pointer(mAutomation, (int) id));
             break;
 
         case Action:
             intent.putExtra(EditComponentActivity.EXTRA_COMPONENT_POINTER,
-                            new Action.Pointer(mAutomation.getId(), (int) id));
+                            new Action.Pointer(mAutomation, (int) id));
             break;
 
         case Trigger:
             intent.putExtra(EditComponentActivity.EXTRA_COMPONENT_POINTER,
-                            new Trigger.Pointer(mAutomation.getId(), (int) id));
+                            new Trigger.Pointer(mAutomation, (int) id));
             break;
         }
 

@@ -82,6 +82,8 @@ public class TriggerType extends ComponentType<Trigger>
 
         ArrayList<TriggerType> types = new ArrayList<TriggerType>();
 
+        types.add(TestTrigger.initComponentType(res));
+
         for (TriggerType type : types)
             type.checkIfSupported(context);
 

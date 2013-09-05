@@ -16,10 +16,16 @@
 
 package net.forkk.autocron.data.trigger;
 
+import android.preference.PreferenceFragment;
+
+import net.forkk.autocron.R;
 import net.forkk.autocron.data.Automation;
 import net.forkk.autocron.data.AutomationComponentBase;
 import net.forkk.autocron.data.AutomationService;
 import net.forkk.autocron.data.ComponentPointer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -27,9 +33,21 @@ import net.forkk.autocron.data.ComponentPointer;
  */
 public abstract class TriggerBase extends AutomationComponentBase implements Trigger
 {
+    protected List<TriggerListener> mTriggerListeners;
+
     public TriggerBase(Automation parent, AutomationService service, int id)
     {
         super(parent, service, id);
+        mTriggerListeners = new ArrayList<TriggerListener>();
+    }
+
+    /**
+     * This should be called to trigger this trigger component. Calls onTriggered for all listeners. 
+     */
+    protected void trigger()
+    {
+        for (TriggerListener listener : mTriggerListeners)
+            listener.onTriggered(this);
     }
 
     /**
@@ -51,6 +69,20 @@ public abstract class TriggerBase extends AutomationComponentBase implements Tri
         return "trigger_" + id;
     }
 
+
+    @Override
+    public void registerTriggerListener(TriggerListener listener)
+    {
+        mTriggerListeners.add(listener);
+    }
+
+    @Override
+    public void unregisterTriggerListener(TriggerListener listener)
+    {
+        mTriggerListeners.remove(listener);
+    }
+
+
     /**
      * Gets a component pointer that points to this component.
      *
@@ -61,5 +93,12 @@ public abstract class TriggerBase extends AutomationComponentBase implements Tri
     public ComponentPointer getPointer()
     {
         return new Pointer(this);
+    }
+
+    @Override
+    public void addPreferencesToFragment(PreferenceFragment fragment)
+    {
+        super.addPreferencesToFragment(fragment);
+        fragment.addPreferencesFromResource(R.xml.prefs_trigger);
     }
 }

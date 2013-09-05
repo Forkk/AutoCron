@@ -16,6 +16,7 @@
 
 package net.forkk.autocron.data.trigger;
 
+import net.forkk.autocron.data.Automation;
 import net.forkk.autocron.data.AutomationComponent;
 import net.forkk.autocron.data.AutomationComponentPointer;
 import net.forkk.autocron.data.AutomationService;
@@ -31,6 +32,36 @@ import java.io.Serializable;
  */
 public interface Trigger extends AutomationComponent
 {
+    /**
+     * Registers the given trigger listener to this trigger.
+     *
+     * @param listener
+     *         The listener to register.
+     */
+    public abstract void registerTriggerListener(TriggerListener listener);
+
+    /**
+     * Un-registers the given trigger listener from this trigger.
+     *
+     * @param listener
+     *         The listener to register.
+     */
+    public abstract void unregisterTriggerListener(TriggerListener listener);
+
+    /**
+     * An interface that allows an object to listen for when this trigger is triggered.
+     */
+    public interface TriggerListener
+    {
+        /**
+         * Called when a trigger this listener is registered to becomes triggered.
+         *
+         * @param trigger
+         *         The trigger that was triggered.
+         */
+        public abstract void onTriggered(Trigger trigger);
+    }
+
     public static class Pointer extends AutomationComponentPointer implements Serializable
     {
         protected int mTriggerId;
@@ -39,6 +70,12 @@ public interface Trigger extends AutomationComponent
         {
             super(trigger.getParent().getId(), AutomationType.Event);
             mTriggerId = trigger.getId();
+        }
+
+        public Pointer(Automation automation, int triggerId)
+        {
+            super(automation);
+            mTriggerId = triggerId;
         }
 
         public Pointer(int automationId, int triggerId)
