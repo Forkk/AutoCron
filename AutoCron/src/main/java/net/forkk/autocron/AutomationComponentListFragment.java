@@ -33,6 +33,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import net.forkk.autocron.data.Automation;
+import net.forkk.autocron.data.AutomationComponent;
 import net.forkk.autocron.data.AutomationService;
 import net.forkk.autocron.data.ComponentPointer;
 import net.forkk.autocron.data.ComponentType;
@@ -322,10 +323,19 @@ public class AutomationComponentListFragment extends ComponentListFragment
 
         ComponentType[] mComponentTypes;
 
-        public ComponentTypeAdapter(Context parent, ComponentType[] types)
+        public ComponentTypeAdapter(Context parent,
+                                    ComponentType<? extends AutomationComponent>[] types)
         {
             mInflater = LayoutInflater.from(parent);
-            mComponentTypes = types;
+
+            // Filter out incompatible component types.
+            List<ComponentType> compatibleTypes = new ArrayList<ComponentType>();
+            for (ComponentType<? extends AutomationComponent> type : types)
+            {
+                if (mAutomation.isComponentTypeCompatible(type)) compatibleTypes.add(type);
+            }
+
+            mComponentTypes = compatibleTypes.toArray(new ComponentType[compatibleTypes.size()]);
         }
 
         @Override

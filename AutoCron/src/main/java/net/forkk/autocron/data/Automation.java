@@ -108,6 +108,11 @@ public interface Automation extends ConfigComponent
     public Action findActionById(int id);
 
     /**
+     * Checks if the given component type is compatible with this automation type.
+     */
+    public boolean isComponentTypeCompatible(ComponentType<? extends AutomationComponent> type);
+
+    /**
      * Reloads all components from configuration.
      * <p/>
      * This is generally called when some configuration options change. It re-creates all of the

@@ -216,8 +216,9 @@ public class EventBase extends AutomationBase implements Event, Trigger.TriggerL
     {
         if (!isEnabled()) return;
 
+        // If any enabled rules are inactive, don't trigger the actions.
         for (Rule rule : getRules())
-            if (!rule.isActive()) return;
+            if (rule.isEnabled() && !rule.isActive()) return;
 
         trigger();
     }
@@ -265,5 +266,15 @@ public class EventBase extends AutomationBase implements Event, Trigger.TriggerL
         {
             return findTriggerById(id);
         }
+    }
+
+    @Override
+    public boolean isComponentTypeCompatible(ComponentType<? extends AutomationComponent> type)
+    {
+        // Only triggers, rules, and trigger actions are compatible with event automations.
+        Class<? extends AutomationComponent> componentClass = type.getTypeClass();
+        return TriggerAction.class.isAssignableFrom(componentClass) ||
+               Trigger.class.isAssignableFrom(componentClass) ||
+               Rule.class.isAssignableFrom(componentClass);
     }
 }

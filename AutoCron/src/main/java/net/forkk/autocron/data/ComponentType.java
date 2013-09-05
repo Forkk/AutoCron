@@ -154,6 +154,11 @@ public abstract class ComponentType<T extends AutomationComponent>
         return mTypeId;
     }
 
+    public Class<? extends T> getTypeClass()
+    {
+        return mTypeClass;
+    }
+
     /**
      * @return An error message explaining to the user why this component type is not supported on
      * his/her device. Empty string if no error occurred.

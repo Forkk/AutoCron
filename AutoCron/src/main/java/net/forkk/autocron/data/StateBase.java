@@ -135,4 +135,13 @@ public class StateBase extends AutomationBase
     {
         return new Pointer(this);
     }
+
+    @Override
+    public boolean isComponentTypeCompatible(ComponentType<? extends AutomationComponent> type)
+    {
+        // All rule and action types are compatible with state automations.
+        Class<? extends AutomationComponent> componentClass = type.getTypeClass();
+        return Action.class.isAssignableFrom(componentClass) ||
+               Rule.class.isAssignableFrom(componentClass);
+    }
 }
