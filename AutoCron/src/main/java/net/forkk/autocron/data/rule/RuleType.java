@@ -88,6 +88,7 @@ public class RuleType extends ComponentType<Rule>
         types.add(WiFiRule.initComponentType(res));
         types.add(NfcRule.initComponentType(res));
         types.add(TestRule.initComponentType(res));
+        types.add(CustomRule.initComponentType(res));
 
         for (RuleType type : types)
             type.checkIfSupported(context);

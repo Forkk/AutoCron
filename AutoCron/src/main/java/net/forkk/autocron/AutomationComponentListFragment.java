@@ -26,6 +26,7 @@ import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -194,24 +195,27 @@ public class AutomationComponentListFragment extends ComponentListFragment
             break;
         }
 
+        final ComponentTypeAdapter finalAdapter = adapter;
         builder.setAdapter(adapter, new DialogInterface.OnClickListener()
         {
             @Override
-            public void onClick(DialogInterface dialogInterface, int i)
+            public void onClick(DialogInterface dialogInterface, int position)
             {
+                int id = (int) finalAdapter.getItemId(position);
+
                 ConfigComponent component = null;
                 switch (mType)
                 {
                 case Rule:
-                    component = mAutomation.addRule(RuleType.getRuleTypes()[i]);
+                    component = mAutomation.addRule(RuleType.getRuleTypes()[id]);
                     break;
 
                 case Action:
-                    component = mAutomation.addAction(ActionType.getActionTypes()[i]);
+                    component = mAutomation.addAction(ActionType.getActionTypes()[id]);
                     break;
 
                 case Trigger:
-                    component = ((Event) mAutomation).addTrigger(TriggerType.getTriggerTypes()[i]);
+                    component = ((Event) mAutomation).addTrigger(TriggerType.getTriggerTypes()[id]);
                     break;
                 }
                 onEditComponent(component.getId());
@@ -321,45 +325,46 @@ public class AutomationComponentListFragment extends ComponentListFragment
     {
         LayoutInflater mInflater;
 
-        ComponentType[] mComponentTypes;
+        SparseArray<ComponentType<? extends AutomationComponent>> mComponentTypes;
 
         public ComponentTypeAdapter(Context parent,
                                     ComponentType<? extends AutomationComponent>[] types)
         {
+            mComponentTypes = new SparseArray<ComponentType<? extends AutomationComponent>>();
+
             mInflater = LayoutInflater.from(parent);
 
             // Filter out incompatible component types.
-            List<ComponentType> compatibleTypes = new ArrayList<ComponentType>();
+            int i = 0;
             for (ComponentType<? extends AutomationComponent> type : types)
             {
-                if (mAutomation.isComponentTypeCompatible(type)) compatibleTypes.add(type);
+                if (mAutomation.isComponentTypeCompatible(type)) mComponentTypes.append(i, type);
+                i++;
             }
-
-            mComponentTypes = compatibleTypes.toArray(new ComponentType[compatibleTypes.size()]);
         }
 
         @Override
         public int getCount()
         {
-            return mComponentTypes.length;
+            return mComponentTypes.size();
         }
 
         @Override
         public Object getItem(int i)
         {
-            return mComponentTypes[i];
+            return mComponentTypes.valueAt(i);
         }
 
         @Override
         public long getItemId(int i)
         {
-            return i;
+            return mComponentTypes.keyAt(i);
         }
 
         @Override
         public View getView(int i, View view, ViewGroup viewGroup)
         {
-            ComponentType type = mComponentTypes[i];
+            ComponentType type = mComponentTypes.valueAt(i);
 
             view = mInflater.inflate(R.layout.component_type_list_item, null);
 
@@ -384,7 +389,7 @@ public class AutomationComponentListFragment extends ComponentListFragment
         @Override
         public int getItemViewType(int position)
         {
-            ComponentType type = mComponentTypes[position];
+            ComponentType type = mComponentTypes.valueAt(position);
             return type.isSupported() ? 0 : 1;
         }
 
@@ -397,7 +402,7 @@ public class AutomationComponentListFragment extends ComponentListFragment
         @Override
         public boolean isEnabled(int position)
         {
-            ComponentType type = mComponentTypes[position];
+            ComponentType type = mComponentTypes.valueAt(position);
             return type.isSupported();
         }
     }

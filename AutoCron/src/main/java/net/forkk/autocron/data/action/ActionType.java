@@ -87,6 +87,7 @@ public class ActionType extends ComponentType<Action>
         types.add(OngoingNotificationAction.initComponentType(res));
         types.add(TriggerNotificationAction.initComponentType(res));
         types.add(TestAction.initComponentType(res));
+        types.add(CustomRuleAction.initComponentType(res));
 
         for (ActionType type : types)
             type.checkIfSupported(context);

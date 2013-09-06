@@ -31,7 +31,7 @@
           android:versionCode="00301"
           android:versionName="0.3.1">
 
-<uses-sdk
+    <uses-sdk
             android:minSdkVersion="14"
             android:targetSdkVersion="18"/>
 
@@ -99,6 +99,11 @@
 
         <service
                 android:name="net.forkk.autocron.data.NfcService"
+                android:enabled="true"
+                android:exported="false"/>
+
+        <service
+                android:name="net.forkk.autocron.data.CustomRuleService"
                 android:enabled="true"
                 android:exported="false"/>
     </application>

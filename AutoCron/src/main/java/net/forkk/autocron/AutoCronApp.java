@@ -17,7 +17,10 @@
 package net.forkk.autocron;
 
 import android.app.Application;
+import android.content.Intent;
 
+import net.forkk.autocron.data.AutomationService;
+import net.forkk.autocron.data.CustomRuleService;
 import net.forkk.autocron.data.action.ActionType;
 import net.forkk.autocron.data.rule.RuleType;
 import net.forkk.autocron.data.trigger.TriggerType;
@@ -37,5 +40,9 @@ public class AutoCronApp extends Application
         RuleType.initialize(this);
         ActionType.initialize(this);
         TriggerType.initialize(this);
+
+        // Start services.
+        startService(new Intent(this, AutomationService.class));
+        startService(new Intent(this, CustomRuleService.class));
     }
 }
