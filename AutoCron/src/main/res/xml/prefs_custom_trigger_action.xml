@@ -17,20 +17,12 @@
   -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="@string/pref_title_custom_rule_action_category">
+    <PreferenceCategory android:title="@string/pref_title_custom_trigger_action_category">
         <EditTextPreference
-                android:key="custom_rule_id"
-                android:title="@string/pref_title_custom_rule_action_id"
-                android:summary="@string/pref_summary_custom_rule_action_id"
+                android:key="custom_trigger_id"
+                android:title="@string/pref_title_custom_trigger_action_id"
+                android:summary="@string/pref_summary_custom_trigger_action_id"
                 android:inputType="text|textNoSuggestions"
-                />
-
-        <ListPreference
-                android:key="state_change_type"
-                android:title="@string/pref_title_custom_rule_action_state_change"
-                android:summary="@string/pref_summary_custom_rule_action_state_change"
-                android:entries="@array/pref_custom_rule_action_titles"
-                android:entryValues="@array/pref_custom_rule_action_values"
                 />
     </PreferenceCategory>
 </PreferenceScreen>

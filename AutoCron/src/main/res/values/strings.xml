@@ -62,6 +62,12 @@
     <string name="trigger_notification_action_title">Triggered Notification Action</string>
     <string name="trigger_notification_action_description">An action that displays a notification when it is triggered.</string>
 
+    <string name="custom_rule_action_title">Custom Rule Action</string>
+    <string name="custom_rule_action_description">An action that changes the state of all of the custom rules that have a given ID.</string>
+
+    <string name="custom_trigger_action_title">Custom Trigger Action</string>
+    <string name="custom_trigger_action_description">An action that triggers all of the custom triggers with a given ID.</string>
+
     <!-- Rule Type Info -->
     <string name="test_rule_title">Test Rule</string>
     <string name="test_rule_description">This is a simple test rule that displays a notification that you can click on to activate and deactivate the rule. You can use this rule for testing an state\'s actions.</string>
@@ -81,12 +87,15 @@
     <string name="nfc_rule_title">NFC Rule</string>
     <string name="nfc_rule_description">A rule that activates when an NFC tag is discovered that contains this rule\'s ID.</string>
 
-    <string name="custom_rule_action_title">Custom Rule Action</string>
-    <string name="custom_rule_action_description">An action that changes the state of all of the custom rules that have a given ID.</string>
+    <string name="custom_rule_title">Custom Rule</string>
+    <string name="custom_rule_description">A custom rule that can be activated and deactivated by a custom rule action.</string>
 
     <!-- Trigger Type Info -->
     <string name="test_trigger_title">Test Trigger</string>
     <string name="test_trigger_description">A simple trigger that shows a notification that can be tapped to trigger its event.</string>
+
+    <string name="custom_trigger_title">Custom Trigger</string>
+    <string name="custom_trigger_description">A trigger that can be set off by a custom trigger action.</string>
 
     <!-- Misc -->
     <string name="component_no_description">No description set.</string>
@@ -220,6 +229,14 @@
         <item>Toggle</item>
     </string-array>
 
+    <string name="pref_title_custom_trigger_category">Custom Trigger</string>
+    <string name="pref_title_custom_trigger_id">Custom Trigger ID</string>
+    <string name="pref_summary_custom_trigger_id">This custom trigger\'s ID. When a custom trigger action with the same ID as this custom trigger runs, it will set off this trigger.</string>
+
+    <string name="pref_title_custom_trigger_action_category">Custom Trigger Action</string>
+    <string name="pref_title_custom_trigger_action_id">Custom Trigger ID</string>
+    <string name="pref_summary_custom_trigger_action_id">The ID of the custom trigger or triggers that this action will set off.</string>
+
     <!-- Names of Things -->
     <string name="rule_upper">Rule</string>
     <string name="rule_lower">rule</string>
@@ -260,6 +277,4 @@
     <string name="error_message_malformed_ndef_message">The NDEF message to write is malformed.</string>
     <string name="error_message_tag_write_unknown">An unknown error occurred when trying to write data to the NFC tag.</string>
     <string name="error_tag_write_cancelled">The operation was cancelled.</string>
-    <string name="custom_rule_title">Custom Rule</string>
-    <string name="custom_rule_description">A custom rule that can be activated and deactivated by a custom rule action.</string>
 </resources>
