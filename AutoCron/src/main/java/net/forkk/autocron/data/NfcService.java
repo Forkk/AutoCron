@@ -22,7 +22,9 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -35,13 +37,11 @@ public class NfcService extends Service
 
     public static final String EXTRA_NFC_LISTENER_ID = "net.forkk.autocron.nfc_listener_id";
 
-    public static final String EXTRA_NFC_LISTENER_ACTION = "net.forkk.autocron.nfc_listener_action";
-
-    private Map<String, NfcListener> mListeners;
+    private Map<String, List<NfcListener>> mListeners;
 
     public NfcService()
     {
-        mListeners = new HashMap<String, NfcListener>();
+        mListeners = new HashMap<String, List<NfcListener>>();
     }
 
     @Override
@@ -54,7 +54,10 @@ public class NfcService extends Service
             String id = intent.getStringExtra(EXTRA_NFC_LISTENER_ID);
 
             if (mListeners.containsKey(id))
-                mListeners.get(id).tagTriggered(intent.getStringExtra(EXTRA_NFC_LISTENER_ACTION));
+            {
+                for (NfcListener listener : mListeners.get(id))
+                    listener.tagTriggered();
+            }
             else Log.w(LOGGER_TAG, "Unknown NFC tag ID encountered.");
         }
 
@@ -71,17 +74,28 @@ public class NfcService extends Service
     {
         public void registerListener(String id, NfcListener listener)
         {
-            mListeners.put(id, listener);
+            if (mListeners.containsKey(id)) mListeners.get(id).add(listener);
+            else
+            {
+                List<NfcListener> listenerList = new ArrayList<NfcListener>();
+                listenerList.add(listener);
+                mListeners.put(id, listenerList);
+            }
         }
 
-        public void unregisterListener(String id)
+        public void unregisterListener(String id, NfcListener listener)
         {
-            mListeners.remove(id);
+            if (mListeners.containsKey(id))
+            {
+                List<NfcListener> listenerList = mListeners.get(id);
+                listenerList.remove(listener);
+                if (listenerList.isEmpty()) mListeners.remove(id);
+            }
         }
     }
 
     public interface NfcListener
     {
-        public abstract void tagTriggered(String action);
+        public abstract void tagTriggered();
     }
 }

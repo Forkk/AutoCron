@@ -17,20 +17,16 @@
   -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="@string/pref_title_nfc_rule">
-        <Preference
-                android:key="write_activate"
-                android:title="@string/pref_title_nfc_write_activate"
-                android:summary="@string/pref_summary_nfc_write_activate"/>
+    <PreferenceCategory android:title="@string/pref_title_nfc_tag">
+        <EditTextPreference
+                android:key="nfc_tag_id"
+                android:title="@string/pref_title_nfc_tag_id"
+                android:summary="@string/pref_summary_nfc_tag_id"
+                />
 
         <Preference
-                android:key="write_deactivate"
-                android:title="@string/pref_title_nfc_write_deactivate"
-                android:summary="@string/pref_summary_nfc_write_deactivate"/>
-
-        <Preference
-                android:key="write_toggle"
-                android:title="@string/pref_title_nfc_write_toggle"
-                android:summary="@string/pref_summary_nfc_write_toggle"/>
+                android:key="write"
+                android:title="@string/pref_title_nfc_write"
+                android:summary="@string/pref_summary_nfc_write"/>
     </PreferenceCategory>
 </PreferenceScreen>

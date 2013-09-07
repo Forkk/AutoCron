@@ -38,7 +38,9 @@ public class NfcHandler extends Activity
     {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        if (intent.getType() != null && intent.getType().equals("application/net.forkk.autocron"))
+        assert intent != null;
+        String type = intent.getType();
+        if (type != null && type.equals("application/net.forkk.autocron"))
         {
             // Read the first record which contains the NFC data
             Parcelable[] messages = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
@@ -47,7 +49,7 @@ public class NfcHandler extends Activity
             NdefMessage message = ((NdefMessage) messages[0]);
             NdefRecord[] records = message.getRecords();
 
-            if (records.length < 2)
+            if (records.length < 1)
             {
                 Log.e(LOGGER_TAG, "Error processing NFC tag. Data is invalid. Missing records.");
                 finish();
@@ -55,16 +57,13 @@ public class NfcHandler extends Activity
             }
 
             NdefRecord idRecord = records[0];
-            NdefRecord actionRecord = records[1];
 
             try
             {
                 String id = new String(idRecord.getPayload());
-                String action = new String(actionRecord.getPayload());
 
                 Intent serviceIntent = new Intent(this, NfcService.class);
                 serviceIntent.putExtra(NfcService.EXTRA_NFC_LISTENER_ID, id);
-                serviceIntent.putExtra(NfcService.EXTRA_NFC_LISTENER_ACTION, action);
                 startService(serviceIntent);
             }
             catch (NumberFormatException e)

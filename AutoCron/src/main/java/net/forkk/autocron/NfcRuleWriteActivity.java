@@ -46,13 +46,13 @@ import java.io.UnsupportedEncodingException;
  */
 public class NfcRuleWriteActivity extends Activity implements DialogInterface.OnCancelListener
 {
-    public static final String EXTRA_NFC_RULE_ID = "net.forkk.autocron.nfc_rule_id";
-
-    public static final String EXTRA_NFC_ACTION = "net.forkk.autocron.nfc_rule_action_type";
+    public static final String EXTRA_NFC_TAG_ID = "net.forkk.autocron.nfc_tag_id";
 
     protected ProgressDialog mProgressDialog;
 
     protected WriteTagTask mTask;
+
+    protected boolean mFinishOnProgessDialogCancel = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -71,20 +71,17 @@ public class NfcRuleWriteActivity extends Activity implements DialogInterface.On
     @Override
     protected void onResume()
     {
-        super.onStart();
+        super.onResume();
 
         NfcAdapter adapter = NfcAdapter.getDefaultAdapter(this);
         assert adapter != null;
 
         mProgressDialog.show();
 
-        String id = getIntent().getStringExtra(EXTRA_NFC_RULE_ID);
-        String action = getIntent().getStringExtra(EXTRA_NFC_ACTION);
-
+        String id = getIntent().getStringExtra(EXTRA_NFC_TAG_ID);
         Intent intent = new Intent(this, NfcRuleWriteActivity.class)
                                 .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        intent.putExtra(EXTRA_NFC_RULE_ID, id);
-        intent.putExtra(EXTRA_NFC_ACTION, action);
+        intent.putExtra(EXTRA_NFC_TAG_ID, id);
         PendingIntent pending =
                 PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -98,13 +95,15 @@ public class NfcRuleWriteActivity extends Activity implements DialogInterface.On
     {
         super.onPause();
 
-        mProgressDialog.cancel();
-        mProgressDialog.hide();
-        if (mTask != null) mTask.cancel(true);
+        if (mTask != null)
+        {
+            mProgressDialog.cancel();
+            mProgressDialog.hide();
 
-        NfcAdapter adapter = NfcAdapter.getDefaultAdapter(this);
-        assert adapter != null;
-        adapter.disableForegroundDispatch(this);
+            NfcAdapter adapter = NfcAdapter.getDefaultAdapter(this);
+            assert adapter != null;
+            adapter.disableForegroundDispatch(this);
+        }
     }
 
     @Override
@@ -121,6 +120,7 @@ public class NfcRuleWriteActivity extends Activity implements DialogInterface.On
         super.onNewIntent(intent);
 
         mProgressDialog.setMessage(getString(R.string.nfc_writing_message));
+        mProgressDialog.setCancelable(false);
 
         mTask = new WriteTagTask();
         mTask.execute(intent);
@@ -153,12 +153,10 @@ public class NfcRuleWriteActivity extends Activity implements DialogInterface.On
             Intent intent = intents[0];
 
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            String id = intent.getStringExtra(EXTRA_NFC_RULE_ID);
-            String action = intent.getStringExtra(EXTRA_NFC_ACTION);
+            String id = intent.getStringExtra(EXTRA_NFC_TAG_ID);
 
             assert tag != null;
             assert id != null;
-            assert action != null;
 
             // Neat, IntelliJ made my code look like space ships! Kinda...
             try
@@ -167,12 +165,8 @@ public class NfcRuleWriteActivity extends Activity implements DialogInterface.On
                                                      "application/net.forkk.autocron"
                                                              .getBytes("US-ASCII"), null,
                                                      id.getBytes());
-                NdefRecord actionRecord = new NdefRecord(NdefRecord.TNF_MIME_MEDIA,
-                                                         "application/net.forkk.autocron"
-                                                                 .getBytes("US-ASCII"), null,
-                                                         action.getBytes());
 
-                NdefMessage message = new NdefMessage(new NdefRecord[] {idRecord, actionRecord});
+                NdefMessage message = new NdefMessage(new NdefRecord[] {idRecord});
 
                 if (isCancelled())
                     return new WriteTagResult(false, R.string.error_tag_write_cancelled);
@@ -290,8 +284,6 @@ public class NfcRuleWriteActivity extends Activity implements DialogInterface.On
 
     public void showFinishDialog(String title, String message)
     {
-        mProgressDialog.dismiss();
-
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(title);
         builder.setMessage(message);
