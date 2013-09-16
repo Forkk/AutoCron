@@ -84,6 +84,9 @@
     <string name="wifi_rule_title">Wi-Fi Rule</string>
     <string name="wifi_rule_description">A rule that activates based on your current Wi-Fi network.</string>
 
+    <string name="usb_rule_title">USB Rule</string>
+    <string name="usb_rule_description">A rule that activates while a USB cable is connected.</string>
+
     <string name="custom_rule_title">Custom Rule</string>
     <string name="custom_rule_description">A custom rule that can be activated and deactivated by a custom rule action.</string>
 
